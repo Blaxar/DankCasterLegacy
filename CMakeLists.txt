@@ -10,6 +10,7 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH}
 "${CMAKE_SOURCE_DIR}/cmake/Modules/")
 
 find_package(Threads REQUIRED)
+find_package(SDL2 REQUIRED)
 
 set(DEFAULT_SRC_DIR ${CMAKE_SOURCE_DIR}/src)
 set(DEFAULT_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/include)
@@ -20,6 +21,7 @@ set(DEFAULT_BIN_DIR ${CMAKE_SOURCE_DIR}/bin)
 #Define all the include directories
 include_directories(
     ${DEFAULT_INCLUDE_DIR}
+	${SDL2_INCLUDE_DIR}
 )
 
 add_definitions(-rdynamic -O2)
