@@ -24,7 +24,7 @@ include_directories(
 	${SDL2_INCLUDE_DIR}
 )
 
-add_definitions(-rdynamic -O2)
+add_definitions(-rdynamic -O0)
 
 link_directories(${DEFAULT_LINK_DIR})
 add_subdirectory(src)

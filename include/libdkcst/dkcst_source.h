@@ -1,6 +1,7 @@
 #ifndef DKCST_SOURCE_H
 #define DKCST_SOURCE_H
 
+#include "dkcst_rc.h"
 #include <inttypes.h>
 #include <stddef.h>
 
@@ -27,12 +28,12 @@ typedef uint8_t src_tk;
 		float (*get_fps)(void* ctx);						   \
 		uint16_t (*get_sample_rate)(void* ctx);                \
 		uint8_t (*get_nb_channels)(void* ctx);                 \
-		uint32_t (*alloc_video_buffer)(void* ctx, void** buf); \
-        uint32_t (*free_video_buffer)(void* ctx, void** buf);  \
-        uint32_t (*copy_video_data)(void* ctx, void* buf);    \
-        uint32_t (*alloc_audio_buffer)(void* ctx, void** buf); \
-        uint32_t (*free_audio_buffer)(void* ctx, void** buf);  \
-        uint32_t (*copy_audio_data)(void* ctx, void* buf);
+	    DkCst_rc (*alloc_video_buffer)(void* ctx, void** buf, uint32_t* size); \
+        DkCst_rc (*free_video_buffer)(void* ctx, void** buf); \
+        DkCst_rc (*copy_video_data)(void* ctx, void* buf);    \
+        DkCst_rc (*alloc_audio_buffer)(void* ctx, void** buf, uint32_t* size); \
+        DkCst_rc (*free_audio_buffer)(void* ctx, void** buf);  \
+        DkCst_rc (*copy_audio_data)(void* ctx, void* buf);
     
 
 
@@ -68,16 +69,16 @@ typedef struct {
 	
 } DkCst_source_mgr;
 
-void DkCst_create_source_mgr(DkCst_source_mgr** src_mgr);
-void DkCst_delete_source_mgr(DkCst_source_mgr** src_mgr);
+DkCst_rc DkCst_create_source_mgr(DkCst_source_mgr** src_mgr);
+DkCst_rc DkCst_delete_source_mgr(DkCst_source_mgr** src_mgr);
 
-const DkCst_source* DkCst_create_source(DkCst_source_mgr* src_mgr, const char* type, const void* params);
-uint8_t DkCst_delete_source(DkCst_source_mgr* src_mgr, const DkCst_source*  src);
-void DkCst_register_source_type(const char* src_name);
-void DkCst_register_all_source_types(void);
-void DkCst_unregister_all_source_types(void);
-void DkCst_ready_all_source_types(void);
-void DkCst_init(void);
-void DkCst_terminate(void);
+DkCst_rc DkCst_create_source(DkCst_source_mgr* src_mgr, const char* type, const void* params, DkCst_source** src);
+DkCst_rc DkCst_delete_source(DkCst_source_mgr* src_mgr, DkCst_source**  src);
+DkCst_rc DkCst_register_source_type(const char* src_name);
+DkCst_rc DkCst_register_all_source_types(void);
+DkCst_rc DkCst_unregister_all_source_types(void);
+DkCst_rc DkCst_ready_all_source_types(void);
+DkCst_rc DkCst_init(void);
+DkCst_rc DkCst_terminate(void);
 
 #endif //DKCST_SOURCE_H	

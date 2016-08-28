@@ -9,10 +9,10 @@ int main(int argc, char* argv[]){
 	printf("Initializing DkCst\n");
     DkCst_init();
 	
-	printf("Initialized DkCst"); 
+	printf("Initialized DkCst\n"); 
     DkCst_source_mgr* src_mgr;
 	DkCst_create_source_mgr(&src_mgr);
-	printf("Created Mgr");
+	printf("Created Mgr\n");
 	struct DkCst_source_dummy_params params = {
 	    .width       = 960,
 		.height      = 540,
@@ -22,12 +22,17 @@ int main(int argc, char* argv[]){
 		.sample_rate = 48000,
 	};
 		
-    DkCst_source* src = DkCst_create_source(src_mgr, "dummy", &params);
+    DkCst_source* src;
+	if(! DkCst_rc_ok(DkCst_create_source(src_mgr, "dummy", &params, &src))) {
+		printf("Source not created\n");
+		return 1;
+	}
 	printf("%d\n", src->id);
 	printf("%f\n", src->get_fps(src->ctx));
 
 	void* video_data;
-	int size = src->alloc_video_buffer(src->ctx, &video_data);
+	int size;
+	src->alloc_video_buffer(src->ctx, &video_data, &size);
 	printf("%d\n", size);
 	src->copy_video_data(src->ctx, video_data);
 	
@@ -72,7 +77,7 @@ int main(int argc, char* argv[]){
 	SDL_Quit();
 
 	src->free_video_buffer(src->ctx, &video_data);
-	DkCst_delete_source(src_mgr, src);
+	DkCst_delete_source(src_mgr, &src);
 	DkCst_delete_source_mgr(&src_mgr);
 	DkCst_terminate();
 	

@@ -38,19 +38,20 @@ uint8_t get_nb_channels(void* ctx) {
 	return ((dummy_ctx*)ctx)->nb_channels;
 }
 
-uint32_t alloc_video_buffer (void* ctx, void** buf) {
+DkCst_rc alloc_video_buffer (void* ctx, void** buf, uint32_t* size) {
 	uint16_t width = ((dummy_ctx*)ctx)->width;
 	uint16_t height = ((dummy_ctx*)ctx)->height;
     *buf = malloc(width*height*3);
-	return width*height*3;
+	*size = width*height*3;
+	return OK;
 }
 
-uint32_t free_video_buffer (void* ctx, void** buf) {
+DkCst_rc free_video_buffer (void* ctx, void** buf) {
 	free(*buf);
-	return 0;
+	return OK;
 }
 
-uint32_t copy_video_data (void* ctx, void* buf) {
+DkCst_rc copy_video_data (void* ctx, void* buf) {
 
 	uint16_t width = ((dummy_ctx*)ctx)->width;
 	uint16_t height = ((dummy_ctx*)ctx)->height;
@@ -63,16 +64,18 @@ uint32_t copy_video_data (void* ctx, void* buf) {
 
 }
 
-uint32_t alloc_audio_buffer (void* ctx, void** buf) {
-	return 0;
+DkCst_rc alloc_audio_buffer (void* ctx, void** buf, uint32_t* size) {
+	*buf = NULL;
+	*size = 0;
+	return NOT_IMPLEMENTED;
 }
 
-uint32_t free_audio_buffer (void* ctx, void** buf) {
-	return 0;
+DkCst_rc free_audio_buffer (void* ctx, void** buf) {
+	return NOT_IMPLEMENTED;
 }
 
-uint32_t copy_audio_data (void* ctx, void* buf) {
-	return 0;
+DkCst_rc copy_audio_data (void* ctx, void* buf) {
+	return NOT_IMPLEMENTED;
 }
 
 DkCst_source_type dummy_type = {
@@ -95,7 +98,7 @@ DkCst_source_type dummy_type = {
 /* Creation and deletion functions. */
 
 uint8_t DkCst_source_create(DkCst_source* src, void* params) {
-
+	printf("OK\n");
 	struct DkCst_source_dummy_params* dummy_params = params;
 	src->ctx = malloc(sizeof(dummy_ctx));
 	((dummy_ctx*)src->ctx)->width = dummy_params->width;
