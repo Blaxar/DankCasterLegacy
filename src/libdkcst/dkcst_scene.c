@@ -6,20 +6,53 @@
 
 /* Scene handling */
 
-DkCst_rc DkCst_create_scene_mgr(DkCst_scene_mgr** scn_mgr) {
 
+DkCst_rc DkCst_create_scene_mgr(DkCst_scene_mgr* src_mgr, DkCst_scene_mgr** scn_mgr) {
+
+	(*scn_mgr) = malloc(sizeof(DkCst_scene_mgr));
+	for(int i=0 ; i<NB_SCENES; i++) {
+		(*scn_mgr)->scenes[i] = NULL;
+	}
+	(*scn_mgr)->nb_scenes=0;
+	
 }
 
 DkCst_rc DkCst_delete_scene_mgr(DkCst_scene_mgr** scn_mgr) {
 
+	for(int i=0; i<NB_SCENES; i++) {
+		if((*scn_mgr)->scenes[i] != NULL) return ERROR;
+	}
+	free(*scn_mgr);
+	return OK;
 }
 
 DkCst_rc DkCst_create_scene(DkCst_scene_mgr* scn_mgr, DkCst_scene** scn){
 
+	for(int i=0; i<NB_SCENES; i++) {
+		if(scn_mgr->scenes[i] == NULL) {
+			scn_mgr->scenes[i] = malloc(sizeof(DkCst_scene));
+			for(int j=0 ; j<NB_WRP_SOURCES; j++) {
+				scn_mgr->scenes[i]->sources[j] = NULL;
+			}
+			(*scn) = scn_mgr->scenes[i];
+			scn_mgr->nb_scenes=0;
+			return OK;
+		}
+	}
+	return ERROR;
+	
 }
 
 DkCst_rc DkCst_delete_scene(DkCst_scene_mgr* scn_mgr, DkCst_scene** scn){
 
+	uint8_t id = (*scn)->id;
+    for(int i=0 ; i<NB_WRP_SOURCES; i++) {
+		if(scn_mgr->scenes[id]->sources[i] != NULL) return ERROR;
+	}
+	free(scn_mgr->scenes[id]);
+	scn_mgr->nb_scenes--;
+	return OK;
+	
 }
 
 /* Source wrapping */

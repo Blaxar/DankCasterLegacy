@@ -24,6 +24,9 @@ DkCst_rc DkCst_create_source_mgr(DkCst_source_mgr** src_mgr) {
 
 DkCst_rc DkCst_delete_source_mgr(DkCst_source_mgr**  src_mgr) {
 
+	for(int i=0; i<NB_SOURCES; i++) {
+		if((*src_mgr)->sources[i] != NULL) return ERROR;
+	}
 	free(*src_mgr);
 	return OK;
 	

@@ -8,6 +8,7 @@
 
 typedef struct {
 
+	uint8_t id;
     uint8_t source_id;
     uint16_t x, y;
 	uint16_t width, height;
@@ -17,22 +18,23 @@ typedef struct {
 
 typedef struct {
 
-	uint8_t scene_id;
-    DkCst_wrapped_source sources[NB_WRP_SOURCES];
+	uint8_t id;
+    DkCst_wrapped_source* sources[NB_WRP_SOURCES];
 	uint8_t nb_sources;
 
 } DkCst_scene;
 
 typedef struct {
 
-    DkCst_scene scenes[NB_SCENES];
+	DkCst_source_mgr* src_mgr;
+    DkCst_scene* scenes[NB_SCENES];
 	uint8_t nb_scenes;
 	
 } DkCst_scene_mgr;
 
 /* Scene handling */
 
-DkCst_rc DkCst_create_scene_mgr(DkCst_scene_mgr** scn_mgr);
+DkCst_rc DkCst_create_scene_mgr(DkCst_scene_mgr* src_mgr, DkCst_scene_mgr** scn_mgr);
 DkCst_rc DkCst_delete_scene_mgr(DkCst_scene_mgr** scn_mgr);
 
 DkCst_rc DkCst_create_scene(DkCst_scene_mgr* scn_mgr, DkCst_scene** scn);
