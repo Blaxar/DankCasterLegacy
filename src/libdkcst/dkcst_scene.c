@@ -35,7 +35,7 @@ DkCst_rc DkCst_create_scene(DkCst_scene_mgr* scn_mgr, DkCst_scene** scn){
 				scn_mgr->scenes[i]->sources[j] = NULL;
 			}
 			(*scn) = scn_mgr->scenes[i];
-			scn_mgr->nb_scenes=0;
+			scn_mgr->nb_scenes++;
 			return OK;
 		}
 	}
@@ -61,10 +61,25 @@ DkCst_rc DkCst_wrap_source(DkCst_scene* scn,
 	                   DkCst_source* src,
 					   DkCst_wrapped_source** wrpd_src) {
 
+	for(int i=0; i<NB_WRP_SOURCES; i++) {
+		if(scn->sources[i] == NULL) {
+			scn->sources[i] = malloc(sizeof(DkCst_wrapped_source));
+			scn->sources[i]->id = i;
+			scn->sources[i]->source_id = src->id;
+			(*wrpd_src) = scn->sources[i];
+		    scn->nb_sources++;
+			return OK;
+		}
+	}
+	return ERROR;
+	
 }
 
 DkCst_rc DkCst_unwrap_source(DkCst_scene* scn,
 					     DkCst_wrapped_source** wrpd_src) {
+	uint8_t id = (*wrpd_src)->id;
+    free(scn->sources[id]);
+	scn->nb_sources--;
 
 }
 
