@@ -36,12 +36,9 @@ DkCst_rc DkCst_create_source(DkCst_source_mgr* src_mgr, const char* type, const 
 
 	for(int i=0; i<DkCst_nb_registered_sources; i++) {
 		if(strcmp(DkCst_registered_sources[i].DkCst_source_get_type().name, type) == 0) {
-			printf("source type found.\n");
 			for(int j=0; j<NB_SOURCES; j++) {
 				if(src_mgr->sources[j] == NULL) {
-					printf("allocating source...\n");
 					src_mgr->sources[j] = malloc(sizeof(DkCst_source));
-					printf("source allocated.\n");
 					src_mgr->sources[j]->id                 = j;
 					src_mgr->sources[j]->type_id            = i;
 					src_mgr->sources[j]->type               = DkCst_registered_sources[i].DkCst_source_get_type().type;
@@ -58,20 +55,18 @@ DkCst_rc DkCst_create_source(DkCst_source_mgr* src_mgr, const char* type, const 
 					src_mgr->sources[j]->alloc_audio_buffer = DkCst_registered_sources[i].DkCst_source_get_type().alloc_audio_buffer;
 					src_mgr->sources[j]->free_audio_buffer  = DkCst_registered_sources[i].DkCst_source_get_type().free_audio_buffer;
 					src_mgr->sources[j]->copy_audio_data    = DkCst_registered_sources[i].DkCst_source_get_type().copy_audio_data;
-					printf("creating source.\n");
 					DkCst_registered_sources[i].DkCst_source_create(src_mgr->sources[j], params);
-					printf("source created.\n");
 					src_mgr->nb_sources++;
 					(*src) = src_mgr->sources[j];
 					return OK;
 				}
 			}
 			(*src) = NULL;
-			return -1;
+			return ERROR;
 		}
 	}
 	(*src) = NULL;
-    return -1;
+    return ERROR;
 	
 }
 

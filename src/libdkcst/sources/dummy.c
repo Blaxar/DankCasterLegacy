@@ -98,7 +98,6 @@ DkCst_source_type dummy_type = {
 /* Creation and deletion functions. */
 
 uint8_t DkCst_source_create(DkCst_source* src, void* params) {
-	printf("OK\n");
 	struct DkCst_source_dummy_params* dummy_params = params;
 	src->ctx = malloc(sizeof(dummy_ctx));
 	((dummy_ctx*)src->ctx)->width = dummy_params->width;
