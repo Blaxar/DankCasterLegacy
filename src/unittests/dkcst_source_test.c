@@ -16,7 +16,7 @@ void DkCst_create_source_mgr_test(void) {
 	CU_ASSERT_EQUAL(src_mgr->nb_sources,0);
 	for(int i=0; i<NB_SOURCES; i++)
 		CU_ASSERT_EQUAL(src_mgr->sources[i], NULL);
-	
+
 	DkCst_terminate();
 }
 
@@ -78,9 +78,12 @@ void DkCst_delete_source_test(void){
 		
     DkCst_source* src;
 	DkCst_create_source(src_mgr, "dummy", &params, &src);
+
+	uint8_t id = src->id;
 		
     CU_ASSERT_EQUAL(DkCst_delete_source(src_mgr, &src), OK);
 	CU_ASSERT_EQUAL(src_mgr->nb_sources, 0);
+	CU_ASSERT_EQUAL(src_mgr->sources[id], NULL);
 
 	DkCst_terminate();
 	

@@ -14,6 +14,8 @@ DkCst_rc DkCst_create_scene_mgr(DkCst_scene_mgr* src_mgr, DkCst_scene_mgr** scn_
 		(*scn_mgr)->scenes[i] = NULL;
 	}
 	(*scn_mgr)->nb_scenes=0;
+	(*scn_mgr)->src_mgr=src_mgr;
+	return OK;
 	
 }
 
@@ -50,6 +52,7 @@ DkCst_rc DkCst_delete_scene(DkCst_scene_mgr* scn_mgr, DkCst_scene** scn){
 		if(scn_mgr->scenes[id]->sources[i] != NULL) return ERROR;
 	}
 	free(scn_mgr->scenes[id]);
+	scn_mgr->scenes[id] = NULL;
 	scn_mgr->nb_scenes--;
 	return OK;
 	

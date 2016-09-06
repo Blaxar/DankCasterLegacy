@@ -77,6 +77,7 @@ DkCst_rc DkCst_delete_source(DkCst_source_mgr* src_mgr, DkCst_source** src) {
 	uint8_t type_id = (*src)->type_id;
     DkCst_registered_sources[type_id].DkCst_source_delete(src_mgr->sources[id]);
 	free(src_mgr->sources[id]);
+	src_mgr->sources[id] = NULL;
 	src_mgr->nb_sources--;
 	return OK;
 	
