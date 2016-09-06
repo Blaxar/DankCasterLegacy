@@ -87,9 +87,9 @@ int init_suite(void) {
 	return 0;
 }
 int clean_suite(void) {
-	if (!DkCst_rc_ok(DkCst_delete_source(g_src_mgr, &g_src))){printf("DkCst_delete_source(g_src_mgr, &g_src) failed!"); return 1;}
-	if (!DkCst_rc_ok(DkCst_delete_source_mgr(&g_src_mgr))){printf("DkCst_delete_source_mgr(&g_src_mgr) failed!"); return 1;}
-	if (!DkCst_rc_ok(DkCst_terminate())){printf("DkCst_terminate() failed!"); return 1;}
+	if (!DkCst_rc_ok(DkCst_delete_source(g_src_mgr, &g_src))){return 1;}
+	if (!DkCst_rc_ok(DkCst_delete_source_mgr(&g_src_mgr))){return 1;}
+	if (!DkCst_rc_ok(DkCst_terminate())){return 1;}
 	return 0;
 }
 
