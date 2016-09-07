@@ -30,6 +30,7 @@ void DkCst_delete_source_mgr_test(void) {
 	CU_ASSERT_EQUAL(DkCst_delete_source_mgr(&src_mgr), ERROR);
 	src_mgr->sources[0] = NULL;
 	CU_ASSERT_EQUAL(DkCst_delete_source_mgr(&src_mgr), OK);
+	CU_ASSERT_NOT_EQUAL(src_mgr, NULL);
 	
 	DkCst_terminate();
 	
@@ -39,7 +40,7 @@ void DkCst_create_source_test(void) {
 
 	DkCst_init();
 	
-	DkCst_source_mgr* src_mgr;
+	DkCst_source_mgr *src_mgr;
     DkCst_create_source_mgr(&src_mgr);
 	
 	struct DkCst_source_dummy_params params = {
@@ -50,10 +51,11 @@ void DkCst_create_source_test(void) {
 		.nb_channels = 2,
 		.sample_rate = 48000,
 	};
-		
+
     DkCst_source* src;
-    CU_ASSERT_EQUAL(DkCst_create_source(src_mgr, "ymmud", &params, &src), ERROR);
-    CU_ASSERT_EQUAL(DkCst_create_source(src_mgr, "dummy", &params, &src), OK);
+    CU_ASSERT_EQUAL(DkCst_create_source(src_mgr, "ymmud", &params, &src), ERROR); // When there is no such source type.
+    CU_ASSERT_EQUAL(DkCst_create_source(src_mgr, "dummy", &params, &src), OK); // When there is the source type.
+	CU_ASSERT_EQUAL(src->src_mgr, src_mgr);
 	CU_ASSERT_EQUAL(src_mgr->nb_sources, 1);
 
 	DkCst_terminate();
@@ -64,7 +66,7 @@ void DkCst_delete_source_test(void){
 
 	DkCst_init();
 	
-	DkCst_source_mgr* src_mgr;
+	DkCst_source_mgr *src_mgr, *src_mgr2;
     DkCst_create_source_mgr(&src_mgr);
 	
 	struct DkCst_source_dummy_params params = {
@@ -80,10 +82,15 @@ void DkCst_delete_source_test(void){
 	DkCst_create_source(src_mgr, "dummy", &params, &src);
 
 	uint8_t id = src->id;
-		
+
+	/* Good case scenario */
     CU_ASSERT_EQUAL(DkCst_delete_source(src_mgr, &src), OK);
 	CU_ASSERT_EQUAL(src_mgr->nb_sources, 0);
-	CU_ASSERT_EQUAL(src_mgr->sources[id], NULL);
+	CU_ASSERT_EQUAL(src_mgr->sources[id],NULL);
+
+	/* When the source doesn't belong to the good manager */
+	DkCst_create_source_mgr(&src_mgr2);
+	CU_ASSERT_EQUAL(DkCst_delete_source(src_mgr2, &src), ERROR);
 
 	DkCst_terminate();
 	

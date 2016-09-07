@@ -35,16 +35,20 @@ typedef uint8_t src_tk;
         DkCst_rc (*free_audio_buffer)(void* ctx, void** buf);  \
         DkCst_rc (*copy_audio_data)(void* ctx, void* buf);
     
+struct DkCst_source_type_s;
+struct DkCst_source_s;
+struct DkCst_source_handler_s;
+struct DkCst_source_mgr_s;
 
-
-typedef struct {
+typedef struct DkCst_source_type_s{
 
 	SET_SOURCE_METHODS();
 	
 } DkCst_source_type;
 
-typedef struct {
+typedef struct DkCst_source_s{
 
+	struct DkCst_source_mgr_s* src_mgr;
 	uint8_t id;
 	uint8_t type_id;
 	void* ctx;
@@ -52,7 +56,7 @@ typedef struct {
 	
 } DkCst_source;
 
-typedef struct {
+typedef struct DkCst_source_handler_s{
 
 	char name[SOURCE_NAME_LENGTH];
 	void* module;
@@ -62,7 +66,7 @@ typedef struct {
 	
 } DkCst_source_handler;
 
-typedef struct {
+typedef struct DkCst_source_mgr_s{
 
 	DkCst_source* sources[NB_SOURCES];
 	uint8_t nb_sources;

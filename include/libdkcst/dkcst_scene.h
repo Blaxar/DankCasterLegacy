@@ -6,8 +6,13 @@
 #define NB_WRP_SOURCES 255
 #define NB_SCENES 255
 
-typedef struct {
+struct DkCst_wrapped_source_s;
+struct DkCst_scene_s;
+struct DkCst_scene_mgr_s;
 
+typedef struct DkCst_wrapped_source_s{
+
+	struct DkCst_scene_s* scn;
 	uint8_t id;
     uint8_t source_id;
     uint16_t x, y;
@@ -16,15 +21,16 @@ typedef struct {
 
 } DkCst_wrapped_source;
 
-typedef struct {
+typedef struct DkCst_scene_s{
 
+	struct DkCst_scene_mgr_s* scn_mgr;
 	uint8_t id;
     DkCst_wrapped_source* sources[NB_WRP_SOURCES];
 	uint8_t nb_sources;
 
 } DkCst_scene;
 
-typedef struct {
+typedef struct DkCst_scene_mgr_s{
 
 	DkCst_source_mgr* src_mgr;
     DkCst_scene* scenes[NB_SCENES];

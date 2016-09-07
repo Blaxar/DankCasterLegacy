@@ -33,12 +33,13 @@ DkCst_rc DkCst_delete_source_mgr(DkCst_source_mgr**  src_mgr) {
 }
 
 DkCst_rc DkCst_create_source(DkCst_source_mgr* src_mgr, const char* type, const void* params, DkCst_source** src) {
-
+	
 	for(int i=0; i<DkCst_nb_registered_sources; i++) {
 		if(strcmp(DkCst_registered_sources[i].DkCst_source_get_type().name, type) == 0) {
 			for(int j=0; j<NB_SOURCES; j++) {
 				if(src_mgr->sources[j] == NULL) {
 					src_mgr->sources[j] = malloc(sizeof(DkCst_source));
+					src_mgr->sources[j]->src_mgr            = src_mgr;
 					src_mgr->sources[j]->id                 = j;
 					src_mgr->sources[j]->type_id            = i;
 					src_mgr->sources[j]->type               = DkCst_registered_sources[i].DkCst_source_get_type().type;
@@ -73,6 +74,7 @@ DkCst_rc DkCst_create_source(DkCst_source_mgr* src_mgr, const char* type, const 
 
 DkCst_rc DkCst_delete_source(DkCst_source_mgr* src_mgr, DkCst_source** src) {
 
+	if(src_mgr != (*src)->src_mgr) return ERROR;
 	uint8_t id = (*src)->id;
 	uint8_t type_id = (*src)->type_id;
     DkCst_registered_sources[type_id].DkCst_source_delete(src_mgr->sources[id]);
