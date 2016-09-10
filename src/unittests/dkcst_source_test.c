@@ -122,8 +122,7 @@ void DkCst_terminate_test(void){
 int init_suite(void) { return 0; }
 int clean_suite(void) { return 0; }
 
-int main ( void )
-{
+void* tests(void* arg) {
 
 	CU_pSuite pSuite = NULL;
 	
@@ -172,6 +171,19 @@ int main ( void )
 */
    /* Clean up registry and return */
    CU_cleanup_registry();
-   return CU_get_error();
+	
+}
+
+int main ( void )
+{
+
+    pthread_t tid;
+
+    err = pthread_create(&tid, NULL, &doSomeThing, NULL);
+    if (err != 0) printf("\ncan't create thread :[%s]", strerror(err));
+
+	pthread_join(tid, NULL);
+	
+    return CU_get_error();
 
 }
