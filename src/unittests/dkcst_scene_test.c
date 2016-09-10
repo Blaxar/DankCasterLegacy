@@ -130,52 +130,67 @@ int clean_suite(void) {
 	return 0;
 }
 
+void* run_tests(void* arg) {
+
+	CU_basic_run_tests();
+	
+}
+
 int main ( void )
 {
 
+	pthread_t tid;
+    int err;
+	
 	CU_pSuite pSuite = NULL;
 	
     /* initialize the CUnit test registry */
-   if ( CUE_SUCCESS != CU_initialize_registry() )
+    if ( CUE_SUCCESS != CU_initialize_registry() )
       return CU_get_error();
 
-   /* add a suite to the registry */
-   pSuite = CU_add_suite( "dkcst_scenes_test_suite", init_suite, clean_suite );
-   if ( NULL == pSuite ) {
+    /* add a suite to the registry */
+    pSuite = CU_add_suite( "dkcst_scenes_test_suite", init_suite, clean_suite );
+    if ( NULL == pSuite ) {
       CU_cleanup_registry();
       return CU_get_error();
-   }
+    }
 
-   /* add the tests to the suite */
+    /* add the tests to the suite */
 
-   if ( (NULL == CU_add_test(pSuite, "DkCst_create_scene_mgr_test", DkCst_create_scene_mgr_test)) ||
+    if ( (NULL == CU_add_test(pSuite, "DkCst_create_scene_mgr_test", DkCst_create_scene_mgr_test)) ||
 	    (NULL == CU_add_test(pSuite, "DkCst_delete_scene_mgr_test", DkCst_delete_scene_mgr_test)) ||
 		(NULL == CU_add_test(pSuite, "DkCst_create_scene_test", DkCst_create_scene_test)) ||
 		(NULL == CU_add_test(pSuite, "DkCst_delete_scene_test", DkCst_delete_scene_test)) ||
 	    (NULL == CU_add_test(pSuite, "DkCst_wrap_source_test", DkCst_wrap_source_test)) ||
         (NULL == CU_add_test(pSuite, "DkCst_unwrap_source_test", DkCst_unwrap_source_test))
-      )
-   {
+    )
+    {
       CU_cleanup_registry();
       return CU_get_error();
-   }
+    }
 
-   // Run all tests using the basic interface
-   CU_basic_set_mode(CU_BRM_VERBOSE);
-   CU_basic_run_tests();
-   printf("\n");
-   CU_basic_show_failures(CU_get_failure_list());
-   printf("\n\n");
+    // Run all tests using the basic interface
+    CU_basic_set_mode(CU_BRM_VERBOSE);
+
+    err = pthread_create(&tid, NULL, &run_tests, NULL);
+
+	if (err != 0) printf("\ncan't create thread :[%s]", strerror(err));
+
+	pthread_join(tid, NULL);
+
+	printf("\n");
+    CU_basic_show_failures(CU_get_failure_list());
+    printf("\n\n");
 /*
-   // Run all tests using the automated interface
-   CU_automated_run_tests();
-   CU_list_tests_to_file();
+    // Run all tests using the automated interface
+    CU_automated_run_tests();
+    CU_list_tests_to_file();
 
-   // Run all tests using the console interface
-   CU_console_run_tests();
+    // Run all tests using the console interface
+    CU_console_run_tests();
 */
-   /* Clean up registry and return */
-   CU_cleanup_registry();
-   return CU_get_error();
+    /* Clean up registry and return */
+    CU_cleanup_registry();
+    return CU_get_error();
 
 }

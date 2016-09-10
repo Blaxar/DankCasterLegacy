@@ -25,11 +25,11 @@ include_directories(
 	${SDL2_INCLUDE_DIR}
 )
 IF(CMAKE_BUILD_TYPE MATCHES Debug)
-    add_definitions(-rdynamic -O0 -lpthread)
+    add_definitions(-rdynamic -O0)
 ENDIF(CMAKE_BUILD_TYPE MATCHES Debug)
 
 IF(CMAKE_BUILD_TYPE MATCHES Release)
-	add_definitions(-rdynamic -O3 -lpthread)
+	add_definitions(-rdynamic -O3)
 ENDIF(CMAKE_BUILD_TYPE MATCHES Release)
 
 link_directories(${DEFAULT_LINK_DIR})

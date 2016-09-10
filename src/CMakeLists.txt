@@ -9,5 +9,5 @@ ENDIF(CUNIT_FOUND)
 
 #DankCaster executable
 add_executable(libDkCst_sample ${DankCaster_src_files})
-target_link_libraries(libDkCst_sample dl ${SDL2_LIBRARY} dkcst)
+target_link_libraries(libDkCst_sample pthread dl ${SDL2_LIBRARY} dkcst)
 set_target_properties(libDkCst_sample PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${DEFAULT_BIN_DIR})
