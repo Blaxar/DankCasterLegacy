@@ -77,7 +77,7 @@ int main(int argc, char* argv[]){
 	SDL_Quit();
 
 	src->free_video_buffer(src->ctx, &video_data);
-	DkCst_delete_source(src_mgr, &src);
+	DkCst_delete_source(&src);
 	DkCst_delete_source_mgr(&src_mgr);
 	DkCst_terminate();
 	

@@ -3,6 +3,7 @@
 
 typedef enum {
 	OK = 0,
+	WAIT,
 	NOT_IMPLEMENTED,
 	ERROR,
 } DkCst_rc;

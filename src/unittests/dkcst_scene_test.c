@@ -64,16 +64,12 @@ void DkCst_delete_scene_test(void) {
 
 	/* When not all source slots are free*/
 	scn->sources[0] = 0xdeadbeef;
-	CU_ASSERT_EQUAL(DkCst_delete_scene(scn_mgr, &scn),ERROR);
+	CU_ASSERT_EQUAL(DkCst_delete_scene(&scn),ERROR);
 
 	/* Good case scenario */
 	scn->sources[0] = NULL;
-	CU_ASSERT_EQUAL(DkCst_delete_scene(scn_mgr, &scn),OK);
+	CU_ASSERT_EQUAL(DkCst_delete_scene(&scn),OK);
 	CU_ASSERT_EQUAL(scn_mgr->scenes[id],NULL);
-
-	/* When the scene doesn't belong to the good manager */
-	DkCst_create_scene_mgr(g_src_mgr, &scn_mgr2);
-	CU_ASSERT_EQUAL(DkCst_delete_scene(scn_mgr2, &scn),ERROR);
 	
 }
 
@@ -110,15 +106,9 @@ void DkCst_unwrap_source_test(void) {
 
 	/* Good case scenario */
 	DkCst_wrap_source(scn, g_src, &wrpd_src);
-    CU_ASSERT_EQUAL(DkCst_unwrap_source(scn, &wrpd_src),OK);
+    CU_ASSERT_EQUAL(DkCst_unwrap_source(&wrpd_src),OK);
 	CU_ASSERT_EQUAL(scn->nb_sources,0);
 	CU_ASSERT_EQUAL(scn->sources[0],NULL);
-
-	/* When the source and the scene don't belong to linked managers */
-	DkCst_wrap_source(scn, g_src, &wrpd_src);
-	DkCst_create_scene_mgr(g_src_mgr2, &scn_mgr2);
-	DkCst_create_scene(scn_mgr2, &scn2);
-	CU_ASSERT_EQUAL(DkCst_unwrap_source(scn2, &wrpd_src),ERROR);
 	
 }
 
@@ -132,9 +122,9 @@ int init_suite(void) {
 	return 0;
 }
 int clean_suite(void) {
-	if (!DkCst_rc_ok(DkCst_delete_source(g_src_mgr, &g_src))){return 1;}
+	if (!DkCst_rc_ok(DkCst_delete_source(&g_src))){return 1;}
 	if (!DkCst_rc_ok(DkCst_delete_source_mgr(&g_src_mgr))){return 1;}
-	if (!DkCst_rc_ok(DkCst_delete_source(g_src_mgr2, &g_src2))){return 1;}
+	if (!DkCst_rc_ok(DkCst_delete_source(&g_src2))){return 1;}
 	if (!DkCst_rc_ok(DkCst_delete_source_mgr(&g_src_mgr2))){return 1;}
 	if (!DkCst_rc_ok(DkCst_terminate())){return 1;}
 	return 0;

@@ -4,6 +4,7 @@
 #include "dkcst_rc.h"
 #include <inttypes.h>
 #include <stddef.h>
+#include <pthread.h>
 
 #define NB_SOURCE_TYPES 255
 #define NB_SOURCES 255
@@ -48,6 +49,7 @@ typedef struct DkCst_source_type_s{
 
 typedef struct DkCst_source_s{
 
+	pthread_mutex_t lock;
 	struct DkCst_source_mgr_s* src_mgr;
 	uint8_t id;
 	uint8_t type_id;
@@ -68,6 +70,7 @@ typedef struct DkCst_source_handler_s{
 
 typedef struct DkCst_source_mgr_s{
 
+	pthread_mutex_t lock;
 	DkCst_source* sources[NB_SOURCES];
 	uint8_t nb_sources;
 	
@@ -77,7 +80,7 @@ DkCst_rc DkCst_create_source_mgr(DkCst_source_mgr** src_mgr);
 DkCst_rc DkCst_delete_source_mgr(DkCst_source_mgr** src_mgr);
 
 DkCst_rc DkCst_create_source(DkCst_source_mgr* src_mgr, const char* type, const void* params, DkCst_source** src);
-DkCst_rc DkCst_delete_source(DkCst_source_mgr* src_mgr, DkCst_source**  src);
+DkCst_rc DkCst_delete_source(DkCst_source**  src);
 DkCst_rc DkCst_register_source_type(const char* src_name);
 DkCst_rc DkCst_register_all_source_types(void);
 DkCst_rc DkCst_unregister_all_source_types(void);

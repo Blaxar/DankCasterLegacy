@@ -84,13 +84,9 @@ void DkCst_delete_source_test(void){
 	uint8_t id = src->id;
 
 	/* Good case scenario */
-    CU_ASSERT_EQUAL(DkCst_delete_source(src_mgr, &src), OK);
+    CU_ASSERT_EQUAL(DkCst_delete_source(&src), OK);
 	CU_ASSERT_EQUAL(src_mgr->nb_sources, 0);
 	CU_ASSERT_EQUAL(src_mgr->sources[id],NULL);
-
-	/* When the source doesn't belong to the good manager */
-	DkCst_create_source_mgr(&src_mgr2);
-	CU_ASSERT_EQUAL(DkCst_delete_source(src_mgr2, &src), ERROR);
 
 	DkCst_terminate();
 	
