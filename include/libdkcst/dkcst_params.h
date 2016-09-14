@@ -9,13 +9,15 @@
 
 struct DkCst_param_s;
 
+typedef enum {
+	INT = 0,
+	FLOAT,
+	STRING,
+} DkCst_param_type;
+
 typedef struct DkCst_param_s {
 
-    enum DkCst_param_type_e {
-		INT = 0,
-		FLOAT,
-		STRING,
-	} type;
+    DkCst_param_type type;
 	
 	char name[MAX_PARAM_NAME_LENGTH];
 		
@@ -49,9 +51,7 @@ DkCst_rc DkCst_get_int_param(DkCst_params *params, char name[MAX_PARAM_NAME_LENG
 DkCst_rc DkCst_get_float_param(DkCst_params *params, char name[MAX_PARAM_NAME_LENGTH], float* value);
 DkCst_rc DkCst_get_string_param(DkCst_params *params, char name[MAX_PARAM_NAME_LENGTH], char** value, uint16_t* length);
 
-DkCst_rc DkCst_unset_int_param(DkCst_params *params, char name[MAX_PARAM_NAME_LENGTH]);
-DkCst_rc DkCst_unset_float_param(DkCst_params *params, char name[MAX_PARAM_NAME_LENGTH]);
-DkCst_rc DkCst_unset_string_param(DkCst_params *params, char name[MAX_PARAM_NAME_LENGTH]);
+DkCst_rc DkCst_unset_param(DkCst_params *params, char name[MAX_PARAM_NAME_LENGTH]);
 
 DkCst_rc DkCst_delete_param_pack(DkCst_params **params);
 
