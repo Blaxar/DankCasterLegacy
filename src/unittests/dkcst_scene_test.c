@@ -149,7 +149,7 @@ int main ( void )
       return CU_get_error();
 
     /* add a suite to the registry */
-    pSuite = CU_add_suite( "dkcst_scenes_test_suite", init_suite, clean_suite );
+    pSuite = CU_add_suite( "dkcst_scene_test_suite", init_suite, clean_suite );
     if ( NULL == pSuite ) {
       CU_cleanup_registry();
       return CU_get_error();
