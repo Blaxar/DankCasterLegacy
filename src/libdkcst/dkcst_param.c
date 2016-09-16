@@ -98,6 +98,7 @@ DkCst_rc DkCst_get_param(DkCst_params *params, char name[MAX_PARAM_NAME_LENGTH],
 				else if(type == FLOAT)
 					**(float**)value = param->data.float_value;
 				else if(type == STRING) {
+					(*value) = malloc((strlen(param->data.string_value.str)+1)*sizeof(char));
 					memcpy(*value, param->data.string_value.str,
 						   (strlen(param->data.string_value.str)+1)*sizeof(char));
 				}
@@ -120,7 +121,7 @@ DkCst_rc DkCst_get_float_param(DkCst_params *params, char name[MAX_PARAM_NAME_LE
 }
 
 DkCst_rc DkCst_get_string_param(DkCst_params *params, char name[MAX_PARAM_NAME_LENGTH], char** value) {
-    return DkCst_get_param(params, name, STRING, &value, NULL);
+    return DkCst_get_param(params, name, STRING, value, NULL);
 }
 
 DkCst_rc DkCst_unset_param(DkCst_params *params, char name[MAX_PARAM_NAME_LENGTH]) {
@@ -132,7 +133,9 @@ DkCst_rc DkCst_unset_param(DkCst_params *params, char name[MAX_PARAM_NAME_LENGTH
 	DkCst_param* param = params->first;
 	while(param != NULL){ //Iterate over existing params
 		if(strcmp(name, param->name) == 0) { //Param with this name exists
-			prev_param->next=param->next;
+			if(prev_param != NULL) prev_param->next=param->next;
+			else params->first = param->next;
+			
 			if(param->type == STRING)
 				free(param->data.string_value.str);
 			free(param);
