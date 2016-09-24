@@ -2,6 +2,7 @@
 #define DKCST_SOURCE_H
 
 #include "dkcst_rc.h"
+#include "dkcst_param.h"
 #include <inttypes.h>
 #include <stddef.h>
 #include <pthread.h>
@@ -62,7 +63,7 @@ typedef struct DkCst_source_handler_s{
 
 	char name[SOURCE_NAME_LENGTH];
 	void* module;
-	uint8_t (*DkCst_source_create)(DkCst_source* src, void* params);
+	uint8_t (*DkCst_source_create)(DkCst_source* src, DkCst_params* params);
 	uint8_t (*DkCst_source_delete)(DkCst_source* src);
     DkCst_source_type (*DkCst_source_get_type)(void);
 	
@@ -79,7 +80,7 @@ typedef struct DkCst_source_mgr_s{
 DkCst_rc DkCst_create_source_mgr(DkCst_source_mgr** src_mgr);
 DkCst_rc DkCst_delete_source_mgr(DkCst_source_mgr** src_mgr);
 
-DkCst_rc DkCst_create_source(DkCst_source_mgr* src_mgr, const char* type, const void* params, DkCst_source** src);
+DkCst_rc DkCst_create_source(DkCst_source_mgr* src_mgr, const char* type, DkCst_params* params, DkCst_source** src);
 DkCst_rc DkCst_delete_source(DkCst_source**  src);
 DkCst_rc DkCst_register_source_type(const char* src_name);
 DkCst_rc DkCst_register_all_source_types(void);

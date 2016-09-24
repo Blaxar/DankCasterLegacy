@@ -1,7 +1,6 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <libdkcst/dkcst_source.h>
-#include <libdkcst/sources/dummy.h>
 #include <SDL2/SDL.h>
 
 int main(int argc, char* argv[]){
@@ -13,17 +12,18 @@ int main(int argc, char* argv[]){
     DkCst_source_mgr* src_mgr;
 	DkCst_create_source_mgr(&src_mgr);
 	printf("Created Mgr\n");
-	struct DkCst_source_dummy_params params = {
-	    .width       = 960,
-		.height      = 540,
-		.pix_fmt     = RGB24,
-		.fps         = 30.0,
-		.nb_channels = 2,
-		.sample_rate = 48000,
-	};
+
+	DkCst_params* params;
+	if (!DkCst_rc_ok(DkCst_create_param_pack(&params))) return 1;
+	if (!DkCst_rc_ok(DkCst_set_int_param(params, "width", 960))) return 1;
+	if (!DkCst_rc_ok(DkCst_set_int_param(params, "height", 540))) return 1;
+	if (!DkCst_rc_ok(DkCst_set_int_param(params, "pix_fmt", RGB24))) return 1;
+	if (!DkCst_rc_ok(DkCst_set_float_param(params, "fps", 30.0))) return 1;
+	if (!DkCst_rc_ok(DkCst_set_int_param(params, "nb_channels", 2))) return 1;
+	if (!DkCst_rc_ok(DkCst_set_int_param(params, "sample_rate", 48000))) return 1;
 		
     DkCst_source* src;
-	if(! DkCst_rc_ok(DkCst_create_source(src_mgr, "dummy", &params, &src))) {
+	if(! DkCst_rc_ok(DkCst_create_source(src_mgr, "dummy", params, &src))) {
 		printf("Source not created\n");
 		return 1;
 	}
@@ -78,6 +78,15 @@ int main(int argc, char* argv[]){
 
 	src->free_video_buffer(src->ctx, &video_data);
 	DkCst_delete_source(&src);
+	
+    DkCst_unset_param(params, "width");
+	DkCst_unset_param(params, "height");
+	DkCst_unset_param(params, "pix_fmt");
+	DkCst_unset_param(params, "fps");
+	DkCst_unset_param(params, "nb_channels");
+    DkCst_unset_param(params, "sample_rate");
+	DkCst_delete_param_pack(&params);
+	
 	DkCst_delete_source_mgr(&src_mgr);
 	DkCst_terminate();
 	

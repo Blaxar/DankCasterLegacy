@@ -2,7 +2,6 @@
 #include "CUnit/Basic.h"
 
 #include <libdkcst/dkcst_source.h>
-#include <libdkcst/sources/dummy.h>
 
 void DkCst_init_test(void){
 	CU_ASSERT_EQUAL(DkCst_init(), OK);
@@ -42,19 +41,19 @@ void DkCst_create_source_test(void) {
 	
 	DkCst_source_mgr *src_mgr;
     DkCst_create_source_mgr(&src_mgr);
-	
-	struct DkCst_source_dummy_params params = {
-	    .width       = 960,
-		.height      = 540,
-		.pix_fmt     = RGB24,
-		.fps         = 30.0,
-		.nb_channels = 2,
-		.sample_rate = 48000,
-	};
+
+	DkCst_params* params;
+	DkCst_create_param_pack(&params);
+	DkCst_set_int_param(params, "width", 960);
+	DkCst_set_int_param(params, "height", 540);
+	DkCst_set_int_param(params, "pix_fmt", RGB24);
+	DkCst_set_float_param(params, "fps", 30.0);
+	DkCst_set_int_param(params, "nb_channels", 2);
+	DkCst_set_int_param(params, "sample_rate", 48000);
 
     DkCst_source* src;
-    CU_ASSERT_EQUAL(DkCst_create_source(src_mgr, "ymmud", &params, &src), ERROR); // When there is no such source type.
-    CU_ASSERT_EQUAL(DkCst_create_source(src_mgr, "dummy", &params, &src), OK); // When there is the source type.
+    CU_ASSERT_EQUAL(DkCst_create_source(src_mgr, "ymmud", params, &src), ERROR); // When there is no such source type.
+    CU_ASSERT_EQUAL(DkCst_create_source(src_mgr, "dummy", params, &src), OK); // When there is the source type.
 	CU_ASSERT_EQUAL(src->src_mgr, src_mgr);
 	CU_ASSERT_EQUAL(src_mgr->nb_sources, 1);
 
@@ -69,17 +68,17 @@ void DkCst_delete_source_test(void){
 	DkCst_source_mgr *src_mgr, *src_mgr2;
     DkCst_create_source_mgr(&src_mgr);
 	
-	struct DkCst_source_dummy_params params = {
-	    .width       = 960,
-		.height      = 540,
-		.pix_fmt     = RGB24,
-		.fps         = 30.0,
-		.nb_channels = 2,
-		.sample_rate = 48000,
-	};
-		
+    DkCst_params* params;
+	DkCst_create_param_pack(&params);
+	DkCst_set_int_param(params, "width", 960);
+	DkCst_set_int_param(params, "height", 540);
+	DkCst_set_int_param(params, "pix_fmt", RGB24);
+	DkCst_set_float_param(params, "fps", 30.0);
+	DkCst_set_int_param(params, "nb_channels", 2);
+	DkCst_set_int_param(params, "sample_rate", 48000);
+	
     DkCst_source* src;
-	DkCst_create_source(src_mgr, "dummy", &params, &src);
+	DkCst_create_source(src_mgr, "dummy", params, &src);
 
 	uint8_t id = src->id;
 

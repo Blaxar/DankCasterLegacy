@@ -35,7 +35,7 @@ DkCst_rc DkCst_delete_source_mgr(DkCst_source_mgr**  src_mgr) {
 	
 }
 
-DkCst_rc DkCst_create_source(DkCst_source_mgr* src_mgr, const char* type, const void* params, DkCst_source** src) {
+DkCst_rc DkCst_create_source(DkCst_source_mgr* src_mgr, const char* type, DkCst_params* params, DkCst_source** src) {
 
 	pthread_mutex_lock(&src_mgr->lock);
 	
@@ -109,8 +109,8 @@ DkCst_rc DkCst_delete_source(DkCst_source** src) {
 DkCst_rc DkCst_register_source_type(const char* src_name) {
 
    void *tmp_module;
-   uint8_t (*tmp_source_create)(DkCst_source* src, void* params);
-   uint8_t (*tmp_source_delete)(DkCst_source* src);
+   DkCst_rc (*tmp_source_create)(DkCst_source* src, DkCst_params* params);
+   DkCst_rc (*tmp_source_delete)(DkCst_source* src);
    DkCst_source_type (*tmp_source_get_type)(void);
    int rc = 0;
 

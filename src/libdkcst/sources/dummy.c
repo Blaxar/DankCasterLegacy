@@ -1,5 +1,4 @@
 #include <libdkcst/dkcst_source.h>
-#include <libdkcst/sources/dummy.h>
 #include <stdlib.h>
 
 /* Private context */
@@ -97,20 +96,24 @@ DkCst_source_type dummy_type = {
 
 /* Creation and deletion functions. */
 
-uint8_t DkCst_source_create(DkCst_source* src, void* params) {
-	struct DkCst_source_dummy_params* dummy_params = params;
+DkCst_rc DkCst_source_create(DkCst_source* src, DkCst_params* params) {
 	src->ctx = malloc(sizeof(dummy_ctx));
-	((dummy_ctx*)src->ctx)->width = dummy_params->width;
-	((dummy_ctx*)src->ctx)->height = dummy_params->height;
-	((dummy_ctx*)src->ctx)->pix_fmt = dummy_params->pix_fmt;
-	((dummy_ctx*)src->ctx)->fps = dummy_params->fps;
-	((dummy_ctx*)src->ctx)->nb_channels = dummy_params->nb_channels;
-	((dummy_ctx*)src->ctx)->sample_rate = dummy_params->sample_rate;
-	
+	int width, height, nb_channels, sample_rate, pix_fmt;
+	DkCst_get_int_param(params, "width", &width);
+	((dummy_ctx*)src->ctx)->width = width;
+	DkCst_get_int_param(params, "height", &height);
+	((dummy_ctx*)src->ctx)->height = height;
+	DkCst_get_int_param(params, "pix_fmt", &pix_fmt);
+	((dummy_ctx*)src->ctx)->pix_fmt = pix_fmt;
+	DkCst_get_float_param(params, "fps", &((dummy_ctx*)src->ctx)->fps);
+	DkCst_get_int_param(params, "nb_channels", &nb_channels);
+	((dummy_ctx*)src->ctx)->nb_channels = nb_channels;
+	DkCst_get_int_param(params, "sample_rate", &sample_rate);
+	((dummy_ctx*)src->ctx)->sample_rate = sample_rate;
 	return 0;
 }
 
-uint8_t DkCst_source_delete(DkCst_source* src) {
+DkCst_rc DkCst_source_delete(DkCst_source* src) {
 	free(src->ctx);
 	
 	return 0;

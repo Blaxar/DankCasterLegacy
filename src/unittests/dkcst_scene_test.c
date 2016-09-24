@@ -2,17 +2,10 @@
 #include "CUnit/Basic.h"
 
 #include <libdkcst/dkcst_scene.h>
-#include <libdkcst/sources/dummy.h>
 
 DkCst_source_mgr *g_src_mgr, *g_src_mgr2;
-struct DkCst_source_dummy_params g_params = {
-	    .width       = 960,
-		.height      = 540,
-		.pix_fmt     = RGB24,
-		.fps         = 30.0,
-		.nb_channels = 2,
-		.sample_rate = 48000,
-};
+
+DkCst_params* g_params;
 
 DkCst_source *g_src, *g_src2;
 
@@ -114,20 +107,42 @@ void DkCst_unwrap_source_test(void) {
 
 
 int init_suite(void) {
+
+	if (!DkCst_rc_ok(DkCst_create_param_pack(&g_params))) return 1;
+	if (!DkCst_rc_ok(DkCst_set_int_param(g_params, "width", 960))) return 1;
+	if (!DkCst_rc_ok(DkCst_set_int_param(g_params, "height", 540))) return 1;
+	if (!DkCst_rc_ok(DkCst_set_int_param(g_params, "pix_fmt", RGB24))) return 1;
+	if (!DkCst_rc_ok(DkCst_set_float_param(g_params, "fps", 30.0))) return 1;
+	if (!DkCst_rc_ok(DkCst_set_int_param(g_params, "nb_channels", 2))) return 1;
+	if (!DkCst_rc_ok(DkCst_set_int_param(g_params, "sample_rate", 48000))) return 1;
+	
 	if (!DkCst_rc_ok(DkCst_init())) return 1;
 	if (!DkCst_rc_ok(DkCst_create_source_mgr(&g_src_mgr))) return 1;
-	if (!DkCst_rc_ok(DkCst_create_source(g_src_mgr, "dummy", &g_params, &g_src))) return 1;
+	if (!DkCst_rc_ok(DkCst_create_source(g_src_mgr, "dummy", g_params, &g_src))) return 1;
 	if (!DkCst_rc_ok(DkCst_create_source_mgr(&g_src_mgr2))) return 1;
-	if (!DkCst_rc_ok(DkCst_create_source(g_src_mgr2, "dummy", &g_params, &g_src2))) return 1;
+	if (!DkCst_rc_ok(DkCst_create_source(g_src_mgr2, "dummy", g_params, &g_src2))) return 1;
+	
 	return 0;
+	
 }
 int clean_suite(void) {
-	if (!DkCst_rc_ok(DkCst_delete_source(&g_src))){return 1;}
-	if (!DkCst_rc_ok(DkCst_delete_source_mgr(&g_src_mgr))){return 1;}
-	if (!DkCst_rc_ok(DkCst_delete_source(&g_src2))){return 1;}
-	if (!DkCst_rc_ok(DkCst_delete_source_mgr(&g_src_mgr2))){return 1;}
-	if (!DkCst_rc_ok(DkCst_terminate())){return 1;}
+	
+	if (!DkCst_rc_ok(DkCst_delete_source(&g_src))) return 1;
+	if (!DkCst_rc_ok(DkCst_delete_source_mgr(&g_src_mgr))) return 1;
+	if (!DkCst_rc_ok(DkCst_delete_source(&g_src2))) return 1;
+	if (!DkCst_rc_ok(DkCst_delete_source_mgr(&g_src_mgr2))) return 1;
+	if (!DkCst_rc_ok(DkCst_terminate())) return 1;
+
+	if (!DkCst_rc_ok(DkCst_unset_param(g_params, "width"))) return 1;
+	if (!DkCst_rc_ok(DkCst_unset_param(g_params, "height"))) return 1;
+	if (!DkCst_rc_ok(DkCst_unset_param(g_params, "pix_fmt"))) return 1;
+	if (!DkCst_rc_ok(DkCst_unset_param(g_params, "fps"))) return 1;
+	if (!DkCst_rc_ok(DkCst_unset_param(g_params, "nb_channels"))) return 1;
+	if (!DkCst_rc_ok(DkCst_unset_param(g_params, "sample_rate"))) return 1;
+	if (!DkCst_rc_ok(DkCst_delete_param_pack(&g_params))) return 1;
+	
 	return 0;
+	
 }
 
 void* run_tests(void* arg) {
