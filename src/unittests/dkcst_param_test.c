@@ -6,7 +6,7 @@
 #include <libdkcst/dkcst_param.h>
 
 void DkCst_create_param_pack_test(void){
-	DkCst_params *params;
+	DkCstParams *params;
 	CU_ASSERT_EQUAL(DkCst_create_param_pack(&params), OK);
 	CU_ASSERT_EQUAL(params->first, NULL);
 	CU_ASSERT_EQUAL(params->nb_params, 0);
@@ -14,7 +14,7 @@ void DkCst_create_param_pack_test(void){
 
 void DkCst_set_int_param_test(void){
 	
-	DkCst_params *params;
+	DkCstParams *params;
 	DkCst_create_param_pack(&params);
 
     CU_ASSERT_EQUAL(DkCst_set_int_param(params, "long long long long long long lo", 42), ERROR); //one character too far
@@ -38,7 +38,7 @@ void DkCst_set_int_param_test(void){
 
 void DkCst_set_float_param_test(void){
 
-	DkCst_params *params;
+	DkCstParams *params;
 	DkCst_create_param_pack(&params);
 	
 	CU_ASSERT_EQUAL(DkCst_set_float_param(params, "long long long long long long lo", (float)42.2), ERROR); //one character too far
@@ -62,7 +62,7 @@ void DkCst_set_float_param_test(void){
 
 void DkCst_set_string_param_test(void){
 
-	DkCst_params *params;
+	DkCstParams *params;
 	DkCst_create_param_pack(&params);
 	
 	CU_ASSERT_EQUAL(DkCst_set_string_param(params, "long long long long long long lo", "Some string here."), ERROR); //one character too far
@@ -85,7 +85,7 @@ void DkCst_set_string_param_test(void){
 
 void DkCst_get_int_param_test(void){
 
-	DkCst_params *params;
+	DkCstParams *params;
 	DkCst_create_param_pack(&params);
 
     DkCst_set_int_param(params, "some parameter", 3);
@@ -101,7 +101,7 @@ void DkCst_get_int_param_test(void){
 
 void DkCst_get_float_param_test(void){
 
-	DkCst_params *params;
+	DkCstParams *params;
 	DkCst_create_param_pack(&params);
 
     DkCst_set_float_param(params, "some parameter", (float)3.14);
@@ -117,7 +117,7 @@ void DkCst_get_float_param_test(void){
 
 void DkCst_get_string_param_test(void){
 
-	DkCst_params *params;
+	DkCstParams *params;
 	DkCst_create_param_pack(&params);
 
     DkCst_set_string_param(params, "some parameter", "smok wed evryday");
@@ -133,7 +133,7 @@ void DkCst_get_string_param_test(void){
 
 void DkCst_unset_param_test(void){
 
-	DkCst_params *params;
+	DkCstParams *params;
 	DkCst_create_param_pack(&params);
 
     DkCst_set_string_param(params, "some string parameter", "smok wed evryday");
@@ -179,7 +179,7 @@ void DkCst_unset_param_test(void){
 
 void DkCst_delete_param_pack_test(void){
 
-	DkCst_params *params;
+	DkCstParams *params;
 	DkCst_create_param_pack(&params);
 
     DkCst_set_string_param(params, "some string parameter", "smok wed evryday");

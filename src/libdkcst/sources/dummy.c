@@ -5,7 +5,7 @@
 
 typedef struct {
 	uint16_t width, height;
-	DkCst_pix_fmt pix_fmt;
+	DkCstPixFmt pix_fmt;
 	float fps;
 	uint8_t nb_channels;
 	uint16_t sample_rate;
@@ -21,7 +21,7 @@ uint16_t get_height(void* ctx) {
 	return ((dummy_ctx*)ctx)->height;
 }
 
-DkCst_pix_fmt get_pix_fmt(void* ctx) {
+DkCstPixFmt get_pix_fmt(void* ctx) {
 	return ((dummy_ctx*)ctx)->pix_fmt;
 }
 
@@ -77,7 +77,7 @@ DkCst_rc copy_audio_data (void* ctx, void* buf) {
 	return NOT_IMPLEMENTED;
 }
 
-DkCst_source_type dummy_type = {
+DkCstSourceType dummy_type = {
 	.type               = BOTH,
     .name               = "dummy",
     .get_width          = get_width,
@@ -96,7 +96,7 @@ DkCst_source_type dummy_type = {
 
 /* Creation and deletion functions. */
 
-DkCst_rc DkCst_source_create(DkCst_source* src, DkCst_params* params) {
+DkCst_rc DkCst_source_create(DkCstSource* src, DkCstParams* params) {
 	src->ctx = malloc(sizeof(dummy_ctx));
 	int width, height, nb_channels, sample_rate, pix_fmt;
 	DkCst_get_int_param(params, "width", &width);
@@ -113,12 +113,12 @@ DkCst_rc DkCst_source_create(DkCst_source* src, DkCst_params* params) {
 	return 0;
 }
 
-DkCst_rc DkCst_source_delete(DkCst_source* src) {
+DkCst_rc DkCst_source_delete(DkCstSource* src) {
 	free(src->ctx);
 	
 	return 0;
 }
 
-DkCst_source_type DkCst_source_get_type(void) {
+DkCstSourceType DkCst_source_get_type(void) {
 	return dummy_type;
 }

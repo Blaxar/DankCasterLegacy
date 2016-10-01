@@ -9,11 +9,11 @@ int main(int argc, char* argv[]){
     DkCst_init();
 	
 	printf("Initialized DkCst\n"); 
-    DkCst_source_mgr* src_mgr;
+    DkCstSourceMgr* src_mgr;
 	DkCst_create_source_mgr(&src_mgr);
 	printf("Created Mgr\n");
 
-	DkCst_params* params;
+	DkCstParams* params;
 	if (!DkCst_rc_ok(DkCst_create_param_pack(&params))) return 1;
 	if (!DkCst_rc_ok(DkCst_set_int_param(params, "width", 960))) return 1;
 	if (!DkCst_rc_ok(DkCst_set_int_param(params, "height", 540))) return 1;
@@ -22,7 +22,7 @@ int main(int argc, char* argv[]){
 	if (!DkCst_rc_ok(DkCst_set_int_param(params, "nb_channels", 2))) return 1;
 	if (!DkCst_rc_ok(DkCst_set_int_param(params, "sample_rate", 48000))) return 1;
 		
-    DkCst_source* src;
+    DkCstSource* src;
 	if(! DkCst_rc_ok(DkCst_create_source(src_mgr, "dummy", params, &src))) {
 		printf("Source not created\n");
 		return 1;

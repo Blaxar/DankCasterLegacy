@@ -7,9 +7,9 @@
 /* Scene handling */
 
 
-DkCst_rc DkCst_create_scene_mgr(DkCst_scene_mgr* src_mgr, DkCst_scene_mgr** scn_mgr) {
+DkCst_rc DkCst_create_scene_mgr(DkCstSourceMgr* src_mgr, DkCstSceneMgr** scn_mgr) {
 
-	(*scn_mgr) = malloc(sizeof(DkCst_scene_mgr));
+	(*scn_mgr) = malloc(sizeof(DkCstSceneMgr));
 	if(pthread_mutex_init(&(*scn_mgr)->lock, NULL) != 0){ free(*scn_mgr); return ERROR; }
 	for(int i=0 ; i<NB_SCENES; i++) {
 		(*scn_mgr)->scenes[i] = NULL;
@@ -20,7 +20,7 @@ DkCst_rc DkCst_create_scene_mgr(DkCst_scene_mgr* src_mgr, DkCst_scene_mgr** scn_
 	
 }
 
-DkCst_rc DkCst_delete_scene_mgr(DkCst_scene_mgr** scn_mgr) {
+DkCst_rc DkCst_delete_scene_mgr(DkCstSceneMgr** scn_mgr) {
 
     pthread_mutex_destroy(&(*scn_mgr)->lock);
 	for(int i=0; i<NB_SCENES; i++) {
@@ -31,13 +31,13 @@ DkCst_rc DkCst_delete_scene_mgr(DkCst_scene_mgr** scn_mgr) {
 	
 }
 
-DkCst_rc DkCst_create_scene(DkCst_scene_mgr* scn_mgr, DkCst_scene** scn){
+DkCst_rc DkCst_create_scene(DkCstSceneMgr* scn_mgr, DkCstScene** scn){
 
 	pthread_mutex_lock(&scn_mgr->lock);
 	
 	for(int i=0; i<NB_SCENES; i++) {
 		if(scn_mgr->scenes[i] == NULL) {
-			scn_mgr->scenes[i] = malloc(sizeof(DkCst_scene));
+			scn_mgr->scenes[i] = malloc(sizeof(DkCstScene));
 			if(pthread_mutex_init(&scn_mgr->scenes[i]->lock, NULL) != 0){
 				free(scn_mgr->scenes[i]);
 				scn_mgr->scenes[i] = NULL;
@@ -59,9 +59,9 @@ DkCst_rc DkCst_create_scene(DkCst_scene_mgr* scn_mgr, DkCst_scene** scn){
 	
 }
 
-DkCst_rc DkCst_delete_scene(DkCst_scene** scn){
+DkCst_rc DkCst_delete_scene(DkCstScene** scn){
 
-	DkCst_scene_mgr* scn_mgr = (*scn)->scn_mgr;
+	DkCstSceneMgr* scn_mgr = (*scn)->scn_mgr;
 	pthread_mutex_lock(&scn_mgr->lock);
 	
 	uint8_t id = (*scn)->id;
@@ -79,9 +79,9 @@ DkCst_rc DkCst_delete_scene(DkCst_scene** scn){
 
 /* Source wrapping */
 
-DkCst_rc DkCst_wrap_source(DkCst_scene* scn,
-	                   DkCst_source* src,
-					   DkCst_wrapped_source** wrpd_src) {
+DkCst_rc DkCst_wrap_source(DkCstScene* scn,
+	                   DkCstSource* src,
+					   DkCstWrappedSource** wrpd_src) {
 
 	pthread_mutex_lock(&scn->lock);
 	
@@ -89,7 +89,7 @@ DkCst_rc DkCst_wrap_source(DkCst_scene* scn,
 	
 	for(int i=0; i<NB_WRP_SOURCES; i++) {
 		if(scn->sources[i] == NULL) {
-			scn->sources[i] = malloc(sizeof(DkCst_wrapped_source));
+			scn->sources[i] = malloc(sizeof(DkCstWrappedSource));
 			if(pthread_mutex_init(&scn->sources[i]->lock, NULL) != 0){
 				free(scn->sources[i]);
 				scn->sources[i] = NULL;
@@ -110,9 +110,9 @@ DkCst_rc DkCst_wrap_source(DkCst_scene* scn,
 	
 }
 
-DkCst_rc DkCst_unwrap_source(DkCst_wrapped_source** wrpd_src) {
+DkCst_rc DkCst_unwrap_source(DkCstWrappedSource** wrpd_src) {
 
-    DkCst_scene* scn = (*wrpd_src)->scn;
+    DkCstScene* scn = (*wrpd_src)->scn;
 	pthread_mutex_lock(&scn->lock);
 	pthread_mutex_destroy(&(*wrpd_src)->lock);
 	uint8_t id = (*wrpd_src)->id;

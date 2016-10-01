@@ -10,7 +10,7 @@ void DkCst_init_test(void){
 void DkCst_create_source_mgr_test(void) {
 	DkCst_init();
 	
-	DkCst_source_mgr* src_mgr;
+	DkCstSourceMgr* src_mgr;
 	CU_ASSERT_EQUAL(DkCst_create_source_mgr(&src_mgr), OK);
 	CU_ASSERT_EQUAL(src_mgr->nb_sources,0);
 	for(int i=0; i<NB_SOURCES; i++)
@@ -23,7 +23,7 @@ void DkCst_delete_source_mgr_test(void) {
 
 	DkCst_init();
 	
-	DkCst_source_mgr* src_mgr;
+	DkCstSourceMgr* src_mgr;
     DkCst_create_source_mgr(&src_mgr);
 	src_mgr->sources[0] = 0xdeadbeef;
 	CU_ASSERT_EQUAL(DkCst_delete_source_mgr(&src_mgr), ERROR);
@@ -39,10 +39,10 @@ void DkCst_create_source_test(void) {
 
 	DkCst_init();
 	
-	DkCst_source_mgr *src_mgr;
+	DkCstSourceMgr *src_mgr;
     DkCst_create_source_mgr(&src_mgr);
 
-	DkCst_params* params;
+	DkCstParams* params;
 	DkCst_create_param_pack(&params);
 	DkCst_set_int_param(params, "width", 960);
 	DkCst_set_int_param(params, "height", 540);
@@ -51,7 +51,7 @@ void DkCst_create_source_test(void) {
 	DkCst_set_int_param(params, "nb_channels", 2);
 	DkCst_set_int_param(params, "sample_rate", 48000);
 
-    DkCst_source* src;
+    DkCstSource* src;
     CU_ASSERT_EQUAL(DkCst_create_source(src_mgr, "ymmud", params, &src), ERROR); // When there is no such source type.
     CU_ASSERT_EQUAL(DkCst_create_source(src_mgr, "dummy", params, &src), OK); // When there is the source type.
 	CU_ASSERT_EQUAL(src->src_mgr, src_mgr);
@@ -65,10 +65,10 @@ void DkCst_delete_source_test(void){
 
 	DkCst_init();
 	
-	DkCst_source_mgr *src_mgr, *src_mgr2;
+	DkCstSourceMgr *src_mgr, *src_mgr2;
     DkCst_create_source_mgr(&src_mgr);
 	
-    DkCst_params* params;
+    DkCstParams* params;
 	DkCst_create_param_pack(&params);
 	DkCst_set_int_param(params, "width", 960);
 	DkCst_set_int_param(params, "height", 540);
@@ -77,7 +77,7 @@ void DkCst_delete_source_test(void){
 	DkCst_set_int_param(params, "nb_channels", 2);
 	DkCst_set_int_param(params, "sample_rate", 48000);
 	
-    DkCst_source* src;
+    DkCstSource* src;
 	DkCst_create_source(src_mgr, "dummy", params, &src);
 
 	uint8_t id = src->id;

@@ -9,12 +9,12 @@
         DkCst_register_source("##x##");      \
     }
 
-DkCst_source_handler DkCst_registered_sources[NB_SOURCE_TYPES];
+DkCstSourceHandler DkCst_registered_sources[NB_SOURCE_TYPES];
 uint8_t DkCst_nb_registered_sources = 0;
 
-DkCst_rc DkCst_create_source_mgr(DkCst_source_mgr** src_mgr) {
+DkCst_rc DkCst_create_source_mgr(DkCstSourceMgr** src_mgr) {
 
-    (*src_mgr) = malloc(sizeof(DkCst_source_mgr));
+    (*src_mgr) = malloc(sizeof(DkCstSourceMgr));
 	if(pthread_mutex_init(&(*src_mgr)->lock, NULL) != 0){ free(*src_mgr); return ERROR; }
     for(int i=0; i<NB_SOURCES; i++) {
 		(*src_mgr)->sources[i] = NULL;
@@ -24,7 +24,7 @@ DkCst_rc DkCst_create_source_mgr(DkCst_source_mgr** src_mgr) {
 	
 }
 
-DkCst_rc DkCst_delete_source_mgr(DkCst_source_mgr**  src_mgr) {
+DkCst_rc DkCst_delete_source_mgr(DkCstSourceMgr**  src_mgr) {
 
 	pthread_mutex_destroy(&(*src_mgr)->lock);
 	for(int i=0; i<NB_SOURCES; i++) {
@@ -35,7 +35,7 @@ DkCst_rc DkCst_delete_source_mgr(DkCst_source_mgr**  src_mgr) {
 	
 }
 
-DkCst_rc DkCst_create_source(DkCst_source_mgr* src_mgr, const char* type, DkCst_params* params, DkCst_source** src) {
+DkCst_rc DkCst_create_source(DkCstSourceMgr* src_mgr, const char* type, DkCstParams* params, DkCstSource** src) {
 
 	pthread_mutex_lock(&src_mgr->lock);
 	
@@ -43,7 +43,7 @@ DkCst_rc DkCst_create_source(DkCst_source_mgr* src_mgr, const char* type, DkCst_
 		if(strcmp(DkCst_registered_sources[i].DkCst_source_get_type().name, type) == 0) {
 			for(int j=0; j<NB_SOURCES; j++) {
 				if(src_mgr->sources[j] == NULL) {
-					src_mgr->sources[j] = malloc(sizeof(DkCst_source));
+					src_mgr->sources[j] = malloc(sizeof(DkCstSource));
 					if(pthread_mutex_init(&src_mgr->sources[j]->lock, NULL) != 0){
 						free(src_mgr->sources[j]);
 						src_mgr->sources[j] = NULL;
@@ -86,12 +86,12 @@ DkCst_rc DkCst_create_source(DkCst_source_mgr* src_mgr, const char* type, DkCst_
 }
 
 
-DkCst_rc DkCst_delete_source(DkCst_source** src) {
+DkCst_rc DkCst_delete_source(DkCstSource** src) {
 
 	pthread_mutex_lock(&(*src)->src_mgr->lock);
 	
 	pthread_mutex_destroy(&(*src)->lock);
-    DkCst_source_mgr* src_mgr = (*src)->src_mgr;
+    DkCstSourceMgr* src_mgr = (*src)->src_mgr;
 	uint8_t id = (*src)->id;
 	uint8_t type_id = (*src)->type_id;
     DkCst_registered_sources[type_id].DkCst_source_delete(src_mgr->sources[id]);
@@ -109,9 +109,9 @@ DkCst_rc DkCst_delete_source(DkCst_source** src) {
 DkCst_rc DkCst_register_source_type(const char* src_name) {
 
    void *tmp_module;
-   DkCst_rc (*tmp_source_create)(DkCst_source* src, DkCst_params* params);
-   DkCst_rc (*tmp_source_delete)(DkCst_source* src);
-   DkCst_source_type (*tmp_source_get_type)(void);
+   DkCst_rc (*tmp_source_create)(DkCstSource* src, DkCstParams* params);
+   DkCst_rc (*tmp_source_delete)(DkCstSource* src);
+   DkCstSourceType (*tmp_source_get_type)(void);
    int rc = 0;
 
    char path[80];

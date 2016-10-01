@@ -7,21 +7,21 @@
 
 #define MAX_PARAM_NAME_LENGTH 32
 
-struct DkCst_param_s;
+struct DkCstParam_s;
 
 typedef enum {
 	INT = 0,
 	FLOAT,
 	STRING,
-} DkCst_param_type;
+} DkCstParam_type;
 
-typedef struct DkCst_param_s {
+typedef struct DkCstParam_s {
 
-    DkCst_param_type type;
+    DkCstParam_type type;
 	
 	char name[MAX_PARAM_NAME_LENGTH];
 		
-	union DkCst_param_data {
+	union DkCstParam_data {
 		int int_value ;
 		float float_value;
 		struct string_param {
@@ -29,29 +29,29 @@ typedef struct DkCst_param_s {
 		} string_value;
 	} data;
 
-	struct DkCst_param_s* next;
+	struct DkCstParam_s* next;
 	
-} DkCst_param;
+} DkCstParam;
 
-typedef struct dkcst_param_s {
+typedef struct DkCstParams_s {
 
-	DkCst_param* first;
+	DkCstParam* first;
 	uint8_t nb_params;
 	
-} DkCst_params;
+} DkCstParams;
 
-DkCst_rc DkCst_create_param_pack(DkCst_params **params);
+DkCst_rc DkCst_create_param_pack(DkCstParams **params);
 
-DkCst_rc DkCst_set_int_param(DkCst_params *params, char name[MAX_PARAM_NAME_LENGTH], int value);
-DkCst_rc DkCst_set_float_param(DkCst_params *params, char name[MAX_PARAM_NAME_LENGTH], float value);
-DkCst_rc DkCst_set_string_param(DkCst_params *params, char name[MAX_PARAM_NAME_LENGTH], char* value);
+DkCst_rc DkCst_set_int_param(DkCstParams *params, char name[MAX_PARAM_NAME_LENGTH], int value);
+DkCst_rc DkCst_set_float_param(DkCstParams *params, char name[MAX_PARAM_NAME_LENGTH], float value);
+DkCst_rc DkCst_set_string_param(DkCstParams *params, char name[MAX_PARAM_NAME_LENGTH], char* value);
 
-DkCst_rc DkCst_get_int_param(DkCst_params *params, char name[MAX_PARAM_NAME_LENGTH], int* value);
-DkCst_rc DkCst_get_float_param(DkCst_params *params, char name[MAX_PARAM_NAME_LENGTH], float* value);
-DkCst_rc DkCst_get_string_param(DkCst_params *params, char name[MAX_PARAM_NAME_LENGTH], char** value);
+DkCst_rc DkCst_get_int_param(DkCstParams *params, char name[MAX_PARAM_NAME_LENGTH], int* value);
+DkCst_rc DkCst_get_float_param(DkCstParams *params, char name[MAX_PARAM_NAME_LENGTH], float* value);
+DkCst_rc DkCst_get_string_param(DkCstParams *params, char name[MAX_PARAM_NAME_LENGTH], char** value);
 
-DkCst_rc DkCst_unset_param(DkCst_params *params, char name[MAX_PARAM_NAME_LENGTH]);
+DkCst_rc DkCst_unset_param(DkCstParams *params, char name[MAX_PARAM_NAME_LENGTH]);
 
-DkCst_rc DkCst_delete_param_pack(DkCst_params **params);
+DkCst_rc DkCst_delete_param_pack(DkCstParams **params);
 
 #endif //DKCST_PARAM_H	

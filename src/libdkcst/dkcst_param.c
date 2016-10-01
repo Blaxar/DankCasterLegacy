@@ -1,9 +1,9 @@
 #include <libdkcst/dkcst_param.h>
 #include <stdlib.h>
 
-DkCst_rc DkCst_create_param_pack(DkCst_params **params) {
+DkCst_rc DkCst_create_param_pack(DkCstParams **params) {
 
-	(*params) = malloc(sizeof(DkCst_params));
+	(*params) = malloc(sizeof(DkCstParams));
 	(*params)->first = NULL;
 	(*params)->nb_params = 0;
 	
@@ -11,13 +11,13 @@ DkCst_rc DkCst_create_param_pack(DkCst_params **params) {
 	
 }
 
-DkCst_rc DkCst_set_param(DkCst_params *params, char name[MAX_PARAM_NAME_LENGTH], DkCst_param_type type, void* value, uint16_t length) {
+DkCst_rc DkCst_set_param(DkCstParams *params, char name[MAX_PARAM_NAME_LENGTH], DkCstParam_type type, void* value, uint16_t length) {
 	
 	uint16_t name_length = strlen(name);
 	if(name_length > MAX_PARAM_NAME_LENGTH-1) return ERROR;
 	
 	if(params->first == NULL) { //No param in the list yet
-		params->first = malloc(sizeof(DkCst_param));
+		params->first = malloc(sizeof(DkCstParam));
 		params->first->type = type;
 		if(type == INT)
 		    params->first->data.int_value = *(int*)value;
@@ -32,8 +32,8 @@ DkCst_rc DkCst_set_param(DkCst_params *params, char name[MAX_PARAM_NAME_LENGTH],
 		params->nb_params++;
 		return OK;
 	} else {
-		DkCst_param* prev_param = NULL;
-		DkCst_param* param = params->first;
+		DkCstParam* prev_param = NULL;
+		DkCstParam* param = params->first;
 		while(param != NULL){ //Iterate over existing params
 			if(strcmp(name, param->name) == 0) { //Param with this name already exists
 				if(param->type == type){ //Update if types do match
@@ -55,7 +55,7 @@ DkCst_rc DkCst_set_param(DkCst_params *params, char name[MAX_PARAM_NAME_LENGTH],
 			param=param->next;
 		}
 		//at this point, no existing param with this name, add it to the list.
-		prev_param->next=malloc(sizeof(DkCst_param));
+		prev_param->next=malloc(sizeof(DkCstParam));
 		prev_param->next->type = type;
 		memcpy(prev_param->next->name, name, name_length+1);
 		if(type == INT)
@@ -72,24 +72,24 @@ DkCst_rc DkCst_set_param(DkCst_params *params, char name[MAX_PARAM_NAME_LENGTH],
 	}
 }
 
-DkCst_rc DkCst_set_int_param(DkCst_params *params, char name[MAX_PARAM_NAME_LENGTH], int value) {
+DkCst_rc DkCst_set_int_param(DkCstParams *params, char name[MAX_PARAM_NAME_LENGTH], int value) {
     return DkCst_set_param(params, name, INT, &value, 0);
 }
 
-DkCst_rc DkCst_set_float_param(DkCst_params *params, char name[MAX_PARAM_NAME_LENGTH], float value) {
+DkCst_rc DkCst_set_float_param(DkCstParams *params, char name[MAX_PARAM_NAME_LENGTH], float value) {
 	return DkCst_set_param(params, name, FLOAT, &value, 0);
 }
 
-DkCst_rc DkCst_set_string_param(DkCst_params *params, char name[MAX_PARAM_NAME_LENGTH], char* value) {
+DkCst_rc DkCst_set_string_param(DkCstParams *params, char name[MAX_PARAM_NAME_LENGTH], char* value) {
     return DkCst_set_param(params, name, STRING, value, 0);
 }
 
-DkCst_rc DkCst_get_param(DkCst_params *params, char name[MAX_PARAM_NAME_LENGTH], DkCst_param_type type, void** value, uint16_t* length) {
+DkCst_rc DkCst_get_param(DkCstParams *params, char name[MAX_PARAM_NAME_LENGTH], DkCstParam_type type, void** value, uint16_t* length) {
 
 	uint16_t name_length = strlen(name);
 	if(name_length > MAX_PARAM_NAME_LENGTH-1) return ERROR;
 	
-    DkCst_param* param = params->first;
+    DkCstParam* param = params->first;
 	while(param != NULL){ //Iterate over existing params
 		if(strcmp(name, param->name) == 0) { //Param with this name already exists
 			if(param->type == type) //return value if types do match
@@ -112,25 +112,25 @@ DkCst_rc DkCst_get_param(DkCst_params *params, char name[MAX_PARAM_NAME_LENGTH],
 	return ERROR;
 }
 
-DkCst_rc DkCst_get_int_param(DkCst_params *params, char name[MAX_PARAM_NAME_LENGTH], int* value) {
+DkCst_rc DkCst_get_int_param(DkCstParams *params, char name[MAX_PARAM_NAME_LENGTH], int* value) {
     return DkCst_get_param(params, name, INT, &value, NULL);
 }
 
-DkCst_rc DkCst_get_float_param(DkCst_params *params, char name[MAX_PARAM_NAME_LENGTH], float* value) {
+DkCst_rc DkCst_get_float_param(DkCstParams *params, char name[MAX_PARAM_NAME_LENGTH], float* value) {
     return DkCst_get_param(params, name, FLOAT, &value, NULL);
 }
 
-DkCst_rc DkCst_get_string_param(DkCst_params *params, char name[MAX_PARAM_NAME_LENGTH], char** value) {
+DkCst_rc DkCst_get_string_param(DkCstParams *params, char name[MAX_PARAM_NAME_LENGTH], char** value) {
     return DkCst_get_param(params, name, STRING, value, NULL);
 }
 
-DkCst_rc DkCst_unset_param(DkCst_params *params, char name[MAX_PARAM_NAME_LENGTH]) {
+DkCst_rc DkCst_unset_param(DkCstParams *params, char name[MAX_PARAM_NAME_LENGTH]) {
 
 	uint16_t name_length = strlen(name);
 	if(name_length > MAX_PARAM_NAME_LENGTH-1) return ERROR;
 	
-	DkCst_param* prev_param = NULL;
-	DkCst_param* param = params->first;
+	DkCstParam* prev_param = NULL;
+	DkCstParam* param = params->first;
 	while(param != NULL){ //Iterate over existing params
 		if(strcmp(name, param->name) == 0) { //Param with this name exists
 			if(prev_param != NULL) prev_param->next=param->next;
@@ -149,7 +149,7 @@ DkCst_rc DkCst_unset_param(DkCst_params *params, char name[MAX_PARAM_NAME_LENGTH
 	return ERROR;
 }
 
-DkCst_rc DkCst_delete_param_pack(DkCst_params **params) {
+DkCst_rc DkCst_delete_param_pack(DkCstParams **params) {
 	if((*params)->nb_params > 0)
 		return ERROR;
 

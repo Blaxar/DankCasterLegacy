@@ -3,16 +3,16 @@
 
 #include <libdkcst/dkcst_scene.h>
 
-DkCst_source_mgr *g_src_mgr, *g_src_mgr2;
+DkCstSourceMgr *g_src_mgr, *g_src_mgr2;
 
-DkCst_params* g_params;
+DkCstParams* g_params;
 
-DkCst_source *g_src, *g_src2;
+DkCstSource *g_src, *g_src2;
 
 
 void DkCst_create_scene_mgr_test(void) {
 
-	DkCst_scene_mgr* scn_mgr;
+	DkCstSceneMgr* scn_mgr;
 	CU_ASSERT_EQUAL(DkCst_create_scene_mgr(g_src_mgr, &scn_mgr), OK);
 	CU_ASSERT_EQUAL(scn_mgr->nb_scenes,0);
 	for(int i=0; i<NB_SCENES; i++)
@@ -24,7 +24,7 @@ void DkCst_create_scene_mgr_test(void) {
 
 void DkCst_delete_scene_mgr_test(void) {
 
-	DkCst_scene_mgr* scn_mgr;
+	DkCstSceneMgr* scn_mgr;
 	DkCst_create_scene_mgr(g_src_mgr, &scn_mgr);
 	scn_mgr->scenes[0] = 0xdeadbeef;
 	CU_ASSERT_EQUAL(DkCst_delete_scene_mgr(&scn_mgr),ERROR);
@@ -35,8 +35,8 @@ void DkCst_delete_scene_mgr_test(void) {
 
 void DkCst_create_scene_test(void) {
 
-	DkCst_scene_mgr *scn_mgr, *scn_mgr2;
-	DkCst_scene* scn = NULL;
+	DkCstSceneMgr *scn_mgr, *scn_mgr2;
+	DkCstScene* scn = NULL;
 	DkCst_create_scene_mgr(g_src_mgr, &scn_mgr);
 
 	CU_ASSERT_EQUAL(DkCst_create_scene(scn_mgr, &scn),OK);
@@ -49,8 +49,8 @@ void DkCst_create_scene_test(void) {
 
 void DkCst_delete_scene_test(void) {
 
-	DkCst_scene_mgr *scn_mgr, *scn_mgr2;
-	DkCst_scene* scn;
+	DkCstSceneMgr *scn_mgr, *scn_mgr2;
+	DkCstScene* scn;
 	DkCst_create_scene_mgr(g_src_mgr, &scn_mgr);
     DkCst_create_scene(scn_mgr, &scn);
 	uint8_t id = scn->id;
@@ -68,9 +68,9 @@ void DkCst_delete_scene_test(void) {
 
 void DkCst_wrap_source_test(void) {
 
-	DkCst_scene_mgr *scn_mgr, *scn_mgr2;
-	DkCst_scene *scn, *scn2;
-	DkCst_wrapped_source* wrpd_src;
+	DkCstSceneMgr *scn_mgr, *scn_mgr2;
+	DkCstScene *scn, *scn2;
+	DkCstWrappedSource* wrpd_src;
 	DkCst_create_scene_mgr(g_src_mgr, &scn_mgr);
     DkCst_create_scene(scn_mgr, &scn);
 
@@ -91,9 +91,9 @@ void DkCst_wrap_source_test(void) {
 
 void DkCst_unwrap_source_test(void) {
 
-	DkCst_scene_mgr *scn_mgr, *scn_mgr2;
-	DkCst_scene *scn, *scn2;
-	DkCst_wrapped_source* wrpd_src;
+	DkCstSceneMgr *scn_mgr, *scn_mgr2;
+	DkCstScene *scn, *scn2;
+	DkCstWrappedSource* wrpd_src;
 	DkCst_create_scene_mgr(g_src_mgr, &scn_mgr);
     DkCst_create_scene(scn_mgr, &scn);
 
