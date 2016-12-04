@@ -19,6 +19,7 @@ typedef enum {RGB24,
 			  YUV420,
 			  YUV422} DkCstPixFmt;
 typedef uint8_t src_tk;
+typedef uint64_t DkCstTimestamp;
 
 #define SET_SOURCE_METHODS()								   \
 												               \
@@ -30,12 +31,6 @@ typedef uint8_t src_tk;
 		float (*get_fps)(void* ctx);						   \
 		uint16_t (*get_sample_rate)(void* ctx);                \
 		uint8_t (*get_nb_channels)(void* ctx);                 \
-	    DkCst_rc (*alloc_video_buffer)(void* ctx, void** buf, uint32_t* size); \
-        DkCst_rc (*free_video_buffer)(void* ctx, void** buf); \
-        DkCst_rc (*copy_video_data)(void* ctx, void* buf);    \
-        DkCst_rc (*alloc_audio_buffer)(void* ctx, void** buf, uint32_t* size); \
-        DkCst_rc (*free_audio_buffer)(void* ctx, void** buf);  \
-        DkCst_rc (*copy_audio_data)(void* ctx, void* buf);
     
 struct DkCstSourceType_s;
 struct DkCstSource_s;
@@ -82,11 +77,5 @@ DkCst_rc DkCst_delete_source_mgr(DkCstSourceMgr** src_mgr);
 
 DkCst_rc DkCst_create_source(DkCstSourceMgr* src_mgr, const char* type, DkCstParams* params, DkCstSource** src);
 DkCst_rc DkCst_delete_source(DkCstSource**  src);
-DkCst_rc DkCst_register_source_type(const char* src_name);
-DkCst_rc DkCst_register_all_source_types(void);
-DkCst_rc DkCst_unregister_all_source_types(void);
-DkCst_rc DkCst_ready_all_source_types(void);
-DkCst_rc DkCst_init(void);
-DkCst_rc DkCst_terminate(void);
 
 #endif //DKCST_SOURCE_H	

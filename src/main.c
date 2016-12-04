@@ -34,7 +34,7 @@ int main(int argc, char* argv[]){
 	int size;
 	src->alloc_video_buffer(src->ctx, &video_data, &size);
 	printf("%d\n", size);
-	src->copy_video_data(src->ctx, video_data);
+	src->copy_video_data(src->ctx, video_data, NULL);
 	
 	void* nullptr = NULL;
 

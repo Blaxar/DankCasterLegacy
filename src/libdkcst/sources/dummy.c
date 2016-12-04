@@ -50,7 +50,7 @@ DkCst_rc free_video_buffer (void* ctx, void** buf) {
 	return OK;
 }
 
-DkCst_rc copy_video_data (void* ctx, void* buf) {
+DkCst_rc copy_video_data (void* ctx, void* buf, DkCstTimestamp timestamp) {
 
 	uint16_t width = ((dummy_ctx*)ctx)->width;
 	uint16_t height = ((dummy_ctx*)ctx)->height;
@@ -73,7 +73,7 @@ DkCst_rc free_audio_buffer (void* ctx, void** buf) {
 	return NOT_IMPLEMENTED;
 }
 
-DkCst_rc copy_audio_data (void* ctx, void* buf) {
+DkCst_rc copy_audio_data (void* ctx, void* buf, DkCstTimestamp timestamp) {
 	return NOT_IMPLEMENTED;
 }
 
