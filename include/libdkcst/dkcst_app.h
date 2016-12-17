@@ -1,12 +1,18 @@
 #ifndef DKCST_APP_H
 #define DKCST_APP_H
 
-#include "dkcst_scene.h"
-#include "dkcst_sink.h"
+#include <inttypes.h>
+#include <stddef.h>
+#include <pthread.h>
+#include "dkcst_rc.h"
+#include "dkcst_param.h"
 
-struct DkCstApp_s;
+struct DkCstSourceMgr_s;
+struct DkCstSceneMgr_s;
+struct DkCstSinkMgr_s;
+struct DkcstBackend_s;
 
-typedef struct DkCstApp_s{
+typedef struct {
 
 	pthread_mutex_t lock;
 	struct DkCstSourceMgr_s* src_mgr;
@@ -18,13 +24,10 @@ typedef struct DkCstApp_s{
 
 /* App handling */
 
-DkCst_rc DkCst_create_app(DkCstApp** app, DkCstSourceMgr* src_mgr, DkCstSceneMgr* scn_mgr, DkCstSinkMgr* snk_mgr, const char* backend);
+DkCst_rc DkCst_create_app(DkCstApp** app, const char* backend);
 DkCst_rc DkCst_delete_app(DkCstApp** app);
 
 DkCst_rc DkCst_start_app(DkCstApp* app);
 DkCst_rc DkCst_stop_app(DkCstApp* app);
-
-DkCst_rc DkCst_init(void);
-DkCst_rc DkCst_terminate(void);
 
 #endif //DKCST_APP_H	

@@ -35,6 +35,7 @@ typedef struct DkCstScene_s{
 typedef struct DkCstSceneMgr_s{
 
 	pthread_mutex_t lock;
+	DkCstApp* app;
     DkCstScene* scenes[NB_SCENES];
 	uint8_t nb_scenes;
 	
@@ -42,7 +43,7 @@ typedef struct DkCstSceneMgr_s{
 
 /* Scene handling */
 
-DkCst_rc DkCst_create_scene_mgr(DkCstSceneMgr** scn_mgr);
+DkCst_rc DkCst_create_scene_mgr(DkCstApp* app, DkCstSceneMgr** scn_mgr);
 DkCst_rc DkCst_delete_scene_mgr(DkCstSceneMgr** scn_mgr);
 
 DkCst_rc DkCst_create_scene(DkCstSceneMgr* scn_mgr, DkCstScene** scn);

@@ -1,11 +1,11 @@
 file(GLOB DankCaster_src_files ${CMAKE_CURRENT_SOURCE_DIR}/main.c)
 
 add_subdirectory(libdkcst)
-IF(CUNIT_FOUND)
-	add_subdirectory(unittests)
-ELSE(CUNIT_FOUND)
-	message("CUnit not found, not generating unit tests.")
-ENDIF(CUNIT_FOUND)
+#IF(CUNIT_FOUND)
+#	add_subdirectory(unittests)
+#ELSE(CUNIT_FOUND)
+#	message("CUnit not found, not generating unit tests.")
+#ENDIF(CUNIT_FOUND)
 
 #DankCaster executable
 add_executable(libDkCst_sample ${DankCaster_src_files})

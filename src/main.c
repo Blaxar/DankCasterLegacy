@@ -5,6 +5,8 @@
 
 int main(int argc, char* argv[]){
 
+	/*
+	
 	printf("Initializing DkCst\n");
     DkCst_init();
 	
@@ -89,7 +91,7 @@ int main(int argc, char* argv[]){
 	
 	DkCst_delete_source_mgr(&src_mgr);
 	DkCst_terminate();
-	
+	*/
 	return 0; 
 	
 }
