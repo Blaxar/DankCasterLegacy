@@ -18,7 +18,7 @@ typedef struct {
 	struct DkCstSourceMgr_s* src_mgr;
 	struct DkCstSceneMgr_s* scn_mgr;
 	struct DkCstSinkMgr_s* snk_mgr;
-	struct DkcstBackend_s* backend;
+    struct DkcstBackend_s* backend;
 
 } DkCstApp;
 
