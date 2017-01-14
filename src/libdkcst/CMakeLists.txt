@@ -1,9 +1,4 @@
-#file(GLOB dkcst_src_files ${CMAKE_CURRENT_SOURCE_DIR}/*.c)
-
-set(dkcst_src_files
-	${CMAKE_CURRENT_SOURCE_DIR}/dkcst_source.c
-	${CMAKE_CURRENT_SOURCE_DIR}/dkcst_backend.c
-	${CMAKE_CURRENT_SOURCE_DIR}/dkcst_scene.c)
+file(GLOB dkcst_src_files ${CMAKE_CURRENT_SOURCE_DIR}/*.c)
 
 #libdkcst
 add_library(dkcst SHARED ${dkcst_src_files})

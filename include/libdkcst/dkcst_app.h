@@ -24,7 +24,7 @@ typedef struct {
 
 /* App handling */
 
-DkCst_rc DkCst_create_app(DkCstApp** app, const char* backend);
+DkCst_rc DkCst_create_app(DkCstApp** app);
 DkCst_rc DkCst_delete_app(DkCstApp** app);
 
 DkCst_rc DkCst_start_app(DkCstApp* app);

@@ -45,6 +45,7 @@ DkCst_rc DkCst_create_source(DkCstSourceMgr* src_mgr, const char* type, DkCstPar
 			}
 			src_mgr->nb_sources++;
 			(*src) = src_mgr->sources[j];
+			(*src)->src_mgr = src_mgr;
 			pthread_mutex_unlock(&src_mgr->lock);
 			return OK;
 		}

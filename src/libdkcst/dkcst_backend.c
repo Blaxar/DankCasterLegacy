@@ -89,7 +89,7 @@ DkCst_rc DkCst_ready_all_backends(void) {
 
 DkCst_rc DkCst_register_all_backends(void) {
 
-    DkCst_register_backend("dummy");
+    //DkCst_register_backend("dummy");
 	return OK;
 	
 }
