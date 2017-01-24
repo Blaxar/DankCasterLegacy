@@ -7,18 +7,18 @@
 #include "dkcst_rc.h"
 #include "dkcst_param.h"
 
-struct DkCstSourceMgr_s;
-struct DkCstSceneMgr_s;
-struct DkCstSinkMgr_s;
-struct DkcstBackend_s;
+struct _DkCstSourceMgr;
+struct _DkCstSceneMgr;
+struct _DkCstSinkMgr;
+struct _DkCstBackend;
 
-typedef struct {
+typedef struct _DkCstApp {
 
 	pthread_mutex_t lock;
-	struct DkCstSourceMgr_s* src_mgr;
-	struct DkCstSceneMgr_s* scn_mgr;
-	struct DkCstSinkMgr_s* snk_mgr;
-    struct DkcstBackend_s* backend;
+    struct _DkCstSourceMgr* src_mgr;
+	struct _DkCstSceneMgr* scn_mgr;
+	struct _DkCstSinkMgr* snk_mgr;
+    struct _DkCstBackend* backend;
 
 } DkCstApp;
 

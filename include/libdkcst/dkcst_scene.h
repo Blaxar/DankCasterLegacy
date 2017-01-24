@@ -2,18 +2,15 @@
 #define DKCST_SCENE_H
 
 #include "dkcst_source.h"
+#include "dkcst_rc.h"
 
 #define NB_WRP_SOURCES 255
 #define NB_SCENES 255
 
-struct DkCstWrappedSource_s;
-struct DkCstScene_s;
-struct DkCstSceneMgr_s;
-
-typedef struct DkCstWrappedSource_s{
+typedef struct _DkCstWrappedSource{
 
 	pthread_mutex_t lock;
-	struct DkCstScene_s* scn;
+	struct _DkCstScene* scn;
 	uint8_t id;
     uint8_t source_id;
     uint16_t x, y;
@@ -22,17 +19,17 @@ typedef struct DkCstWrappedSource_s{
 
 } DkCstWrappedSource;
 
-typedef struct DkCstScene_s{
+typedef struct _DkCstScene{
 
 	pthread_mutex_t lock;
-	struct DkCstSceneMgr_s* scn_mgr;
+    struct _DkCstSceneMgr* scn_mgr;
 	uint8_t id;
     DkCstWrappedSource* sources[NB_WRP_SOURCES];
 	uint8_t nb_sources;
 
 } DkCstScene;
 
-typedef struct DkCstSceneMgr_s{
+typedef struct _DkCstSceneMgr{
 
 	pthread_mutex_t lock;
 	DkCstApp* app;

@@ -2,10 +2,11 @@
 #define DKCST_BACKEND_H
 
 #include "dkcst_app.h"
+#include "dkcst_rc.h"
 
 #define BACKEND_NAME_LENGTH 32
 
-typedef struct DkCstBackend_s{
+typedef struct _DkCstBackend {
 
 	pthread_mutex_t lock;
 	DkCstApp* app;

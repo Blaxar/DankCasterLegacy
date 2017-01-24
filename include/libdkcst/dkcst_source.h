@@ -2,26 +2,24 @@
 #define DKCST_SOURCE_H
 
 #include "dkcst_app.h"
+#include "dkcst_rc.h"
 
 #define NB_SOURCES 255
 
-struct DkCstSource_s;
-struct DkCstSourceMgr_s;
-
-typedef struct DkCstSource_s{
+typedef struct _DkCstSource{
 
 	pthread_mutex_t lock;
-	struct DkCstSourceMgr_s* src_mgr;
+	struct _DkCstSourceMgr* src_mgr;
 	uint8_t id;
 	char* type;
 	
 } DkCstSource;
 
-typedef struct DkCstSourceMgr_s{
+typedef struct _DkCstSourceMgr{
 
 	pthread_mutex_t lock;
     DkCstApp * app;
-	DkCstSource* sources[NB_SOURCES];
+    DkCstSource* sources[NB_SOURCES];
 	uint8_t nb_sources;
 	
 } DkCstSourceMgr;

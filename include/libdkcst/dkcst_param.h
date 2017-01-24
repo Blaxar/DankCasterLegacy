@@ -1,13 +1,13 @@
 #ifndef DKCST_PARAM_H
 #define DKCST_PARAM_H
 
-#include "dkcst_rc.h"
 #include <inttypes.h>
 #include <stddef.h>
+#include "dkcst_rc.h"
 
 #define MAX_PARAM_NAME_LENGTH 32
 
-struct DkCstParam_s;
+struct _DkCstParam;
 
 typedef enum {
 	INT = 0,
@@ -15,7 +15,7 @@ typedef enum {
 	STRING,
 } DkCstParam_type;
 
-typedef struct DkCstParam_s {
+typedef struct _DkCstParam {
 
     DkCstParam_type type;
 	
@@ -29,13 +29,13 @@ typedef struct DkCstParam_s {
 		} string_value;
 	} data;
 
-	struct DkCstParam_s* next;
+	struct _DkCstParam* next;
 	
 } DkCstParam;
 
-typedef struct DkCstParams_s {
+typedef struct _DkCstParams {
 
-	DkCstParam* first;
+	struct _DkCstParam* first;
 	uint8_t nb_params;
 	
 } DkCstParams;

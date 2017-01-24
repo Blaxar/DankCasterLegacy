@@ -2,22 +2,20 @@
 #define DKCST_SINK_H
 
 #include "dkcst_app.h"
+#include "dkcst_rc.h"
 
 #define NB_SINKS 255
 
-struct DkCstSink_s;
-struct DkCstSinkMgr_s;
-
-typedef struct DkCstSink_s{
+typedef struct _DkCstSink {
 
 	pthread_mutex_t lock;
-	struct DkCstSinkMgr_s* snk_mgr;
+    struct _DkCstSinkMgr* snk_mgr;
 	uint8_t id;
 	char* type;
 	
 } DkCstSink;
 
-typedef struct DkCstSinkMgr_s{
+typedef struct _DkCstSinkMgr {
 
 	pthread_mutex_t lock;
     DkCstApp * app;
