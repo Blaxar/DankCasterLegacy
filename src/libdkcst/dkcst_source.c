@@ -4,12 +4,10 @@
 #include <stdlib.h>
 #include <string.h>
 
-DkCst_rc DkCst_create_source_mgr(DkCstApp* app, DkCstSourceMgr** src_mgr) {
+DkCst_rc DkCst_create_source_mgr(DkCstSourceMgr** src_mgr) {
 
     (*src_mgr) = malloc(sizeof(DkCstSourceMgr));
 	if(pthread_mutex_init(&(*src_mgr)->lock, NULL) != 0){ free(*src_mgr); return ERROR; }
-	app->src_mgr = *src_mgr;
-	(*src_mgr)->app = app;
     for(int i=0; i<NB_SOURCES; i++) {
 		(*src_mgr)->sources[i] = NULL;
 	}
@@ -24,7 +22,6 @@ DkCst_rc DkCst_delete_source_mgr(DkCstSourceMgr**  src_mgr) {
 	for(int i=0; i<NB_SOURCES; i++) {
 		if((*src_mgr)->sources[i] != NULL) return ERROR;
 	}
-	(*src_mgr)->app->src_mgr = NULL;
 	free(*src_mgr);
 	return OK;
 	

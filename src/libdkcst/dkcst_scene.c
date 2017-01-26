@@ -7,7 +7,7 @@
 /* Scene handling */
 
 
-DkCst_rc DkCst_create_scene_mgr(DkCstApp* app, DkCstSceneMgr** scn_mgr) {
+DkCst_rc DkCst_create_scene_mgr(DkCstSceneMgr** scn_mgr) {
 
 	(*scn_mgr) = malloc(sizeof(DkCstSceneMgr));
 	if(pthread_mutex_init(&(*scn_mgr)->lock, NULL) != 0){ free(*scn_mgr); return ERROR; }
@@ -15,7 +15,6 @@ DkCst_rc DkCst_create_scene_mgr(DkCstApp* app, DkCstSceneMgr** scn_mgr) {
 		(*scn_mgr)->scenes[i] = NULL;
 	}
 	(*scn_mgr)->nb_scenes=0;
-	app->scn_mgr = (*scn_mgr);
 	return OK;
 	
 }
@@ -84,8 +83,6 @@ DkCst_rc DkCst_wrap_source(DkCstScene* scn,
 					   DkCstWrappedSource** wrpd_src) {
 
 	pthread_mutex_lock(&scn->lock);
-	
-	if(scn->scn_mgr->app->src_mgr != src->src_mgr){ pthread_mutex_unlock(&scn->lock); return ERROR; }
 	
 	for(int i=0; i<NB_WRP_SOURCES; i++) {
 		if(scn->sources[i] == NULL) {

@@ -7,5 +7,7 @@ DkCst_rc gstbkn_init(void** ctx) {
     *ctx = (void*) malloc(sizeof(GstBackendCtx));
 
 	if(gst_init_check (NULL, NULL, NULL) == FALSE) return ERROR;
+
+	return OK;
 	
 }

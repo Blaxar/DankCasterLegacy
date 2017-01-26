@@ -18,13 +18,12 @@ typedef struct _DkCstSource{
 typedef struct _DkCstSourceMgr{
 
 	pthread_mutex_t lock;
-    DkCstApp * app;
     DkCstSource* sources[NB_SOURCES];
 	uint8_t nb_sources;
 	
 } DkCstSourceMgr;
 
-DkCst_rc DkCst_create_source_mgr(DkCstApp * app, DkCstSourceMgr** src_mgr);
+DkCst_rc DkCst_create_source_mgr(DkCstSourceMgr** src_mgr);
 DkCst_rc DkCst_delete_source_mgr(DkCstSourceMgr** src_mgr);
 
 DkCst_rc DkCst_create_source(DkCstSourceMgr* src_mgr, const char* type, DkCstParams* params, DkCstSource** src, const char* name);

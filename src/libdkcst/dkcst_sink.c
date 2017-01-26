@@ -4,12 +4,10 @@
 #include <stdlib.h>
 #include <string.h>
 
-DkCst_rc DkCst_create_sink_mgr(DkCstApp* app, DkCstSinkMgr** snk_mgr) {
+DkCst_rc DkCst_create_sink_mgr(DkCstSinkMgr** snk_mgr) {
 
     (*snk_mgr) = malloc(sizeof(DkCstSinkMgr));
 	if(pthread_mutex_init(&(*snk_mgr)->lock, NULL) != 0){ free(*snk_mgr); return ERROR; }
-	app->snk_mgr = *snk_mgr;
-	(*snk_mgr)->app = app;
     for(int i=0; i<NB_SINKS; i++) {
 		(*snk_mgr)->sinks[i] = NULL;
 	}
@@ -24,7 +22,6 @@ DkCst_rc DkCst_delete_sink_mgr(DkCstSinkMgr**  snk_mgr) {
 	for(int i=0; i<NB_SINKS; i++) {
 		if((*snk_mgr)->sinks[i] != NULL) return ERROR;
 	}
-	(*snk_mgr)->app->snk_mgr = NULL;
 	free(*snk_mgr);
 	return OK;
 	

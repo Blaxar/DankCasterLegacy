@@ -9,7 +9,6 @@
 typedef struct _DkCstBackend {
 
 	pthread_mutex_t lock;
-	DkCstApp* app;
     uint8_t type_id;
 	void* ctx;
     char* name;
@@ -26,7 +25,7 @@ typedef struct _DkCstBackend {
 	
 } DkCstBackend;
 
-DkCst_rc DkCst_create_backend(DkCstApp* app, const char* type, DkCstParams* params, DkCstBackend** bkn);
+DkCst_rc DkCst_create_backend(DkCstBackend** bkn, const char* type, DkCstParams* params);
 DkCst_rc DkCst_delete_backend(DkCstBackend** bkn);
 
 

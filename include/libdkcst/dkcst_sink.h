@@ -18,13 +18,12 @@ typedef struct _DkCstSink {
 typedef struct _DkCstSinkMgr {
 
 	pthread_mutex_t lock;
-    DkCstApp * app;
 	DkCstSink* sinks[NB_SINKS];
 	uint8_t nb_sinks;
 	
 } DkCstSinkMgr;
 
-DkCst_rc DkCst_create_sink_mgr(DkCstApp * app, DkCstSinkMgr** snk_mgr);
+DkCst_rc DkCst_create_sink_mgr(DkCstSinkMgr** snk_mgr);
 DkCst_rc DkCst_delete_sink_mgr(DkCstSinkMgr** snk_mgr);
 
 DkCst_rc DkCst_create_sink(DkCstSinkMgr* snk_mgr, const char* type, DkCstParams* params, DkCstSink** snk, const char* name);

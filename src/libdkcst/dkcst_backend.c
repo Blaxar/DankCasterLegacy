@@ -5,27 +5,27 @@
 #include <stdlib.h>
 #include <dlfcn.h>
 
-DkCst_rc DkCst_create_backend(DkCstApp* app, const char* backend, DkCstParams* params, DkCstBackend** bkn) {
+DkCst_rc DkCst_create_backend(DkCstBackend** bkn, const char* backend, DkCstParams* params) {
 	
-	if(app->backend == NULL) {
+	if(*bkn == NULL) {
 		
-		app->backend = malloc(sizeof(DkCstBackend));
-		if(pthread_mutex_init(&((DkCstBackend*)app->backend)->lock, NULL) != 0){ free(app->backend); return ERROR; }
-		if(app->backend != NULL && DkCst_rc_ok(((DkCstBackend*)app->backend)->init(&((DkCstBackend*)app->backend)->ctx))){
+		*bkn = malloc(sizeof(DkCstBackend));
+		if(pthread_mutex_init(&(*bkn)->lock, NULL) != 0){ free(*bkn); return ERROR; }
+		if(*bkn != NULL ) {
 
-			app->backend->init = gstbkn_init;
-		    app->backend->create_source = gstbkn_create_source;
-			app->backend->delete_source = gstbkn_delete_source;
-			app->backend->create_scene = gstbkn_create_scene;
-			app->backend->delete_scene = gstbkn_delete_scene;
-			app->backend->wrap_source = gstbkn_wrap_source;
-			app->backend->unwrap_source = gstbkn_unwrap_source;
-			app->backend->create_sink = gstbkn_create_sink;
-		    app->backend->delete_sink = gstbkn_delete_sink;
-		    app->backend->uninit = gstbkn_uninit;
+			(*bkn)->init = gstbkn_init;
+			(*bkn)->create_source = gstbkn_create_source;
+			(*bkn)->delete_source = gstbkn_delete_source;
+			(*bkn)->create_scene = gstbkn_create_scene;
+			(*bkn)->delete_scene = gstbkn_delete_scene;
+			(*bkn)->wrap_source = gstbkn_wrap_source;
+			(*bkn)->unwrap_source = gstbkn_unwrap_source;
+		    (*bkn)->create_sink = gstbkn_create_sink;
+			(*bkn)->delete_sink = gstbkn_delete_sink;
+			(*bkn)->uninit = gstbkn_uninit;
 
-			(*bkn) = app->backend;
-			return OK;
+			if(DkCst_rc_ok((*bkn)->init(&(*bkn)->ctx))) return OK;
+			else return ERROR;
 			
 		}
 
@@ -37,13 +37,11 @@ DkCst_rc DkCst_create_backend(DkCstApp* app, const char* backend, DkCstParams* p
 
 DkCst_rc DkCst_delete_backend(DkCstBackend** bkn) {
 	
-	DkCstApp* app = (*bkn)->app;
-	pthread_mutex_destroy(&((DkCstBackend*)app->backend)->lock);
+	pthread_mutex_destroy(&(*bkn)->lock);
 
-	if(DkCst_rc_ok(((DkCstBackend*)app->backend)->uninit(&((DkCstBackend*)app->backend)->ctx))) {
-		free(app->backend);
-		app->backend = NULL;
-	    *bkn = NULL;
+	if(DkCst_rc_ok((*bkn)->uninit(&(*bkn)->ctx))) {
+		if(!DkCst_rc_ok((*bkn)->uninit(&(*bkn)->ctx))) return ERROR;
+		free(*bkn);
 	    return OK;
 	}
 	

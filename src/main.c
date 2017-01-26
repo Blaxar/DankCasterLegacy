@@ -1,6 +1,6 @@
 #include <stdlib.h>
 #include <stdio.h>
-#include <libdkcst/dkcst_source.h>
+#include <libdkcst/dkcst_app.h>
 #include <SDL2/SDL.h>
 
 int main(int argc, char* argv[]){
@@ -11,7 +11,7 @@ int main(int argc, char* argv[]){
 
 	DkCstApp* app;
 	
-    DkCst_create_app(&app);
+    if(!DkCst_rc_ok(DkCst_create_app(&app))) printf("Failed to create app.\n");
 	
 	printf("Terminating DkCst\n");
     DkCst_terminate();
