@@ -1,4 +1,5 @@
 #include <libdkcst/dkcst_param.h>
+#include <string.h>
 #include <stdlib.h>
 
 DkCst_rc DkCst_create_param_pack(DkCstParams **params) {
