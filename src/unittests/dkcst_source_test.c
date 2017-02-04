@@ -11,7 +11,7 @@ void DkCst_create_source_mgr_test(void) {
 	DkCst_create_app(&app);
 	
 	DkCstSourceMgr* src_mgr;
-	CU_ASSERT_EQUAL(DkCst_create_source_mgr(&src_mgr), OK);
+	CU_ASSERT_EQUAL(DkCst_create_source_mgr(&src_mgr, (DkCstSourceCBs){NULL,NULL}), OK);
 	CU_ASSERT_EQUAL(src_mgr->nb_sources,0);
 	for(int i=0; i<NB_SOURCES; i++)
 		CU_ASSERT_EQUAL(src_mgr->sources[i], NULL);
@@ -27,7 +27,7 @@ void DkCst_delete_source_mgr_test(void) {
 	DkCst_create_app(&app);
 	
 	DkCstSourceMgr* src_mgr;
-    DkCst_create_source_mgr(&src_mgr);
+    DkCst_create_source_mgr(&src_mgr, (DkCstSourceCBs){NULL,NULL});
 	src_mgr->sources[0] = 0xdeadbeef;
 	CU_ASSERT_EQUAL(DkCst_delete_source_mgr(&src_mgr), ERROR);
 	src_mgr->sources[0] = NULL;
@@ -46,7 +46,7 @@ void DkCst_create_source_test(void) {
 	DkCst_create_app(&app);
 	
 	DkCstSourceMgr *src_mgr;
-    DkCst_create_source_mgr(&src_mgr);
+    DkCst_create_source_mgr(&src_mgr, (DkCstSourceCBs){NULL,NULL});
 
 	DkCstParams* params;
 	DkCst_create_param_pack(&params);
@@ -75,7 +75,7 @@ void DkCst_delete_source_test(void){
 	DkCst_create_app(&app);
 	
 	DkCstSourceMgr *src_mgr, *src_mgr2;
-    DkCst_create_source_mgr(&src_mgr);
+    DkCst_create_source_mgr(&src_mgr, (DkCstSourceCBs){NULL,NULL});
 	
     DkCstParams* params;
 	DkCst_create_param_pack(&params);

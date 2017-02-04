@@ -4,10 +4,12 @@
 #include <stdlib.h>
 #include <string.h>
 
-DkCst_rc DkCst_create_source_mgr(DkCstSourceMgr** src_mgr) {
+DkCst_rc DkCst_create_source_mgr(DkCstSourceMgr** src_mgr, DkCstSourceCBs src_cbs) {
 
     (*src_mgr) = malloc(sizeof(DkCstSourceMgr));
 	if(pthread_mutex_init(&(*src_mgr)->lock, NULL) != 0){ free(*src_mgr); return ERROR; }
+	(*src_mgr)->create_source = src_cbs.create_source;
+	(*src_mgr)->delete_source = src_cbs.delete_source;
     for(int i=0; i<NB_SOURCES; i++) {
 		(*src_mgr)->sources[i] = NULL;
 	}

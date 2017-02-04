@@ -11,7 +11,7 @@ void DkCst_create_sink_mgr_test(void) {
 	DkCst_create_app(&app);
 	
 	DkCstSinkMgr* snk_mgr;
-	CU_ASSERT_EQUAL(DkCst_create_sink_mgr(&snk_mgr), OK);
+	CU_ASSERT_EQUAL(DkCst_create_sink_mgr(&snk_mgr, (DkCstSinkCBs){NULL,NULL}), OK);
 	CU_ASSERT_EQUAL(snk_mgr->nb_sinks,0);
 	for(int i=0; i<NB_SINKS; i++)
 		CU_ASSERT_EQUAL(snk_mgr->sinks[i], NULL);
@@ -27,7 +27,7 @@ void DkCst_delete_sink_mgr_test(void) {
 	DkCst_create_app(&app);
 	
 	DkCstSinkMgr* snk_mgr;
-    DkCst_create_sink_mgr(&snk_mgr);
+    DkCst_create_sink_mgr(&snk_mgr, (DkCstSinkCBs){NULL,NULL});
 	snk_mgr->sinks[0] = 0xdeadbeef;
 	CU_ASSERT_EQUAL(DkCst_delete_sink_mgr(&snk_mgr), ERROR);
 	snk_mgr->sinks[0] = NULL;
@@ -46,7 +46,7 @@ void DkCst_create_sink_test(void) {
 	DkCst_create_app(&app);
 	
 	DkCstSinkMgr *snk_mgr;
-    DkCst_create_sink_mgr(&snk_mgr);
+    DkCst_create_sink_mgr(&snk_mgr, (DkCstSinkCBs){NULL,NULL});
 
 	DkCstParams* params;
 	DkCst_create_param_pack(&params);
@@ -75,7 +75,7 @@ void DkCst_delete_sink_test(void){
 	DkCst_create_app(&app);
 	
 	DkCstSinkMgr *snk_mgr, *snk_mgr2;
-    DkCst_create_sink_mgr(&snk_mgr);
+    DkCst_create_sink_mgr(&snk_mgr, (DkCstSinkCBs){NULL,NULL});
 	
     DkCstParams* params;
 	DkCst_create_param_pack(&params);

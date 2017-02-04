@@ -1,6 +1,7 @@
 #include "CUnit/CUnit.h"
 #include "CUnit/Basic.h"
 
+#include <libdkcst/dkcst.h>
 #include <libdkcst/dkcst_scene.h>
 
 DkCstSourceMgr *g_src_mgr, *g_src_mgr2;
@@ -13,19 +14,17 @@ DkCstSource *g_src, *g_src2;
 void DkCst_create_scene_mgr_test(void) {
 
 	DkCstSceneMgr* scn_mgr;
-	CU_ASSERT_EQUAL(DkCst_create_scene_mgr(g_src_mgr, &scn_mgr), OK);
+	CU_ASSERT_EQUAL(DkCst_create_scene_mgr(&scn_mgr, (DkCstSceneCBs){NULL,NULL,NULL,NULL}), OK);
 	CU_ASSERT_EQUAL(scn_mgr->nb_scenes,0);
 	for(int i=0; i<NB_SCENES; i++)
 		CU_ASSERT_EQUAL(scn_mgr->scenes[i], NULL);
-
-	CU_ASSERT_EQUAL(scn_mgr->src_mgr, g_src_mgr);
 	
 }
 
 void DkCst_delete_scene_mgr_test(void) {
 
 	DkCstSceneMgr* scn_mgr;
-	DkCst_create_scene_mgr(g_src_mgr, &scn_mgr);
+	DkCst_create_scene_mgr(&scn_mgr, (DkCstSceneCBs){NULL,NULL,NULL,NULL});
 	scn_mgr->scenes[0] = 0xdeadbeef;
 	CU_ASSERT_EQUAL(DkCst_delete_scene_mgr(&scn_mgr),ERROR);
 	scn_mgr->scenes[0] = NULL;
@@ -37,7 +36,7 @@ void DkCst_create_scene_test(void) {
 
 	DkCstSceneMgr *scn_mgr, *scn_mgr2;
 	DkCstScene* scn = NULL;
-	DkCst_create_scene_mgr(g_src_mgr, &scn_mgr);
+	DkCst_create_scene_mgr(&scn_mgr, (DkCstSceneCBs){NULL,NULL,NULL,NULL});
 
 	CU_ASSERT_EQUAL(DkCst_create_scene(scn_mgr, &scn),OK);
 	CU_ASSERT_EQUAL(scn->scn_mgr,scn_mgr);
@@ -51,7 +50,7 @@ void DkCst_delete_scene_test(void) {
 
 	DkCstSceneMgr *scn_mgr, *scn_mgr2;
 	DkCstScene* scn;
-	DkCst_create_scene_mgr(g_src_mgr, &scn_mgr);
+	DkCst_create_scene_mgr(&scn_mgr, (DkCstSceneCBs){NULL,NULL,NULL,NULL});
     DkCst_create_scene(scn_mgr, &scn);
 	uint8_t id = scn->id;
 
@@ -71,7 +70,7 @@ void DkCst_wrap_source_test(void) {
 	DkCstSceneMgr *scn_mgr, *scn_mgr2;
 	DkCstScene *scn, *scn2;
 	DkCstWrappedSource* wrpd_src;
-	DkCst_create_scene_mgr(g_src_mgr, &scn_mgr);
+	DkCst_create_scene_mgr(&scn_mgr, (DkCstSceneCBs){NULL,NULL,NULL,NULL});
     DkCst_create_scene(scn_mgr, &scn);
 
 	/* Good case scenario */
@@ -82,7 +81,7 @@ void DkCst_wrap_source_test(void) {
 	CU_ASSERT_EQUAL(wrpd_src->source_id,g_src->id);
 
 	/* When the source and the scene don't belong to linked managers */
-	DkCst_create_scene_mgr(g_src_mgr2, &scn_mgr2);
+	DkCst_create_scene_mgr(&scn_mgr2, (DkCstSceneCBs){NULL,NULL,NULL,NULL});
 	DkCst_create_scene(scn_mgr2, &scn2);
 	CU_ASSERT_EQUAL(DkCst_wrap_source(scn, g_src2, &wrpd_src),ERROR);
 	CU_ASSERT_EQUAL(DkCst_wrap_source(scn2, g_src, &wrpd_src),ERROR);
@@ -94,7 +93,7 @@ void DkCst_unwrap_source_test(void) {
 	DkCstSceneMgr *scn_mgr, *scn_mgr2;
 	DkCstScene *scn, *scn2;
 	DkCstWrappedSource* wrpd_src;
-	DkCst_create_scene_mgr(g_src_mgr, &scn_mgr);
+	DkCst_create_scene_mgr(&scn_mgr, (DkCstSceneCBs){NULL,NULL,NULL,NULL});
     DkCst_create_scene(scn_mgr, &scn);
 
 	/* Good case scenario */
@@ -109,18 +108,15 @@ void DkCst_unwrap_source_test(void) {
 int init_suite(void) {
 
 	if (!DkCst_rc_ok(DkCst_create_param_pack(&g_params))) return 1;
-	if (!DkCst_rc_ok(DkCst_set_int_param(g_params, "width", 960))) return 1;
-	if (!DkCst_rc_ok(DkCst_set_int_param(g_params, "height", 540))) return 1;
-	if (!DkCst_rc_ok(DkCst_set_int_param(g_params, "pix_fmt", RGB24))) return 1;
-	if (!DkCst_rc_ok(DkCst_set_float_param(g_params, "fps", 30.0))) return 1;
-	if (!DkCst_rc_ok(DkCst_set_int_param(g_params, "nb_channels", 2))) return 1;
-	if (!DkCst_rc_ok(DkCst_set_int_param(g_params, "sample_rate", 48000))) return 1;
 	
 	if (!DkCst_rc_ok(DkCst_init())) return 1;
-	if (!DkCst_rc_ok(DkCst_create_source_mgr(&g_src_mgr))) return 1;
-	if (!DkCst_rc_ok(DkCst_create_source(g_src_mgr, "dummy", g_params, &g_src))) return 1;
-	if (!DkCst_rc_ok(DkCst_create_source_mgr(&g_src_mgr2))) return 1;
-	if (!DkCst_rc_ok(DkCst_create_source(g_src_mgr2, "dummy", g_params, &g_src2))) return 1;
+	if (!DkCst_rc_ok(DkCst_create_source_mgr(&g_src_mgr, (DkCstSourceCBs){NULL,NULL}))) return 1;
+	
+	if (!DkCst_rc_ok(DkCst_create_source(g_src_mgr, "dummy", g_params, &g_src, NULL))) return 1;
+	
+    if (!DkCst_rc_ok(DkCst_create_source_mgr(&g_src_mgr2, (DkCstSourceCBs){NULL,NULL}))) return 1;
+	
+	if (!DkCst_rc_ok(DkCst_create_source(g_src_mgr2, "dummy", g_params, &g_src2, NULL))) return 1;
 	
 	return 0;
 	
@@ -133,12 +129,6 @@ int clean_suite(void) {
 	if (!DkCst_rc_ok(DkCst_delete_source_mgr(&g_src_mgr2))) return 1;
 	if (!DkCst_rc_ok(DkCst_terminate())) return 1;
 
-	if (!DkCst_rc_ok(DkCst_unset_param(g_params, "width"))) return 1;
-	if (!DkCst_rc_ok(DkCst_unset_param(g_params, "height"))) return 1;
-	if (!DkCst_rc_ok(DkCst_unset_param(g_params, "pix_fmt"))) return 1;
-	if (!DkCst_rc_ok(DkCst_unset_param(g_params, "fps"))) return 1;
-	if (!DkCst_rc_ok(DkCst_unset_param(g_params, "nb_channels"))) return 1;
-	if (!DkCst_rc_ok(DkCst_unset_param(g_params, "sample_rate"))) return 1;
 	if (!DkCst_rc_ok(DkCst_delete_param_pack(&g_params))) return 1;
 	
 	return 0;

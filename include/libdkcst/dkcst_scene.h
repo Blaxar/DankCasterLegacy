@@ -7,7 +7,7 @@
 #define NB_WRP_SOURCES 255
 #define NB_SCENES 255
 
-typedef struct _DkCstWrappedSource{
+typedef struct _DkCstWrappedSource {
 
 	pthread_mutex_t lock;
 	struct _DkCstScene* scn;
@@ -19,7 +19,7 @@ typedef struct _DkCstWrappedSource{
 
 } DkCstWrappedSource;
 
-typedef struct _DkCstScene{
+typedef struct _DkCstScene {
 
 	pthread_mutex_t lock;
     struct _DkCstSceneMgr* scn_mgr;
@@ -29,17 +29,24 @@ typedef struct _DkCstScene{
 
 } DkCstScene;
 
-typedef struct _DkCstSceneMgr{
+typedef struct _DkCstSceneMgr {
 
 	pthread_mutex_t lock;
     DkCstScene* scenes[NB_SCENES];
 	uint8_t nb_scenes;
+	DKCST_SCENE_CBS();
 	
 } DkCstSceneMgr;
 
+typedef struct _DkCstSceneCBs {
+
+	DKCST_SCENE_CBS();
+	
+} DkCstSceneCBs;
+
 /* Scene handling */
 
-DkCst_rc DkCst_create_scene_mgr(DkCstSceneMgr** scn_mgr);
+DkCst_rc DkCst_create_scene_mgr(DkCstSceneMgr** scn_mgr, DkCstSceneCBs scn_sbs);
 DkCst_rc DkCst_delete_scene_mgr(DkCstSceneMgr** scn_mgr);
 
 DkCst_rc DkCst_create_scene(DkCstSceneMgr* scn_mgr, DkCstScene** scn);

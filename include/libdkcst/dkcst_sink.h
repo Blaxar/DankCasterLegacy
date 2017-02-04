@@ -20,10 +20,17 @@ typedef struct _DkCstSinkMgr {
 	pthread_mutex_t lock;
 	DkCstSink* sinks[NB_SINKS];
 	uint8_t nb_sinks;
+	DKCST_SINK_CBS();
 	
 } DkCstSinkMgr;
 
-DkCst_rc DkCst_create_sink_mgr(DkCstSinkMgr** snk_mgr);
+typedef struct _DkCstSinkCBs {
+
+	DKCST_SINK_CBS();
+	
+} DkCstSinkCBs;
+
+DkCst_rc DkCst_create_sink_mgr(DkCstSinkMgr** snk_mgr, DkCstSinkCBs snk_cbs);
 DkCst_rc DkCst_delete_sink_mgr(DkCstSinkMgr** snk_mgr);
 
 DkCst_rc DkCst_create_sink(DkCstSinkMgr* snk_mgr, const char* type, DkCstParams* params, DkCstSink** snk, const char* name);

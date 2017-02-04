@@ -7,10 +7,14 @@
 /* Scene handling */
 
 
-DkCst_rc DkCst_create_scene_mgr(DkCstSceneMgr** scn_mgr) {
+DkCst_rc DkCst_create_scene_mgr(DkCstSceneMgr** scn_mgr, DkCstSceneCBs scn_cbs) {
 
 	(*scn_mgr) = malloc(sizeof(DkCstSceneMgr));
 	if(pthread_mutex_init(&(*scn_mgr)->lock, NULL) != 0){ free(*scn_mgr); return ERROR; }
+	(*scn_mgr)->create_scene = scn_cbs.create_scene;
+	(*scn_mgr)->delete_scene = scn_cbs.delete_scene;
+	(*scn_mgr)->wrap_source = scn_cbs.wrap_source;
+	(*scn_mgr)->unwrap_source = scn_cbs.unwrap_source;
 	for(int i=0 ; i<NB_SCENES; i++) {
 		(*scn_mgr)->scenes[i] = NULL;
 	}
