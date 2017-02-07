@@ -14,7 +14,7 @@ static GstPad* request_new_pad_bin (GstElement * element, GstPadTemplate * templ
 	if(comp_pad == NULL) return NULL;
 
 	gchar* comp_pad_name = gst_pad_get_name(comp_pad);
-	gchar* queue_name = g_strconcat(element_name, "_", comp_pad_name, NULL);
+	gchar* queue_name = g_strconcat(comp_name, "_", comp_pad_name, NULL);
 	
 	queue = gst_element_factory_make("queue", queue_name);
 	gst_bin_add(GST_BIN(element), queue);
@@ -36,13 +36,15 @@ static GstPad* request_new_pad_bin (GstElement * element, GstPadTemplate * templ
 static void release_pad_bin (GstElement *element, GstPad *pad) {
 
 	gchar* element_name = GST_ELEMENT_NAME(element);
+	gchar* comp_name = g_strconcat(element_name, "_comp", NULL);
 	gchar* comp_pad_name = gst_pad_get_name(pad);
-	gchar* queue_name = g_strconcat(element_name, "_", comp_pad_name, NULL);
+	gchar* queue_name = g_strconcat(comp_name, "_", comp_pad_name, NULL);
 	
 	gst_element_remove_pad (element, pad);
 	GstElement* queue = gst_bin_get_by_name(GST_BIN(element), queue_name);
 	gst_bin_remove(GST_BIN(element), queue);
 
+	g_free(comp_name);
 	g_free(comp_pad_name);
 	g_free(queue_name);
 

@@ -22,7 +22,7 @@ typedef struct _DkCstApp {
 
 } DkCstApp;
 
-#define DKCST_SOURCE_CBS() DkCst_rc (*create_source)(void* ctx, uint8_t id, const char* type, DkCstParams* params); \
+#define DKCST_SOURCE_CBS() DkCst_rc (*create_source)(void* ctx, uint8_t id, const char* type, const char* name, DkCstParams* params); \
 	                       DkCst_rc (*delete_source)(void* ctx, uint8_t id)
 
 #define DKCST_SCENE_CBS() DkCst_rc (*create_scene)(void* ctx, uint8_t id); \

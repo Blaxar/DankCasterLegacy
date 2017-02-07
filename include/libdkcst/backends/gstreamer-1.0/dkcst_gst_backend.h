@@ -5,7 +5,7 @@
 
 DkCst_rc gstbkn_init(void** ctx);
 
-DkCst_rc gstbkn_create_source(void* ctx, uint8_t id, const char* type, DkCstParams* params);
+DkCst_rc gstbkn_create_source(void* ctx, uint8_t id, const char* type, const char* name, DkCstParams* params);
 
 DkCst_rc gstbkn_delete_source(void* ctx, uint8_t id);
 

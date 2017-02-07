@@ -9,6 +9,12 @@ DkCst_rc gstbkn_init(void** ctx) {
 
 	if(gst_init_check (NULL, NULL, NULL) == FALSE) return ERROR;
 
+	for(int i=0; i<NB_INPUTS; i++) bkn_ctx->inputs[i] = NULL;
+	for(int i=0; i<NB_OUTPUTS; i++) bkn_ctx->outputs[i] = NULL;
+	
+	GstElement* outputs[NB_OUTPUTS];
+	uint8_t nb_outputs;
+	
 	bkn_ctx->pipeline = gst_pipeline_new(NULL);
 	
 	gstbkn_make_scenemanager_bin(&bkn_ctx->scenemanager);
@@ -18,8 +24,6 @@ DkCst_rc gstbkn_init(void** ctx) {
 	
 	if(gst_element_link(phony_src, bkn_ctx->scenemanager) == FALSE)
 		g_printerr("Failed to link %s and %s :(\n", GST_ELEMENT_NAME(phony_src), GST_ELEMENT_NAME(bkn_ctx->scenemanager));
-
-	gst_object_unref(bkn_ctx->pipeline);
 
 	return OK;
 	

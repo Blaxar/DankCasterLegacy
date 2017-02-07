@@ -22,8 +22,6 @@ set(DEFAULT_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/include)
 set(DEFAULT_LINK_DIR ${CMAKE_SOURCE_DIR}/lib)
 set(DEFAULT_BIN_DIR ${CMAKE_SOURCE_DIR}/bin)
 
-message(STATUS ${GSTREAMER_INCLUDE_DIRS})
-
 #Define all the include directories
 include_directories(
     ${DEFAULT_INCLUDE_DIR}
