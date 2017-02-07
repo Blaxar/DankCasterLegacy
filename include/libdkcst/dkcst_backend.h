@@ -8,16 +8,16 @@
 
 typedef struct _DkCstBackend {
 
-	pthread_mutex_t lock;
-    uint8_t type_id;
-	void* ctx;
-    char* name;
-	DkCst_rc (*init)(void** ctx);
-	DKCST_SOURCE_CBS();
-	DKCST_SCENE_CBS();
-	DKCST_SINK_CBS();
-	DkCst_rc (*uninit)(void** ctx);
-	
+  pthread_mutex_t lock;
+  uint8_t type_id;
+  void* ctx;
+  char* name;
+  DkCst_rc (*init)(void** ctx);
+  DKCST_SOURCE_CBS();
+  DKCST_SCENE_CBS();
+  DKCST_SINK_CBS();
+  DkCst_rc (*uninit)(void** ctx);
+  
 } DkCstBackend;
 
 DkCst_rc DkCst_create_backend(DkCstBackend** bkn, const char* type, DkCstParams* params);

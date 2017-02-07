@@ -10,34 +10,34 @@
 struct _DkCstParam;
 
 typedef enum {
-	INT = 0,
-	FLOAT,
-	STRING,
+  INT = 0,
+  FLOAT,
+  STRING,
 } DkCstParam_type;
 
 typedef struct _DkCstParam {
 
-    DkCstParam_type type;
-	
-	char name[MAX_PARAM_NAME_LENGTH];
-		
-	union DkCstParam_data {
-		int int_value ;
-		float float_value;
-		struct string_param {
-			char* str;
-		} string_value;
-	} data;
+  DkCstParam_type type;
+  
+  char name[MAX_PARAM_NAME_LENGTH];
+    
+  union DkCstParam_data {
+  int int_value ;
+  float float_value;
+  struct string_param {
+      char* str;
+    } string_value;
+  } data;
 
-	struct _DkCstParam* next;
-	
+  struct _DkCstParam* next;
+  
 } DkCstParam;
 
 typedef struct _DkCstParams {
 
-	struct _DkCstParam* first;
-	uint8_t nb_params;
-	
+  struct _DkCstParam* first;
+  uint8_t nb_params;
+  
 } DkCstParams;
 
 DkCst_rc DkCst_create_param_pack(DkCstParams **params);

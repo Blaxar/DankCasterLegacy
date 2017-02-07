@@ -8,26 +8,26 @@
 
 typedef struct _DkCstSink {
 
-	pthread_mutex_t lock;
-    struct _DkCstSinkMgr* snk_mgr;
-	uint8_t id;
-	char* type;
-	
+  pthread_mutex_t lock;
+  struct _DkCstSinkMgr* snk_mgr;
+  uint8_t id;
+  char* type;
+  
 } DkCstSink;
 
 typedef struct _DkCstSinkMgr {
 
-	pthread_mutex_t lock;
-	DkCstSink* sinks[NB_SINKS];
-	uint8_t nb_sinks;
-	DKCST_SINK_CBS();
-	
+  pthread_mutex_t lock;
+  DkCstSink* sinks[NB_SINKS];
+  uint8_t nb_sinks;
+  DKCST_SINK_CBS();
+  
 } DkCstSinkMgr;
 
 typedef struct _DkCstSinkCBs {
 
-	DKCST_SINK_CBS();
-	
+  DKCST_SINK_CBS();
+  
 } DkCstSinkCBs;
 
 DkCst_rc DkCst_create_sink_mgr(DkCstSinkMgr** snk_mgr, DkCstSinkCBs snk_cbs);

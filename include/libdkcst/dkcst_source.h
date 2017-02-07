@@ -8,26 +8,26 @@
 
 typedef struct _DkCstSource {
 
-	pthread_mutex_t lock;
-	struct _DkCstSourceMgr* src_mgr;
-	uint8_t id;
-	char* type;
-	
+  pthread_mutex_t lock;
+  struct _DkCstSourceMgr* src_mgr;
+  uint8_t id;
+  char* type;
+  
 } DkCstSource;
 
 typedef struct _DkCstSourceMgr {
 
-	pthread_mutex_t lock;
-    DkCstSource* sources[NB_SOURCES];
-	uint8_t nb_sources;
-	DKCST_SOURCE_CBS();
-	
+  pthread_mutex_t lock;
+  DkCstSource* sources[NB_SOURCES];
+  uint8_t nb_sources;
+  DKCST_SOURCE_CBS();
+  
 } DkCstSourceMgr;
 
 typedef struct _DkCstSourceCBs {
 
-	DKCST_SOURCE_CBS();
-	
+  DKCST_SOURCE_CBS();
+  
 } DkCstSourceCBs;
 
 DkCst_rc DkCst_create_source_mgr(DkCstSourceMgr** src_mgr, DkCstSourceCBs src_cbs);

@@ -2,13 +2,13 @@
 #include <libdkcst/dkcst_backend.h>
 
 DkCst_rc DkCst_init(void) {
-	
-	return OK;
-	
+  
+  return OK;
+  
 }
 
 DkCst_rc DkCst_terminate(void) {
 
-	return OK;
-	
+  return OK;
+  
 }

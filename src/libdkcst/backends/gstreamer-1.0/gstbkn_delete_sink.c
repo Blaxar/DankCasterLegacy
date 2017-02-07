@@ -4,6 +4,6 @@
 
 DkCst_rc gstbkn_delete_sink(void* ctx, uint8_t id) {
 
-	GstBackendCtx* gst_ctx = (GstBackendCtx*) ctx;
-	
+  GstBackendCtx* gst_ctx = (GstBackendCtx*) ctx;
+  
 }

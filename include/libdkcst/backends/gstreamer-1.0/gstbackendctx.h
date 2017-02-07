@@ -9,14 +9,14 @@
 
 typedef struct {
 
-	GstElement* pipeline;
-	GstElement* scenemanager;
-	GstElement* audiomixer;
-	GstElement* inputs[NB_INPUTS];
-	uint8_t nb_inputs;
-	GstElement* outputs[NB_OUTPUTS];
-	uint8_t nb_outputs;
-	
+  GstElement* pipeline;
+  GstElement* scenemanager;
+  GstElement* audiomixer;
+  GstElement* inputs[NB_INPUTS];
+  uint8_t nb_inputs;
+  GstElement* outputs[NB_OUTPUTS];
+  uint8_t nb_outputs;
+  
 } GstBackendCtx;
 
 // Bin handling

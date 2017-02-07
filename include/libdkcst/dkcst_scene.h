@@ -9,39 +9,39 @@
 
 typedef struct _DkCstWrappedSource {
 
-	pthread_mutex_t lock;
-	struct _DkCstScene* scn;
-	uint8_t id;
-    uint8_t source_id;
-    uint16_t x, y;
-	uint16_t width, height;
-	float volume;
+  pthread_mutex_t lock;
+  struct _DkCstScene* scn;
+  uint8_t id;
+  uint8_t source_id;
+  uint16_t x, y;
+  uint16_t width, height;
+  float volume;
 
 } DkCstWrappedSource;
 
 typedef struct _DkCstScene {
 
-	pthread_mutex_t lock;
-    struct _DkCstSceneMgr* scn_mgr;
-	uint8_t id;
-    DkCstWrappedSource* sources[NB_WRP_SOURCES];
-	uint8_t nb_sources;
+  pthread_mutex_t lock;
+  struct _DkCstSceneMgr* scn_mgr;
+  uint8_t id;
+  DkCstWrappedSource* sources[NB_WRP_SOURCES];
+  uint8_t nb_sources;
 
 } DkCstScene;
 
 typedef struct _DkCstSceneMgr {
 
-	pthread_mutex_t lock;
-    DkCstScene* scenes[NB_SCENES];
-	uint8_t nb_scenes;
-	DKCST_SCENE_CBS();
-	
+  pthread_mutex_t lock;
+  DkCstScene* scenes[NB_SCENES];
+  uint8_t nb_scenes;
+  DKCST_SCENE_CBS();
+  
 } DkCstSceneMgr;
 
 typedef struct _DkCstSceneCBs {
 
-	DKCST_SCENE_CBS();
-	
+  DKCST_SCENE_CBS();
+  
 } DkCstSceneCBs;
 
 /* Scene handling */
@@ -55,8 +55,8 @@ DkCst_rc DkCst_delete_scene(DkCstScene** scn);
 /* Source wrapping */
 
 DkCst_rc DkCst_wrap_source(DkCstScene* scn,
-	                   DkCstSource* src,
-					   DkCstWrappedSource** wrpd_src);
+                     DkCstSource* src,
+             DkCstWrappedSource** wrpd_src);
 DkCst_rc DkCst_unwrap_source(DkCstWrappedSource** wrpd_src);
 
 #endif //DKCST_SCENE_H	
