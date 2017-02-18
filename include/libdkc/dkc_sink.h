@@ -33,7 +33,7 @@ typedef struct _DkcSinkCBs {
 dkc_rc dkc_create_sink_mgr(DkcSinkMgr** snk_mgr, DkcSinkCBs snk_cbs);
 dkc_rc dkc_delete_sink_mgr(DkcSinkMgr** snk_mgr);
 
-dkc_rc dkc_create_sink(DkcSinkMgr* snk_mgr, const char* type, DkcSink** snk, const char* name, ...);
+dkc_rc dkc_create_sink(DkcSinkMgr* snk_mgr, const char* type, DkcSink** snk, const char* name, DkcParams* params);
 dkc_rc dkc_delete_sink(DkcSink**  snk);
 
 #endif //DKCST_SINK_H	

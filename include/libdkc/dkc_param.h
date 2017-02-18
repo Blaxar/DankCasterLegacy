@@ -14,11 +14,11 @@ typedef enum {
   INT = 0, //int
   FLOAT,   //float    
   STRING,  //char*
-} DkcParam_type;
+} DkcParamType;
 
 typedef struct _DkcParam {
 
-  DkcParam_type type;
+  DkcParamType type;
   
   char name[MAX_PARAM_NAME_LENGTH];
     
@@ -41,7 +41,11 @@ typedef struct _DkcParams {
   
 } DkcParams;
 
-dkc_rc dkc_get_params(va_list* list, ...);
+DkcParams* dkc_wrap_params(const char* name, ...);
+
+int dkc_pop_int_param(DkcParams *params, const char* name, int default_value);
+float dkc_pop_float_param(DkcParams *params, const char* name, float default_value);
+char* dkc_pop_string_param(DkcParams *params, const char* name, char* default_value);
 
 dkc_rc dkc_create_param_pack(DkcParams **params);
 

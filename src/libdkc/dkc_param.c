@@ -2,9 +2,80 @@
 #include <string.h>
 #include <stdlib.h>
 
-dkc_rc dkc_get_params(va_list* list, ...) {
-//const char* name, DkcParam_type type, void* value
+DkcParams* dkc_wrap_params(const char* name, ...) {
+
+  DkcParams* params = NULL;
+  char* nname = name;
+  DkcParamType type;
+  dkc_create_param_pack(&params);
+  
+  va_list valist;
+  va_start(valist, name);
+  
+  while(nname != NULL){
+      
+    type = va_arg(valist, DkcParamType);
     
+    switch(type){
+    case INT: {
+      dkc_set_int_param(params, nname, va_arg(valist, int));
+    }
+    break;
+    case FLOAT: {
+      dkc_set_float_param(params, nname, va_arg(valist, double));
+    }
+    break;
+    case STRING: {
+      dkc_set_string_param(params, nname, va_arg(valist, char*));
+    }
+    break;
+    default: {
+        
+    }
+    break;
+    }
+    
+    nname = va_arg(valist, char*);
+        
+  }
+
+  return params;
+    
+}
+
+int dkc_pop_int_param(DkcParams *params, const char* name, int default_value) {
+    
+  int value;
+  if(dkc_rc_ok(dkc_get_int_param(params, name, &value))) {
+    dkc_unset_param(params, name);
+    return value;
+  }else
+    return default_value;
+  
+}
+
+float dkc_pop_float_param(DkcParams *params, const char* name, float default_value) {
+
+  float value;
+  if(dkc_rc_ok(dkc_get_float_param(params, name, &value))) {
+    dkc_unset_param(params, name);
+    return value;
+  }else
+    return default_value;
+    
+}
+
+char* dkc_pop_string_param(DkcParams *params, const char* name, char* default_value) {
+
+  char* value;
+  if(dkc_rc_ok(dkc_get_string_param(params, name, &value)))
+    dkc_unset_param(params, name);
+  else {
+    value = malloc((strlen(default_value)+1)*sizeof(char));
+    memcpy(value, default_value, (strlen(default_value)+1)*sizeof(char));
+  }
+  
+  return value;
 }
     
 dkc_rc dkc_create_param_pack(DkcParams **params) {
@@ -17,7 +88,7 @@ dkc_rc dkc_create_param_pack(DkcParams **params) {
   
 }
 
-dkc_rc dkc_set_param(DkcParams *params, char name[MAX_PARAM_NAME_LENGTH], DkcParam_type type, void* value, uint16_t length) {
+dkc_rc dkc_set_param(DkcParams *params, char name[MAX_PARAM_NAME_LENGTH], DkcParamType type, void* value) {
   
   uint16_t name_length = strlen(name);
   if(name_length > MAX_PARAM_NAME_LENGTH-1) return ERROR;
@@ -79,18 +150,18 @@ dkc_rc dkc_set_param(DkcParams *params, char name[MAX_PARAM_NAME_LENGTH], DkcPar
 }
 
 dkc_rc dkc_set_int_param(DkcParams *params, char name[MAX_PARAM_NAME_LENGTH], int value) {
-    return dkc_set_param(params, name, INT, &value, 0);
+    return dkc_set_param(params, name, INT, &value);
 }
 
 dkc_rc dkc_set_float_param(DkcParams *params, char name[MAX_PARAM_NAME_LENGTH], float value) {
-  return dkc_set_param(params, name, FLOAT, &value, 0);
+  return dkc_set_param(params, name, FLOAT, &value);
 }
 
 dkc_rc dkc_set_string_param(DkcParams *params, char name[MAX_PARAM_NAME_LENGTH], char* value) {
-    return dkc_set_param(params, name, STRING, value, 0);
+    return dkc_set_param(params, name, STRING, value);
 }
 
-dkc_rc dkc_get_param(DkcParams *params, char name[MAX_PARAM_NAME_LENGTH], DkcParam_type type, void** value, uint16_t* length) {
+dkc_rc dkc_get_param(DkcParams *params, char name[MAX_PARAM_NAME_LENGTH], DkcParamType type, void** value, uint16_t* length) {
 
   uint16_t name_length = strlen(name);
   if(name_length > MAX_PARAM_NAME_LENGTH-1) return ERROR;

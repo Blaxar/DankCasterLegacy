@@ -29,7 +29,7 @@ dkc_rc dkc_delete_sink_mgr(DkcSinkMgr**  snk_mgr) {
   
 }
 
-dkc_rc dkc_create_sink(DkcSinkMgr* snk_mgr, const char* type, DkcSink** snk, const char* name, ...) {
+dkc_rc dkc_create_sink(DkcSinkMgr* snk_mgr, const char* type, DkcSink** snk, const char* name, DkcParams* params) {
 
   pthread_mutex_lock(&snk_mgr->lock);
   

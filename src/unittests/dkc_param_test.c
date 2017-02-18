@@ -2,6 +2,7 @@
 #include "CUnit/Basic.h"
 
 #include <pthread.h>
+#include <stdlib.h>
 
 #include <libdkc/dkc_param.h>
 
@@ -139,7 +140,7 @@ void dkc_unset_param_test(void){
   dkc_set_string_param(params, "some string parameter", "smok wed evryday");
   dkc_set_float_param(params, "some float parameter", (float)3.14);
   dkc_set_string_param(params, "some other string  parameter", "O SHIT WADDUP");
-  dkc_set_int_param(params, "some int parameter", (int)200);
+  dkc_set_int_param(params, "some int parameter", (int)420);
   dkc_set_float_param(params, "some other float parameter", (float)41.3);
   dkc_set_int_param(params, "some other int parameter", (int)-9999);
 
@@ -155,7 +156,7 @@ void dkc_unset_param_test(void){
   CU_ASSERT_EQUAL(dkc_get_string_param(params, "some string parameter", &s_value), ERROR);
   CU_ASSERT_EQUAL(dkc_unset_param(params, "some string parameter"), ERROR);
 
-  char *i_value;
+  int i_value;
   CU_ASSERT_EQUAL(dkc_unset_param(params, "some other int parameter"), OK);
   CU_ASSERT_EQUAL(params->nb_params,3);
   CU_ASSERT_EQUAL(dkc_get_int_param(params, "some other int parameter", &i_value), ERROR);
@@ -168,7 +169,7 @@ void dkc_unset_param_test(void){
   CU_ASSERT_EQUAL(f_value, (float)3.14);
 
   CU_ASSERT_EQUAL(dkc_get_int_param(params, "some int parameter", &i_value), OK);
-  CU_ASSERT_EQUAL(i_value, (int)200);
+  CU_ASSERT_EQUAL(i_value, (int)420);
 
   CU_ASSERT_EQUAL(dkc_unset_param(params, "some other string  parameter"),OK);
   CU_ASSERT_EQUAL(dkc_unset_param(params, "some float parameter"),OK);
@@ -184,7 +185,7 @@ void dkc_delete_param_pack_test(void){
 
   dkc_set_string_param(params, "some string parameter", "smok wed evryday");
   dkc_set_float_param(params, "some float parameter", (float)3.14);
-  dkc_set_int_param(params, "some int parameter", (int)200);
+  dkc_set_int_param(params, "some int parameter", (int)420);
 
   CU_ASSERT_EQUAL(dkc_delete_param_pack(params), ERROR);
 
@@ -193,6 +194,91 @@ void dkc_delete_param_pack_test(void){
   dkc_unset_param(params, "some int parameter");
   
   CU_ASSERT_EQUAL(dkc_delete_param_pack(&params), OK);
+  
+}
+
+void dkc_wrap_params_test(void){
+
+  float f_value;
+  char* s_value;
+  int i_value;
+  
+  DkcParams* params = dkc_wrap_params("some string parameter", STRING, "smok wed evryday",
+                                      "some float parameter", FLOAT, (float)3.14,
+                                      "some int parameter", INT, (int)420, NULL);
+
+  CU_ASSERT_EQUAL(dkc_get_string_param(params, "some string parameter", &s_value), OK);
+  CU_ASSERT_EQUAL(strcmp("smok wed evryday", s_value), 0);
+
+  CU_ASSERT_EQUAL(dkc_get_float_param(params, "some float parameter", &f_value), OK);
+  CU_ASSERT_EQUAL(f_value, (float)3.14);
+
+  CU_ASSERT_EQUAL(dkc_get_int_param(params, "some int parameter", &i_value), OK);
+  CU_ASSERT_EQUAL(i_value, (int)420);
+
+  dkc_unset_param(params, "some string parameter");
+  dkc_unset_param(params, "some float parameter");
+  dkc_unset_param(params, "some int parameter");
+  dkc_delete_param_pack(&params);
+  
+}
+
+
+void dkc_pop_int_param_test(void) {
+
+  int value;
+  DkcParams* params;
+  
+  dkc_create_param_pack(&params);
+  dkc_set_int_param(params, "some int parameter", 420);
+  
+  value = dkc_pop_int_param(params, "some int parameter", 69);
+  CU_ASSERT_EQUAL(value, (int)420);
+  value = dkc_pop_int_param(params, "I do not exist", 69);
+  CU_ASSERT_EQUAL(value, (int)69);
+
+  dkc_unset_param(params, "some int parameter");
+  dkc_delete_param_pack(&params);
+  
+}
+
+void dkc_pop_float_param_test(void) {
+
+  float value;
+  DkcParams* params;
+
+  dkc_create_param_pack(&params);
+  dkc_set_float_param(params, "some float parameter", (float)3.14);
+  
+  value = dkc_pop_float_param(params, "some float parameter", (float)-6.9);
+  CU_ASSERT_EQUAL(value, (float)3.14);
+  value = dkc_pop_float_param(params, "I do not exist", (float)-6.9);
+  CU_ASSERT_EQUAL(value, (float)-6.9);
+
+  dkc_unset_param(params, "some float parameter");
+  dkc_delete_param_pack(&params);
+  
+}
+
+void dkc_pop_string_param_test(void) {
+    
+  char* value;
+  DkcParams* params;
+
+  dkc_create_param_pack(&params);
+  dkc_set_string_param(params, "some string parameter", "I am a simple string therefore neither me nor any of my kind "
+                                                         "are able to comprehend the concept of capitalism.");
+  
+  value = dkc_pop_string_param(params, "some string parameter", "Your mom is fat tho.");
+  CU_ASSERT_EQUAL(strcmp(value, "I am a simple string therefore neither me nor any of my kind "
+                                "are able to comprehend the concept of capitalism."), 0);
+  free(value);
+  value = dkc_pop_string_param(params, "I do not exist", "Your mom is fat tho.");
+  CU_ASSERT_EQUAL(strcmp(value, "Your mom is fat tho."), 0);
+  free(value);
+
+  dkc_unset_param(params, "some string parameter");
+  dkc_delete_param_pack(&params);
   
 }
 
@@ -234,8 +320,12 @@ int main ( void )
         (NULL == CU_add_test(pSuite, "dkc_get_float_param_test", dkc_get_float_param_test)) ||
         (NULL == CU_add_test(pSuite, "dkc_get_string_param_test", dkc_get_string_param_test)) ||
         (NULL == CU_add_test(pSuite, "dkc_unset_param_test", dkc_unset_param_test)) ||
-        (NULL == CU_add_test(pSuite, "dkc_delete_param_pack_test", dkc_delete_param_pack_test))
-       )
+        (NULL == CU_add_test(pSuite, "dkc_delete_param_pack_test", dkc_delete_param_pack_test)) ||
+        (NULL == CU_add_test(pSuite, "dkc_wrap_params_test", dkc_wrap_params_test)) ||
+        (NULL == CU_add_test(pSuite, "dkc_pop_int_param_test", dkc_pop_int_param_test)) ||
+        (NULL == CU_add_test(pSuite, "dkc_pop_float_param_test", dkc_pop_float_param_test)) ||
+        (NULL == CU_add_test(pSuite, "dkc_pop_string_param_test", dkc_pop_string_param_test))
+    )
     {
       CU_cleanup_registry();
       return CU_get_error();

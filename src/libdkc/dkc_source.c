@@ -29,7 +29,7 @@ dkc_rc dkc_delete_source_mgr(DkcSourceMgr**  src_mgr) {
   
 }
 
-dkc_rc dkc_create_source(DkcSourceMgr* src_mgr, const char* type, DkcSource** src, const char* name, ...) {
+dkc_rc dkc_create_source(DkcSourceMgr* src_mgr, const char* type, DkcSource** src, const char* name, DkcParams* params) {
 
   pthread_mutex_lock(&src_mgr->lock);
   
