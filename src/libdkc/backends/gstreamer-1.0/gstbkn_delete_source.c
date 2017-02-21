@@ -5,5 +5,12 @@
 dkc_rc gstbkn_delete_source(void* ctx, uint8_t id) {
 
   GstBackendCtx* gst_ctx = (GstBackendCtx*) ctx;
+
+  if(gst_ctx->inputs[id] != NULL) {
+    gst_ctx->inputs[id];
+    return OK;
+  }
+  
+  return ERROR;
   
 }

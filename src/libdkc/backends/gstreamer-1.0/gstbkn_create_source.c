@@ -12,10 +12,14 @@ dkc_rc gstbkn_create_source(void* ctx, uint8_t id, const char* type, const char*
   GstElement* convert = NULL;
   GstElement* scale = NULL;
   GstElement* tee = NULL;
-  GstCaps* caps = NULL;
-
-  int width, height, fps;
-  gchar* format;
+  GstCaps* rate_caps = NULL;
+  GstCaps* convert_caps = NULL;
+  GstCaps* scale_caps = NULL;
+  
+  int width = dkc_pop_int_param(params, "width", 480);
+  int height  = dkc_pop_int_param(params, "height", 360);
+  int fps = dkc_pop_int_param(params, "fps", 25);
+  gchar* format = dkc_pop_string_param(params, "fps", "NV12");
   
   source_bin = gst_bin_new(name);
   source = gst_element_factory_make(type, NULL);
@@ -24,45 +28,54 @@ dkc_rc gstbkn_create_source(void* ctx, uint8_t id, const char* type, const char*
   scale = gst_element_factory_make("videoscale", NULL);
   tee = gst_element_factory_make("tee", NULL);
   
-  if(!source_bin || !source || !rate || !convert || !scale || !tee) goto error;
+  if(!source_bin || !source || !rate || !convert || !scale || !tee) {
+
+    if(source_bin) gst_object_unref(source_bin);
+    if(source) gst_object_unref(source);
+    if(rate) gst_object_unref(rate);
+    if(convert) gst_object_unref(convert);
+    if(scale) gst_object_unref(scale);
+    if(tee) gst_object_unref(tee);
+
+    return ERROR;
+      
+  }
 
   gst_bin_add_many(GST_BIN(source_bin), source, rate, convert, scale, tee, NULL);
 
-  gst_element_link(source, rate);
-  
-  caps = gst_caps_new_simple("video/x-raw",
-                             "framerate", GST_TYPE_FRACTION, 1, fps,
-                             NULL);
-  if(!gst_element_link_filtered(rate, convert, caps)) goto error;
-  gst_caps_unref(caps);
+  g_object_set(tee, "allow-not-linked", TRUE, NULL);
 
-  caps = gst_caps_new_simple("video/x-raw",
+  rate_caps = gst_caps_new_simple("video/x-raw",
+                             "framerate", GST_TYPE_FRACTION, fps, 1,
+                             NULL);
+  convert_caps = gst_caps_new_simple("video/x-raw",
                              "format", G_TYPE_STRING, format,
                              NULL);
-  if(!gst_element_link_filtered(convert, scale, caps)) goto error;
-  gst_caps_unref(caps);
-
-  caps = gst_caps_new_simple("video/x-raw",
+  scale_caps = gst_caps_new_simple("video/x-raw",
                              "width", G_TYPE_INT, width,
                              "height", G_TYPE_INT, height,
                              NULL);
-  if(!gst_element_link_filtered(scale, tee, caps)) goto error;
-  gst_caps_unref(caps);
+  
+  gboolean link_res = gst_element_link(source, rate) &&
+                       gst_element_link_filtered(rate, convert, rate_caps) &&
+                       gst_element_link_filtered(convert, scale, convert_caps) &&
+                       gst_element_link_filtered(scale, tee, scale_caps);
+  
+  free(format);
+  
+  gst_caps_unref(rate_caps);
+  gst_caps_unref(convert_caps);
+  gst_caps_unref(scale_caps);
+
+  if(!link_res) {
+    gst_bin_remove_many(GST_BIN(source_bin), source, rate, convert, scale, tee, NULL);
+    return ERROR;
+  }
   
   if(gst_ctx->inputs[id] == NULL) {
     gst_ctx->inputs[id] = source_bin;
     return OK;
   }
-
-  error:
-
-  if(source_bin) gst_object_unref(source_bin);
-  if(source) gst_object_unref(source);
-  if(rate) gst_object_unref(rate);
-  if(convert) gst_object_unref(convert);
-  if(scale) gst_object_unref(scale);
-  if(tee) gst_object_unref(tee);
-  if(caps) gst_caps_unref(caps);
-  
+    
   return ERROR;
 }
