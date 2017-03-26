@@ -187,13 +187,8 @@ void dkc_delete_param_pack_test(void){
   dkc_set_float_param(params, "some float parameter", (float)3.14);
   dkc_set_int_param(params, "some int parameter", (int)420);
 
-  CU_ASSERT_EQUAL(dkc_delete_param_pack(params), ERROR);
-
-  dkc_unset_param(params, "some string parameter");
-  dkc_unset_param(params, "some float parameter");
-  dkc_unset_param(params, "some int parameter");
-  
   CU_ASSERT_EQUAL(dkc_delete_param_pack(&params), OK);
+  CU_ASSERT_EQUAL(params, NULL);
   
 }
 
@@ -216,9 +211,6 @@ void dkc_wrap_params_test(void){
   CU_ASSERT_EQUAL(dkc_get_int_param(params, "some int parameter", &i_value), OK);
   CU_ASSERT_EQUAL(i_value, (int)420);
 
-  dkc_unset_param(params, "some string parameter");
-  dkc_unset_param(params, "some float parameter");
-  dkc_unset_param(params, "some int parameter");
   dkc_delete_param_pack(&params);
   
 }

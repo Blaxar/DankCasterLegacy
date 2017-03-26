@@ -34,12 +34,14 @@ typedef struct _DkcSceneMgr {
   pthread_mutex_t lock;
   DkcScene* scenes[NB_SCENES];
   uint8_t nb_scenes;
+  void* bkn_ctx;
   DKCST_SCENE_CBS();
   
 } DkcSceneMgr;
 
 typedef struct _DkcSceneCBs {
 
+  void* bkn_ctx;
   DKCST_SCENE_CBS();
   
 } DkcSceneCBs;

@@ -2,10 +2,11 @@
 #define DKCST_GST_BACKEND_H
 
 #include <libdkc/dkc_param.h>
+#include <libdkc/dkc_types.h>
 
 dkc_rc gstbkn_init(void** ctx);
 
-dkc_rc gstbkn_create_source(void* ctx, uint8_t id, const char* type, const char* name, DkcParams* params);
+dkc_rc gstbkn_create_source(void* ctx, uint8_t id, DkcSourceType src_type, const char* uri, const char* name, DkcParams* params);
 
 dkc_rc gstbkn_delete_source(void* ctx, uint8_t id);
 

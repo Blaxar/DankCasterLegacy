@@ -2,7 +2,7 @@
 #include <libdkc/backends/gstreamer-1.0/gstbackendctx.h>
 #include <stdlib.h>
 
-dkc_rc gstbkn_create_source(void* ctx, uint8_t id, const char* type, const char* name, DkcParams* params) {
+dkc_rc gstbkn_create_source(void* ctx, uint8_t id,  DkcSourceType src_type, const char* uri, const char* name, DkcParams* params) {
 
   GstBackendCtx* gst_ctx = (GstBackendCtx*) ctx;
 
@@ -22,7 +22,7 @@ dkc_rc gstbkn_create_source(void* ctx, uint8_t id, const char* type, const char*
   gchar* format = dkc_pop_string_param(params, "fps", "NV12");
   
   source_bin = gst_bin_new(name);
-  source = gst_element_factory_make(type, NULL);
+  source = gst_element_factory_make("", NULL);
   rate = gst_element_factory_make("videorate", NULL);
   convert = gst_element_factory_make("videoconvert", NULL);
   scale = gst_element_factory_make("videoscale", NULL);

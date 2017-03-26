@@ -41,7 +41,10 @@ typedef struct _DkcParams {
   
 } DkcParams;
 
+typedef dkc_rc (*dkc_param_cb)(char name[MAX_PARAM_NAME_LENGTH], DkcParamType type, void* value, void* ctx);
+
 DkcParams* dkc_wrap_params(const char* name, ...);
+dkc_rc dkc_pop_every_param(DkcParams *params, dkc_param_cb param_cb, void* ctx);
 
 int dkc_pop_int_param(DkcParams *params, const char* name, int default_value);
 float dkc_pop_float_param(DkcParams *params, const char* name, float default_value);

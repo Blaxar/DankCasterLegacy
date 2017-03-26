@@ -43,6 +43,48 @@ DkcParams* dkc_wrap_params(const char* name, ...) {
     
 }
 
+dkc_rc dkc_pop_every_param(DkcParams *params, dkc_param_cb param_cb, void* ctx) {
+
+  if(params == NULL) return ERROR;
+    
+  DkcParam* param = params->first;
+  DkcParam* rparam = NULL;
+  
+  while(param != NULL){ //Iterate over existing params
+     
+    rparam = param;
+    param=param->next;
+    dkc_rc rc;
+    
+    switch(rparam->type){
+    case INT: {
+      int value;
+      dkc_get_int_param(params, rparam->name, &value);
+      param_cb(rparam->name, rparam->type, &value, ctx);
+    }
+    break;
+    case FLOAT: {
+      float value;
+      dkc_get_float_param(params, rparam->name, &value);
+      param_cb(rparam->name, rparam->type, &value, ctx);
+    }
+    break;
+    case STRING: {
+      char *value;
+      dkc_get_string_param(params, rparam->name, &value);
+      param_cb(rparam->name, rparam->type, value, ctx);
+      free(value);
+    }
+    }
+        
+    params->nb_params--;
+    
+  }
+   
+  return OK;
+    
+}
+
 int dkc_pop_int_param(DkcParams *params, const char* name, int default_value) {
     
   int value;
@@ -140,7 +182,7 @@ dkc_rc dkc_set_param(DkcParams *params, char name[MAX_PARAM_NAME_LENGTH], DkcPar
     else if(type == FLOAT)
       prev_param->next->data.float_value = *(float*)value;
     else if(type == STRING) {
-        prev_param->next->data.string_value.str = malloc((strlen(value)+1)*sizeof(char));
+      prev_param->next->data.string_value.str = malloc((strlen(value)+1)*sizeof(char));
       memcpy(prev_param->next->data.string_value.str, value, (strlen(value)+1)*sizeof(char));
     }
     prev_param->next->next = NULL;
@@ -161,12 +203,12 @@ dkc_rc dkc_set_string_param(DkcParams *params, char name[MAX_PARAM_NAME_LENGTH],
     return dkc_set_param(params, name, STRING, value);
 }
 
-dkc_rc dkc_get_param(DkcParams *params, char name[MAX_PARAM_NAME_LENGTH], DkcParamType type, void** value, uint16_t* length) {
+dkc_rc dkc_get_param(DkcParams *params, char name[MAX_PARAM_NAME_LENGTH], DkcParamType type, void** value) {
 
   uint16_t name_length = strlen(name);
   if(name_length > MAX_PARAM_NAME_LENGTH-1) return ERROR;
   
-    DkcParam* param = params->first;
+  DkcParam* param = params->first;
   while(param != NULL){ //Iterate over existing params
     if(strcmp(name, param->name) == 0) { //Param with this name already exists
       if(param->type == type) //return value if types do match
@@ -190,24 +232,27 @@ dkc_rc dkc_get_param(DkcParams *params, char name[MAX_PARAM_NAME_LENGTH], DkcPar
 }
 
 dkc_rc dkc_get_int_param(DkcParams *params, char name[MAX_PARAM_NAME_LENGTH], int* value) {
-    return dkc_get_param(params, name, INT, &value, NULL);
+    return dkc_get_param(params, name, INT, &value);
 }
 
 dkc_rc dkc_get_float_param(DkcParams *params, char name[MAX_PARAM_NAME_LENGTH], float* value) {
-    return dkc_get_param(params, name, FLOAT, &value, NULL);
+    return dkc_get_param(params, name, FLOAT, &value);
 }
 
 dkc_rc dkc_get_string_param(DkcParams *params, char name[MAX_PARAM_NAME_LENGTH], char** value) {
-    return dkc_get_param(params, name, STRING, value, NULL);
+    return dkc_get_param(params, name, STRING, value);
 }
 
 dkc_rc dkc_unset_param(DkcParams *params, char name[MAX_PARAM_NAME_LENGTH]) {
 
+  if(params == NULL) return ERROR;
+    
   uint16_t name_length = strlen(name);
   if(name_length > MAX_PARAM_NAME_LENGTH-1) return ERROR;
   
   DkcParam* prev_param = NULL;
   DkcParam* param = params->first;
+  
   while(param != NULL){ //Iterate over existing params
     if(strcmp(name, param->name) == 0) { //Param with this name exists
       if(prev_param != NULL) prev_param->next=param->next;
@@ -227,9 +272,28 @@ dkc_rc dkc_unset_param(DkcParams *params, char name[MAX_PARAM_NAME_LENGTH]) {
 }
 
 dkc_rc dkc_delete_param_pack(DkcParams **params) {
+
+  if(*params == NULL) return ERROR;
+    
+  DkcParam* param = (*params)->first;
+  DkcParam* rparam = NULL;
+  
+  while(param != NULL){ //Iterate over existing params
+     
+    rparam = param;
+    param=param->next;
+
+    if(rparam->type == STRING)
+      free(rparam->data.string_value.str);
+    free(rparam);
+    (*params)->nb_params--;
+    
+  }
+    
   if((*params)->nb_params > 0)
     return ERROR;
 
   free(*params);
+  *params = NULL;
   return OK;
 }

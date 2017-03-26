@@ -12,16 +12,19 @@ dkc_rc dkc_create_app(DkcApp** app) {
 
   if(!dkc_rc_ok(dkc_create_backend(&(*app)->backend, "gst", NULL))) return ERROR;
   if(!dkc_rc_ok(dkc_create_source_mgr(&(*app)->src_mgr,
-                      (DkcSourceCBs) {(*app)->backend->create_source,
-                                        (*app)->backend->delete_source}))) return ERROR;
-    if(!dkc_rc_ok(dkc_create_scene_mgr(&(*app)->scn_mgr,
-                       (DkcSceneCBs) {(*app)->backend->create_scene,
-                                        (*app)->backend->delete_scene,
-                                        (*app)->backend->wrap_source,
-                                        (*app)->backend->unwrap_source}))) return ERROR;
-    if(!dkc_rc_ok(dkc_create_sink_mgr(&(*app)->snk_mgr,
-                              (DkcSinkCBs) {(*app)->backend->create_sink,
-                                              (*app)->backend->delete_sink}))) return ERROR;
+                       (DkcSourceCBs) {(*app)->backend->ctx,
+                                       (*app)->backend->create_source,
+                                       (*app)->backend->delete_source}))) return ERROR;
+  if(!dkc_rc_ok(dkc_create_scene_mgr(&(*app)->scn_mgr,
+                       (DkcSceneCBs) {(*app)->backend->ctx,
+                                      (*app)->backend->create_scene,
+                                      (*app)->backend->delete_scene,
+                                      (*app)->backend->wrap_source,
+                                      (*app)->backend->unwrap_source}))) return ERROR;
+  if(!dkc_rc_ok(dkc_create_sink_mgr(&(*app)->snk_mgr,
+                       (DkcSinkCBs) {(*app)->backend->ctx,
+                                     (*app)->backend->create_sink,
+                                     (*app)->backend->delete_sink}))) return ERROR;
   
   return OK;
   

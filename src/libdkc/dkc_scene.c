@@ -41,7 +41,8 @@ dkc_rc dkc_create_scene(DkcSceneMgr* scn_mgr, DkcScene** scn){
   for(int i=0; i<NB_SCENES; i++) {
     if(scn_mgr->scenes[i] == NULL) {
       scn_mgr->scenes[i] = malloc(sizeof(DkcScene));
-      if(pthread_mutex_init(&scn_mgr->scenes[i]->lock, NULL) != 0){
+      if(pthread_mutex_init(&scn_mgr->scenes[i]->lock, NULL) != 0 ||
+         scn_mgr->create_scene(scn_mgr->bkn_ctx, i) != OK){
         free(scn_mgr->scenes[i]);
         scn_mgr->scenes[i] = NULL;
         pthread_mutex_unlock(&scn_mgr->lock);
@@ -52,6 +53,7 @@ dkc_rc dkc_create_scene(DkcSceneMgr* scn_mgr, DkcScene** scn){
         scn_mgr->scenes[i]->sources[j] = NULL;
       }
       (*scn) = scn_mgr->scenes[i];
+      (*scn)->id = i;
       scn_mgr->nb_scenes++;
       pthread_mutex_unlock(&scn_mgr->lock);
       return OK;
@@ -68,8 +70,12 @@ dkc_rc dkc_delete_scene(DkcScene** scn){
   pthread_mutex_lock(&scn_mgr->lock);
   
   uint8_t id = (*scn)->id;
-    for(int i=0 ; i<NB_WRP_SOURCES; i++) {
+  for(int i=0 ; i<NB_WRP_SOURCES; i++) {
     if(scn_mgr->scenes[id]->sources[i] != NULL){ pthread_mutex_unlock(&scn_mgr->lock); return ERROR; }
+  }
+  if(scn_mgr->delete_scene(scn_mgr->bkn_ctx, id) != OK) {
+    pthread_mutex_unlock(&scn_mgr->lock);
+    return ERROR;
   }
   pthread_mutex_destroy(&scn_mgr->scenes[id]->lock);
   free(scn_mgr->scenes[id]);
@@ -83,21 +89,23 @@ dkc_rc dkc_delete_scene(DkcScene** scn){
 /* Source wrapping */
 
 dkc_rc dkc_wrap_source(DkcScene* scn,
-                     DkcSource* src,
-             DkcWrappedSource** wrpd_src) {
+                       DkcSource* src,
+                       DkcWrappedSource** wrpd_src) {
 
+  DkcSceneMgr* scn_mgr = (*wrpd_src)->scn->scn_mgr;
   pthread_mutex_lock(&scn->lock);
   
   for(int i=0; i<NB_WRP_SOURCES; i++) {
     if(scn->sources[i] == NULL) {
       scn->sources[i] = malloc(sizeof(DkcWrappedSource));
-      if(pthread_mutex_init(&scn->sources[i]->lock, NULL) != 0){
+      if(pthread_mutex_init(&scn->sources[i]->lock, NULL) != 0 ||
+         scn_mgr->wrap_source(scn_mgr->bkn_ctx, scn->id, src->id, i) != OK){
         free(scn->sources[i]);
         scn->sources[i] = NULL;
         pthread_mutex_unlock(&scn->lock);
         return ERROR;
       }
-        scn->sources[i]->scn = scn;
+      scn->sources[i]->scn = scn;
       scn->sources[i]->id = i;
       scn->sources[i]->source_id = src->id;
       (*wrpd_src) = scn->sources[i];
@@ -113,11 +121,16 @@ dkc_rc dkc_wrap_source(DkcScene* scn,
 
 dkc_rc dkc_unwrap_source(DkcWrappedSource** wrpd_src) {
 
-    DkcScene* scn = (*wrpd_src)->scn;
-  pthread_mutex_lock(&scn->lock);
-  pthread_mutex_destroy(&(*wrpd_src)->lock);
+  DkcScene* scn = (*wrpd_src)->scn;
+  DkcSceneMgr* scn_mgr = scn->scn_mgr;
   uint8_t id = (*wrpd_src)->id;
-    free(scn->sources[id]);
+  pthread_mutex_lock(&scn->lock);
+  if(scn_mgr->unwrap_source(scn_mgr->bkn_ctx, id) != OK) {
+    pthread_mutex_unlock(&scn->lock);
+    return ERROR;
+  }
+  pthread_mutex_destroy(&(*wrpd_src)->lock);
+  free(scn->sources[id]);
   scn->sources[id] = NULL;
   scn->nb_sources--;
 

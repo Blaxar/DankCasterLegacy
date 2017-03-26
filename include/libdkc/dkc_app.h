@@ -6,6 +6,7 @@
 #include <pthread.h>
 #include "dkc_rc.h"
 #include "dkc_param.h"
+#include "dkc_types.h"
 
 struct _DkcSourceMgr;
 struct _DkcSceneMgr;
@@ -22,7 +23,7 @@ typedef struct _DkcApp {
 
 } DkcApp;
 
-#define DKCST_SOURCE_CBS() dkc_rc (*create_source)(void* ctx, uint8_t id, const char* type, const char* name, DkcParams* params); \
+#define DKCST_SOURCE_CBS() dkc_rc (*create_source)(void* ctx, uint8_t id, DkcSourceType src_type, const char* uri, const char* name, DkcParams* params); \
                          dkc_rc (*delete_source)(void* ctx, uint8_t id)
 
 #define DKCST_SCENE_CBS() dkc_rc (*create_scene)(void* ctx, uint8_t id); \
@@ -30,7 +31,7 @@ typedef struct _DkcApp {
               dkc_rc (*wrap_source)(void* ctx, uint8_t scn_id, uint8_t src_id, uint8_t id); \
               dkc_rc (*unwrap_source)(void* ctx, uint8_t id)
 
-#define DKCST_SINK_CBS() dkc_rc (*create_sink)(void* ctx, uint8_t id, const char* type, const char* name, DkcParams* params); \
+#define DKCST_SINK_CBS() dkc_rc (*create_sink)(void* ctx, uint8_t id, DkcSinkType snk_type, const char* uri, const char* name, DkcParams* params); \
                          dkc_rc (*delete_sink)(void* ctx, uint8_t id)
 
 /* App handling */
