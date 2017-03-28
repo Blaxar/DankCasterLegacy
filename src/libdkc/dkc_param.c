@@ -125,6 +125,7 @@ dkc_rc dkc_create_param_pack(DkcParams **params) {
   (*params) = malloc(sizeof(DkcParams));
   (*params)->first = NULL;
   (*params)->nb_params = 0;
+  (*params)->refs = 1;
   
   return OK;
   
@@ -296,4 +297,17 @@ dkc_rc dkc_delete_param_pack(DkcParams **params) {
   free(*params);
   *params = NULL;
   return OK;
+}
+
+dkc_rc dkc_params_ref(DkcParams *params) {
+
+  params->refs++;
+    
+}
+    
+dkc_rc dkc_params_unref(DkcParams *params) {
+
+  params->refs--;
+  if(params->refs == 0) dkc_delete_param_pack(&params);
+    
 }

@@ -22,11 +22,25 @@ dkc_rc gstbkn_create_source(void* ctx, uint8_t id,  DkcSourceType src_type, cons
   gchar* format = dkc_pop_string_param(params, "fps", "NV12");
   
   source_bin = gst_bin_new(name);
-  source = gst_element_factory_make("", NULL);
   rate = gst_element_factory_make("videorate", NULL);
   convert = gst_element_factory_make("videoconvert", NULL);
   scale = gst_element_factory_make("videoscale", NULL);
   tee = gst_element_factory_make("tee", NULL);
+
+  dkc_params_ref(params);
+  
+  switch(src_type) {
+
+    case DUMMY_SRC:
+      gstbkn_create_source_dummy(&source, params);
+    break;
+    default:
+      dkc_params_unref(params);
+    break;
+      
+  }
+
+  dkc_params_unref(params);
   
   if(!source_bin || !source || !rate || !convert || !scale || !tee) {
 

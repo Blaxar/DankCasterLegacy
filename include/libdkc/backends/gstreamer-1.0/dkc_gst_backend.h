@@ -1,5 +1,5 @@
-#ifndef DKCST_GST_BACKEND_H
-#define DKCST_GST_BACKEND_H
+#ifndef DKC_GST_BACKEND_H
+#define DKC_GST_BACKEND_H
 
 #include <libdkc/dkc_param.h>
 #include <libdkc/dkc_types.h>

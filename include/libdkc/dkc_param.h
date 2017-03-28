@@ -36,6 +36,7 @@ typedef struct _DkcParam {
 
 typedef struct _DkcParams {
 
+  int refs;
   struct _DkcParam* first;
   uint8_t nb_params;
   
@@ -63,5 +64,7 @@ dkc_rc dkc_get_string_param(DkcParams *params, char name[MAX_PARAM_NAME_LENGTH],
 dkc_rc dkc_unset_param(DkcParams *params, char name[MAX_PARAM_NAME_LENGTH]);
 
 dkc_rc dkc_delete_param_pack(DkcParams **params);
+dkc_rc dkc_params_ref(DkcParams *params);
+dkc_rc dkc_params_unref(DkcParams *params);
 
 #endif //DKCST_PARAM_H	
