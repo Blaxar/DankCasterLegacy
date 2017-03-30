@@ -5,43 +5,39 @@
 #include <stdlib.h>
 #include <dlfcn.h>
 
-dkc_rc dkc_create_backend(DkcBackend** bkn, const char* backend, DkcParams* params) {
+DkcBackend* dkc_create_backend(const char* backend, DkcParams* params) {
   
-  if(*bkn == NULL) {
+  DkcBackend* bkn = NULL;
     
-    *bkn = malloc(sizeof(DkcBackend));
-    if(pthread_mutex_init(&(*bkn)->lock, NULL) != 0){ free(*bkn); return ERROR; }
-    if(*bkn != NULL ) {
+  bkn = malloc(sizeof(DkcBackend));
+  if(pthread_mutex_init(&bkn->lock, NULL)){ free(bkn); return ERROR; }
 
-      (*bkn)->init = gstbkn_init;
-      (*bkn)->create_source = gstbkn_create_source;
-      (*bkn)->delete_source = gstbkn_delete_source;
-      (*bkn)->create_scene = gstbkn_create_scene;
-      (*bkn)->delete_scene = gstbkn_delete_scene;
-      (*bkn)->wrap_source = gstbkn_wrap_source;
-      (*bkn)->unwrap_source = gstbkn_unwrap_source;
-      (*bkn)->create_sink = gstbkn_create_sink;
-      (*bkn)->delete_sink = gstbkn_delete_sink;
-      (*bkn)->uninit = gstbkn_uninit;
+  bkn->init = gstbkn_init;
+  bkn->create_source = gstbkn_create_source;
+  bkn->delete_source = gstbkn_delete_source;
+  bkn->create_scene = gstbkn_create_scene;
+  bkn->delete_scene = gstbkn_delete_scene;
+  bkn->wrap_source = gstbkn_wrap_source;
+  bkn->unwrap_source = gstbkn_unwrap_source;
+  bkn->create_sink = gstbkn_create_sink;
+  bkn->delete_sink = gstbkn_delete_sink;
+  bkn->uninit = gstbkn_uninit;
 
-      if(dkc_rc_ok((*bkn)->init(&(*bkn)->ctx))) return OK;
-      else return ERROR;
-      
-    }
-
+  if(!bkn->init(&bkn->ctx)){
+    free(bkn);
+    bkn = NULL;
   }
-    return ERROR;
+
+  return bkn;
   
 }
 
 
-dkc_rc dkc_delete_backend(DkcBackend** bkn) {
-  
-  pthread_mutex_destroy(&(*bkn)->lock);
+dkc_rc dkc_delete_backend(DkcBackend* bkn) {
 
-  if(dkc_rc_ok((*bkn)->uninit(&(*bkn)->ctx))) {
-    if(!dkc_rc_ok((*bkn)->uninit(&(*bkn)->ctx))) return ERROR;
-    free(*bkn);
+  if(bkn->uninit(&bkn->ctx)) {
+    pthread_mutex_destroy(&bkn->lock);
+    free(bkn);
     return OK;
   }
   

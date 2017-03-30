@@ -1,4 +1,5 @@
 #include <libdkc/backends/gstreamer-1.0/dkc_gst_backend.h>
+#include <libdkc/backends/gstreamer-1.0/dkc_gst_sources.h>
 #include <libdkc/backends/gstreamer-1.0/gstbackendctx.h>
 #include <stdlib.h>
 

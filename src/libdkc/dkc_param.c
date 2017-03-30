@@ -88,7 +88,7 @@ dkc_rc dkc_pop_every_param(DkcParams *params, dkc_param_cb param_cb, void* ctx) 
 int dkc_pop_int_param(DkcParams *params, const char* name, int default_value) {
     
   int value;
-  if(dkc_rc_ok(dkc_get_int_param(params, name, &value))) {
+  if(dkc_get_int_param(params, name, &value)) {
     dkc_unset_param(params, name);
     return value;
   }else
@@ -99,7 +99,7 @@ int dkc_pop_int_param(DkcParams *params, const char* name, int default_value) {
 float dkc_pop_float_param(DkcParams *params, const char* name, float default_value) {
 
   float value;
-  if(dkc_rc_ok(dkc_get_float_param(params, name, &value))) {
+  if(dkc_get_float_param(params, name, &value)) {
     dkc_unset_param(params, name);
     return value;
   }else
@@ -110,7 +110,7 @@ float dkc_pop_float_param(DkcParams *params, const char* name, float default_val
 char* dkc_pop_string_param(DkcParams *params, const char* name, char* default_value) {
 
   char* value;
-  if(dkc_rc_ok(dkc_get_string_param(params, name, &value)))
+  if(dkc_get_string_param(params, name, &value))
     dkc_unset_param(params, name);
   else {
     value = malloc((strlen(default_value)+1)*sizeof(char));
@@ -120,18 +120,19 @@ char* dkc_pop_string_param(DkcParams *params, const char* name, char* default_va
   return value;
 }
     
-dkc_rc dkc_create_param_pack(DkcParams **params) {
+DkcParams* dkc_create_param_pack() {
 
-  (*params) = malloc(sizeof(DkcParams));
-  (*params)->first = NULL;
-  (*params)->nb_params = 0;
-  (*params)->refs = 1;
   
-  return OK;
+  DkcParams* params = malloc(sizeof(DkcParams));
+  params->first = NULL;
+  params->nb_params = 0;
+  params->refs = 1;
+  
+  return params;
   
 }
 
-dkc_rc dkc_set_param(DkcParams *params, char name[MAX_PARAM_NAME_LENGTH], DkcParamType type, void* value) {
+dkc_rc dkc_set_param(DkcParams *params, const char* name, DkcParamType type, void* value) {
   
   uint16_t name_length = strlen(name);
   if(name_length > MAX_PARAM_NAME_LENGTH-1) return ERROR;
@@ -147,6 +148,7 @@ dkc_rc dkc_set_param(DkcParams *params, char name[MAX_PARAM_NAME_LENGTH], DkcPar
       params->first->data.string_value.str = malloc((strlen(value)+1)*sizeof(char));
       memcpy(params->first->data.string_value.str, value, (strlen(value)+1)*sizeof(char));
     }
+    params->first->name = malloc((name_length+1)*sizeof(char));
     memcpy(params->first->name, name, name_length+1);
     params->first->next = NULL;
     params->nb_params++;
@@ -177,6 +179,7 @@ dkc_rc dkc_set_param(DkcParams *params, char name[MAX_PARAM_NAME_LENGTH], DkcPar
     //at this point, no existing param with this name, add it to the list.
     prev_param->next=malloc(sizeof(DkcParam));
     prev_param->next->type = type;
+    prev_param->next->name = malloc((name_length+1)*sizeof(char));
     memcpy(prev_param->next->name, name, name_length+1);
     if(type == INT)
       prev_param->next->data.int_value = *(int*)value;
@@ -192,19 +195,19 @@ dkc_rc dkc_set_param(DkcParams *params, char name[MAX_PARAM_NAME_LENGTH], DkcPar
   }
 }
 
-dkc_rc dkc_set_int_param(DkcParams *params, char name[MAX_PARAM_NAME_LENGTH], int value) {
+dkc_rc dkc_set_int_param(DkcParams *params, const char* name, int value) {
     return dkc_set_param(params, name, INT, &value);
 }
 
-dkc_rc dkc_set_float_param(DkcParams *params, char name[MAX_PARAM_NAME_LENGTH], float value) {
+dkc_rc dkc_set_float_param(DkcParams *params, const char* name, float value) {
   return dkc_set_param(params, name, FLOAT, &value);
 }
 
-dkc_rc dkc_set_string_param(DkcParams *params, char name[MAX_PARAM_NAME_LENGTH], char* value) {
+dkc_rc dkc_set_string_param(DkcParams *params, const char* name, char* value) {
     return dkc_set_param(params, name, STRING, value);
 }
 
-dkc_rc dkc_get_param(DkcParams *params, char name[MAX_PARAM_NAME_LENGTH], DkcParamType type, void** value) {
+dkc_rc dkc_get_param(DkcParams *params, const char* name, DkcParamType type, void** value) {
 
   uint16_t name_length = strlen(name);
   if(name_length > MAX_PARAM_NAME_LENGTH-1) return ERROR;
@@ -232,19 +235,19 @@ dkc_rc dkc_get_param(DkcParams *params, char name[MAX_PARAM_NAME_LENGTH], DkcPar
   return ERROR;
 }
 
-dkc_rc dkc_get_int_param(DkcParams *params, char name[MAX_PARAM_NAME_LENGTH], int* value) {
+dkc_rc dkc_get_int_param(DkcParams *params, const char* name, int* value) {
     return dkc_get_param(params, name, INT, &value);
 }
 
-dkc_rc dkc_get_float_param(DkcParams *params, char name[MAX_PARAM_NAME_LENGTH], float* value) {
+dkc_rc dkc_get_float_param(DkcParams *params, const char* name, float* value) {
     return dkc_get_param(params, name, FLOAT, &value);
 }
 
-dkc_rc dkc_get_string_param(DkcParams *params, char name[MAX_PARAM_NAME_LENGTH], char** value) {
+dkc_rc dkc_get_string_param(DkcParams *params, const char* name, char** value) {
     return dkc_get_param(params, name, STRING, value);
 }
 
-dkc_rc dkc_unset_param(DkcParams *params, char name[MAX_PARAM_NAME_LENGTH]) {
+dkc_rc dkc_unset_param(DkcParams *params, const char* name) {
 
   if(params == NULL) return ERROR;
     
@@ -259,6 +262,7 @@ dkc_rc dkc_unset_param(DkcParams *params, char name[MAX_PARAM_NAME_LENGTH]) {
       if(prev_param != NULL) prev_param->next=param->next;
       else params->first = param->next;
       
+      free(param->name);
       if(param->type == STRING)
         free(param->data.string_value.str);
       free(param);
@@ -272,11 +276,11 @@ dkc_rc dkc_unset_param(DkcParams *params, char name[MAX_PARAM_NAME_LENGTH]) {
   return ERROR;
 }
 
-dkc_rc dkc_delete_param_pack(DkcParams **params) {
+dkc_rc dkc_delete_param_pack(DkcParams *params) {
 
-  if(*params == NULL) return ERROR;
+  if(params == NULL) return ERROR;
     
-  DkcParam* param = (*params)->first;
+  DkcParam* param = params->first;
   DkcParam* rparam = NULL;
   
   while(param != NULL){ //Iterate over existing params
@@ -284,19 +288,20 @@ dkc_rc dkc_delete_param_pack(DkcParams **params) {
     rparam = param;
     param=param->next;
 
+    free(param->name);
     if(rparam->type == STRING)
       free(rparam->data.string_value.str);
     free(rparam);
-    (*params)->nb_params--;
+    params->nb_params--;
     
   }
     
-  if((*params)->nb_params > 0)
+  if(params->nb_params > 0)
     return ERROR;
 
-  free(*params);
-  *params = NULL;
+  free(params);
   return OK;
+  
 }
 
 dkc_rc dkc_params_ref(DkcParams *params) {
@@ -308,6 +313,6 @@ dkc_rc dkc_params_ref(DkcParams *params) {
 dkc_rc dkc_params_unref(DkcParams *params) {
 
   params->refs--;
-  if(params->refs == 0) dkc_delete_param_pack(&params);
+  if(params->refs == 0) dkc_delete_param_pack(params);
     
 }

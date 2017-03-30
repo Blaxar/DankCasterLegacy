@@ -48,17 +48,15 @@ typedef struct _DkcSceneCBs {
 
 /* Scene handling */
 
-dkc_rc dkc_create_scene_mgr(DkcSceneMgr** scn_mgr, DkcSceneCBs scn_sbs);
-dkc_rc dkc_delete_scene_mgr(DkcSceneMgr** scn_mgr);
+DkcSceneMgr* dkc_create_scene_mgr(DkcSceneCBs scn_sbs);
+dkc_rc dkc_delete_scene_mgr(DkcSceneMgr* scn_mgr);
 
-dkc_rc dkc_create_scene(DkcSceneMgr* scn_mgr, DkcScene** scn);
-dkc_rc dkc_delete_scene(DkcScene** scn);
+DkcScene* dkc_create_scene(DkcSceneMgr* scn_mgr);
+dkc_rc dkc_delete_scene(DkcScene* scn);
 
 /* Source wrapping */
 
-dkc_rc dkc_wrap_source(DkcScene* scn,
-                     DkcSource* src,
-             DkcWrappedSource** wrpd_src);
-dkc_rc dkc_unwrap_source(DkcWrappedSource** wrpd_src);
+DkcWrappedSource* dkc_wrap_source(DkcScene* scn, DkcSource* src);
+dkc_rc dkc_unwrap_source(DkcWrappedSource* wrpd_src);
 
 #endif //DKCST_SCENE_H	

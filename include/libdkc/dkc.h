@@ -6,4 +6,4 @@
 dkc_rc dkc_init(void);
 dkc_rc dkc_terminate(void);
 
-#endif //DKCST_H	
+#endif //DKCST_H

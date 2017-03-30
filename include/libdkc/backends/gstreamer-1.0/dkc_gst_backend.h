@@ -18,7 +18,7 @@ dkc_rc gstbkn_wrap_source(void* ctx, uint8_t scn_id, uint8_t src_id, uint8_t id)
 
 dkc_rc gstbkn_unwrap_source(void* ctx, uint8_t id);
 
-dkc_rc gstbkn_create_sink(void* ctx, uint8_t id, const char* type, DkcParams* params);
+dkc_rc gstbkn_create_sink(void* ctx, uint8_t id, DkcSinkType snk_type, const char* type, const char* name, DkcParams* params);
 
 dkc_rc gstbkn_delete_sink(void* ctx, uint8_t id);
 

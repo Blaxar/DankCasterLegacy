@@ -1,5 +1,6 @@
 #include <stdlib.h>
 #include <stdio.h>
+#include <libdkc/dkc.h>
 #include <libdkc/dkc_app.h>
 #include <SDL2/SDL.h>
 
@@ -11,7 +12,7 @@ int main(int argc, char* argv[]){
 
   DkcApp* app;
   
-  if(!dkc_rc_ok(dkc_create_app(&app))) printf("Failed to create app.\n");
+  if(! (app = dkc_create_app())) printf("Failed to create app.\n");
   
   printf("Terminating Dkc\n");
   dkc_terminate();

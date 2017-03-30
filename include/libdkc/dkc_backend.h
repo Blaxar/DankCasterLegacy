@@ -20,8 +20,8 @@ typedef struct _DkcBackend {
   
 } DkcBackend;
 
-dkc_rc dkc_create_backend(DkcBackend** bkn, const char* type, DkcParams* params);
-dkc_rc dkc_delete_backend(DkcBackend** bkn);
+DkcBackend* dkc_create_backend(const char* type, DkcParams* params);
+dkc_rc dkc_delete_backend(DkcBackend* bkn);
 
 
 #endif //DKCST_BACKEND_H
