@@ -4,81 +4,74 @@
 #include <libdkc/dkc.h>
 #include <libdkc/dkc_sink.h>
 
-void dkc_create_sink_mgr_test(void) {
+void dkc_sinkmgr_create_test(void) {
   
   dkc_init();
-  DkcApp* app;
-  dkc_create_app(&app);
+  DkcApp* app = dkc_create_app();
   
-  DkcSinkMgr* snk_mgr;
-  CU_ASSERT_EQUAL(dkc_create_sink_mgr(&snk_mgr, (DkcSinkCBs){NULL,NULL,NULL}), OK);
+  DkcSinkMgr* snk_mgr = NULL;
+  snk_mgr = dkc_sinkmgr_create((DkcSinkCBs){NULL,NULL,NULL});
+  CU_ASSERT_NOT_EQUAL(snk_mgr, NULL);
   CU_ASSERT_EQUAL(snk_mgr->nb_sinks,0);
   for(int i=0; i<NB_SINKS; i++)
-  CU_ASSERT_EQUAL(snk_mgr->sinks[i], NULL);
+    CU_ASSERT_EQUAL(snk_mgr->sinks[i], NULL);
 
-  dkc_delete_app(&app);
+  dkc_delete_app(app);
   dkc_terminate();
+  
 }
 
-void dkc_delete_sink_mgr_test(void) {
+void dkc_sinkmgr_delete_test(void) {
 
   dkc_init();
-  DkcApp* app;
-  dkc_create_app(&app);
+  DkcApp* app = dkc_create_app();
   
-  DkcSinkMgr* snk_mgr;
-  dkc_create_sink_mgr(&snk_mgr, (DkcSinkCBs){NULL,NULL,NULL});
+  DkcSinkMgr* snk_mgr = dkc_sinkmgr_create((DkcSinkCBs){NULL,NULL,NULL});
   snk_mgr->sinks[0] = 0xdeadbeef;
-  CU_ASSERT_EQUAL(dkc_delete_sink_mgr(&snk_mgr), ERROR);
+  CU_ASSERT_EQUAL(dkc_sinkmgr_delete(snk_mgr), ERROR);
   snk_mgr->sinks[0] = NULL;
-  CU_ASSERT_EQUAL(dkc_delete_sink_mgr(&snk_mgr), OK);
-  CU_ASSERT_NOT_EQUAL(snk_mgr, NULL);
+  CU_ASSERT_EQUAL(dkc_sinkmgr_delete(snk_mgr), OK);
 
-  dkc_delete_app(&app);
+  dkc_delete_app(app);
   dkc_terminate();
   
 }
 
-void dkc_create_sink_test(void) {
+void dkc_sink_create_test(void) {
 
   dkc_init();
-  DkcApp* app;
-  dkc_create_app(&app);
+  DkcApp* app = dkc_create_app();
   
-  DkcSinkMgr *snk_mgr;
-  dkc_create_sink_mgr(&snk_mgr, (DkcSinkCBs){NULL,NULL,NULL});
+  DkcSinkMgr *snk_mgr = dkc_sinkmgr_create((DkcSinkCBs){NULL,NULL,NULL});
 
-  DkcSink* snk;
-  //CU_ASSERT_EQUAL(dkc_create_sink(snk_mgr, "ymmud", &snk, "somename", NULL), ERROR); // When there is no such sink type.
-  CU_ASSERT_EQUAL(dkc_create_sink(snk_mgr, DUMMY_SNK, "whatever", &snk, "somename", NULL), OK); // When there is the sink type.
+  DkcSink* snk = NULL;
+  //CU_ASSERT_EQUAL(dkc_sink_create(snk_mgr, "ymmud", &snk, "somename", NULL), ERROR); // When there is no such sink type.
+  snk = dkc_sink_create(snk_mgr, DUMMY_SNK, "whatever", "somename", NULL);
+  CU_ASSERT_NOT_EQUAL(snk, NULL);
   CU_ASSERT_EQUAL(snk->snk_mgr, snk_mgr);
   CU_ASSERT_EQUAL(snk_mgr->nb_sinks, 1);
 
-  dkc_delete_app(&app);
+  dkc_delete_app(app);
   dkc_terminate();
   
 }
 
-void dkc_delete_sink_test(void){
+void dkc_sink_delete_test(void){
 
   dkc_init();
-  DkcApp* app;
-  dkc_create_app(&app);
+  DkcApp* app = dkc_create_app(&app);
   
-  DkcSinkMgr *snk_mgr, *snk_mgr2;
-  dkc_create_sink_mgr(&snk_mgr, (DkcSinkCBs){NULL,NULL,NULL});
+  DkcSinkMgr *snk_mgr = dkc_sinkmgr_create((DkcSinkCBs){NULL,NULL,NULL});
   
-  DkcSink* snk;
-  dkc_create_sink(snk_mgr, DUMMY_SNK, "whatever", &snk, "somename", NULL);
+  DkcSink* snk = dkc_sink_create(snk_mgr, DUMMY_SNK, "whatever", "somename", NULL);
 
   uint8_t id = snk->id;
 
-  /* Good case scenario */
-  CU_ASSERT_EQUAL(dkc_delete_sink(&snk), OK);
+  CU_ASSERT_EQUAL(dkc_sink_delete(snk), OK);
   CU_ASSERT_EQUAL(snk_mgr->nb_sinks, 0);
-  CU_ASSERT_EQUAL(snk_mgr->sinks[id],NULL);
+  CU_ASSERT_EQUAL(snk_mgr->sinks[id], NULL);
 
-  dkc_delete_app(&app);
+  dkc_delete_app(app);
   dkc_terminate();
   
 }
@@ -115,10 +108,10 @@ int main ( void )
 
     /* add the tests to the suite */
 
-    if ((NULL == CU_add_test(pSuite, "dkc_create_sink_mgr_test", dkc_create_sink_mgr_test)) ||
-        (NULL == CU_add_test(pSuite, "dkc_delete_sink_mgr_test", dkc_delete_sink_mgr_test)) ||
-    (NULL == CU_add_test(pSuite, "dkc_create_sink_test", dkc_create_sink_test)) ||
-    (NULL == CU_add_test(pSuite, "dkc_delete_sink_test", dkc_delete_sink_test))
+    if ((NULL == CU_add_test(pSuite, "dkc_sinkmgr_create_test", dkc_sinkmgr_create_test)) ||
+        (NULL == CU_add_test(pSuite, "dkc_sinkmgr_delete_test", dkc_sinkmgr_delete_test)) ||
+    (NULL == CU_add_test(pSuite, "dkc_sink_create_test", dkc_sink_create_test)) ||
+    (NULL == CU_add_test(pSuite, "dkc_sink_delete_test", dkc_sink_delete_test))
        )
     {
       CU_cleanup_registry();

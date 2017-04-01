@@ -4,7 +4,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-DkcSinkMgr* dkc_create_sink_mgr(DkcSinkCBs snk_cbs) {
+DkcSinkMgr* dkc_sinkmgr_create(DkcSinkCBs snk_cbs) {
 
   DkcSinkMgr* snk_mgr = malloc(sizeof(DkcSinkMgr));
   if(pthread_mutex_init(&snk_mgr->lock, NULL) != 0){ free(snk_mgr); return NULL; }
@@ -19,7 +19,7 @@ DkcSinkMgr* dkc_create_sink_mgr(DkcSinkCBs snk_cbs) {
   
 }
 
-dkc_rc dkc_delete_sink_mgr(DkcSinkMgr*  snk_mgr) {
+dkc_rc dkc_sinkmgr_delete(DkcSinkMgr*  snk_mgr) {
 
   pthread_mutex_destroy(&snk_mgr->lock);
   for(int i=0; i<NB_SINKS; i++) {
@@ -30,7 +30,7 @@ dkc_rc dkc_delete_sink_mgr(DkcSinkMgr*  snk_mgr) {
   
 }
 
-DkcSink* dkc_create_sink(DkcSinkMgr* snk_mgr, DkcSinkType snk_type, const char* uri, const char* name, DkcParams* params) {
+DkcSink* dkc_sink_create(DkcSinkMgr* snk_mgr, DkcSinkType snk_type, const char* uri, const char* name, DkcParams* params) {
 
   DkcSink* snk;
   pthread_mutex_lock(&snk_mgr->lock);
@@ -60,7 +60,7 @@ DkcSink* dkc_create_sink(DkcSinkMgr* snk_mgr, DkcSinkType snk_type, const char* 
 }
 
 
-dkc_rc dkc_delete_sink(DkcSink* snk) {
+dkc_rc dkc_sink_delete(DkcSink* snk) {
 
   pthread_mutex_lock(&snk->snk_mgr->lock);
   

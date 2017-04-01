@@ -32,10 +32,10 @@ typedef struct _DkcSinkCBs {
   
 } DkcSinkCBs;
 
-DkcSinkMgr* dkc_create_sink_mgr(DkcSinkCBs snk_cbs);
-dkc_rc dkc_delete_sink_mgr(DkcSinkMgr* snk_mgr);
+DkcSinkMgr* dkc_sinkmgr_create(DkcSinkCBs snk_cbs);
+dkc_rc dkc_sinkmgr_delete(DkcSinkMgr* snk_mgr);
 
-DkcSink* dkc_create_sink(DkcSinkMgr* snk_mgr, DkcSinkType snk_type, const char* uri, const char* name, DkcParams* params);
-dkc_rc dkc_delete_sink(DkcSink* snk);
+DkcSink* dkc_sink_create(DkcSinkMgr* snk_mgr, DkcSinkType snk_type, const char* uri, const char* name, DkcParams* params);
+dkc_rc dkc_sink_delete(DkcSink* snk);
 
 #endif //DKCST_SINK_H	

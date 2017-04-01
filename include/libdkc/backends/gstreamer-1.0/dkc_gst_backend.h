@@ -1,7 +1,7 @@
 #ifndef DKC_GST_BACKEND_H
 #define DKC_GST_BACKEND_H
 
-#include <libdkc/dkc_param.h>
+#include <libdkc/dkc_params.h>
 #include <libdkc/dkc_types.h>
 
 dkc_rc gstbkn_init(void** ctx);

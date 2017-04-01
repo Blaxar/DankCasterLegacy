@@ -5,7 +5,7 @@
 #include <stdlib.h>
 #include <dlfcn.h>
 
-DkcBackend* dkc_create_backend(const char* backend, DkcParams* params) {
+DkcBackend* dkc_backend_create(const char* backend, DkcParams* params) {
   
   DkcBackend* bkn = NULL;
     
@@ -33,7 +33,7 @@ DkcBackend* dkc_create_backend(const char* backend, DkcParams* params) {
 }
 
 
-dkc_rc dkc_delete_backend(DkcBackend* bkn) {
+dkc_rc dkc_backend_delete(DkcBackend* bkn) {
 
   if(bkn->uninit(&bkn->ctx)) {
     pthread_mutex_destroy(&bkn->lock);

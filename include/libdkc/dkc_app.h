@@ -5,7 +5,7 @@
 #include <stddef.h>
 #include <pthread.h>
 #include "dkc_rc.h"
-#include "dkc_param.h"
+#include "dkc_params.h"
 #include "dkc_types.h"
 
 struct _DkcSourceMgr;

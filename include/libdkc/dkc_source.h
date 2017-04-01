@@ -33,10 +33,10 @@ typedef struct _DkcSourceCBs {
   
 } DkcSourceCBs;
 
-DkcSourceMgr* dkc_create_source_mgr(DkcSourceCBs src_cbs);
-dkc_rc dkc_delete_source_mgr(DkcSourceMgr* src_mgr);
+DkcSourceMgr* dkc_sourcemgr_create(DkcSourceCBs src_cbs);
+dkc_rc dkc_sourcemgr_delete(DkcSourceMgr* src_mgr);
 
-DkcSource* dkc_create_source(DkcSourceMgr* src_mgr, DkcSourceType src_type, const char* uri, const char* name, DkcParams* params);
-dkc_rc dkc_delete_source(DkcSource*  src);
+DkcSource* dkc_source_create(DkcSourceMgr* src_mgr, DkcSourceType src_type, const char* uri, const char* name, DkcParams* params);
+dkc_rc dkc_source_delete(DkcSource*  src);
 
 #endif //DKCST_SOURCE_H	

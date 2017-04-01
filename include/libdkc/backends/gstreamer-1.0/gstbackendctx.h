@@ -1,7 +1,7 @@
 #ifndef GSTBACKENDCTX_H
 #define GSTBACKENDCTX_H
 
-#include <libdkc/dkc_param.h>
+#include <libdkc/dkc_params.h>
 #include <gst/gst.h>
 
 #define NB_INPUTS 255

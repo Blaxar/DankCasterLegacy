@@ -9,18 +9,18 @@ DkcApp* dkc_create_app() {
 
   DkcApp* app = malloc(sizeof(DkcApp));
 
-  if(app->backend = dkc_create_backend("gst", NULL)){ free(app); return NULL;}
-  if(app->src_mgr = dkc_create_source_mgr(
+  if(app->backend = dkc_backend_create("gst", NULL)){ free(app); return NULL;}
+  if(app->src_mgr = dkc_sourcemgr_create(
                        (DkcSourceCBs) {app->backend->ctx,
                                        app->backend->create_source,
                                        app->backend->delete_source})){ free(app); return NULL;}
-  if(app->scn_mgr = dkc_create_scene_mgr(
+  if(app->scn_mgr = dkc_scenemgr_create(
                        (DkcSceneCBs) {app->backend->ctx,
                                       app->backend->create_scene,
                                       app->backend->delete_scene,
                                       app->backend->wrap_source,
                                       app->backend->unwrap_source})){ free(app); return NULL;}
-  if(app->snk_mgr = dkc_create_sink_mgr(
+  if(app->snk_mgr = dkc_sinkmgr_create(
                        (DkcSinkCBs) {app->backend->ctx,
                                      app->backend->create_sink,
                                      app->backend->delete_sink})){ free(app); return NULL;}
@@ -31,10 +31,10 @@ DkcApp* dkc_create_app() {
 
 dkc_rc dkc_delete_app(DkcApp* app) {
 
-  if(!dkc_delete_sink_mgr(app->snk_mgr)) return ERROR;
-  if(!dkc_delete_scene_mgr(app->scn_mgr)) return ERROR;
-  if(!dkc_delete_source_mgr(app->src_mgr)) return ERROR;
-  if(!dkc_delete_backend(app->backend)) return ERROR;
+  if(!dkc_sinkmgr_delete(app->snk_mgr)) return ERROR;
+  if(!dkc_scenemgr_delete(app->scn_mgr)) return ERROR;
+  if(!dkc_sourcemgr_delete(app->src_mgr)) return ERROR;
+  if(!dkc_backend_delete(app->backend)) return ERROR;
   
   free(app);
 

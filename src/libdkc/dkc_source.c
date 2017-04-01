@@ -4,7 +4,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-DkcSourceMgr* dkc_create_source_mgr(DkcSourceCBs src_cbs) {
+DkcSourceMgr* dkc_sourcemgr_create(DkcSourceCBs src_cbs) {
 
   DkcSourceMgr* src_mgr = malloc(sizeof(DkcSourceMgr));
   if(pthread_mutex_init(&src_mgr->lock, NULL) != 0){ free(src_mgr); return NULL; }
@@ -19,7 +19,7 @@ DkcSourceMgr* dkc_create_source_mgr(DkcSourceCBs src_cbs) {
   
 }
 
-dkc_rc dkc_delete_source_mgr(DkcSourceMgr*  src_mgr) {
+dkc_rc dkc_sourcemgr_delete(DkcSourceMgr*  src_mgr) {
 
   pthread_mutex_destroy(&src_mgr->lock);
   for(int i=0; i<NB_SOURCES; i++) {
@@ -30,7 +30,7 @@ dkc_rc dkc_delete_source_mgr(DkcSourceMgr*  src_mgr) {
   
 }
 
-DkcSource* dkc_create_source(DkcSourceMgr* src_mgr, DkcSourceType src_type, const char* uri, const char* name, DkcParams* params) {
+DkcSource* dkc_source_create(DkcSourceMgr* src_mgr, DkcSourceType src_type, const char* uri, const char* name, DkcParams* params) {
 
   DkcSource* src;
   pthread_mutex_lock(&src_mgr->lock);
@@ -62,7 +62,7 @@ DkcSource* dkc_create_source(DkcSourceMgr* src_mgr, DkcSourceType src_type, cons
 }
 
 
-dkc_rc dkc_delete_source(DkcSource* src) {
+dkc_rc dkc_source_delete(DkcSource* src) {
 
   pthread_mutex_lock(&src->src_mgr->lock);
   

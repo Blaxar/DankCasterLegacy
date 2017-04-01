@@ -17,10 +17,10 @@ dkc_rc gstbkn_create_source(void* ctx, uint8_t id,  DkcSourceType src_type, cons
   GstCaps* convert_caps = NULL;
   GstCaps* scale_caps = NULL;
   
-  int width = dkc_pop_int_param(params, "width", 480);
-  int height  = dkc_pop_int_param(params, "height", 360);
-  int fps = dkc_pop_int_param(params, "fps", 25);
-  gchar* format = dkc_pop_string_param(params, "fps", "NV12");
+  int width = dkc_params_pop_int(params, "width", 480);
+  int height  = dkc_params_pop_int(params, "height", 360);
+  int fps = dkc_params_pop_int(params, "fps", 25);
+  gchar* format = dkc_params_pop_string(params, "fps", "NV12");
   
   source_bin = gst_bin_new(name);
   rate = gst_element_factory_make("videorate", NULL);
