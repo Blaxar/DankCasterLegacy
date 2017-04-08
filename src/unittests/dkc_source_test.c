@@ -6,62 +6,43 @@
 
 void dkc_sourcemgr_create_test(void) {
   
-  dkc_init();
-  DkcApp* app = dkc_create_app();
-  
-  DkcSourceMgr* src_mgr = NULL;
-  src_mgr = dkc_sourcemgr_create((DkcSourceCBs){NULL,NULL,NULL});
+  DkcSourceMgr* src_mgr = dkc_sourcemgr_create((DkcSourceCBs){NULL,NULL,NULL});
   CU_ASSERT_NOT_EQUAL(src_mgr, NULL);
   CU_ASSERT_EQUAL(src_mgr->nb_sources,0);
   for(int i=0; i<NB_SOURCES; i++)
     CU_ASSERT_EQUAL(src_mgr->sources[i], NULL);
-
-  dkc_delete_app(app);
-  dkc_terminate();
   
 }
 
 void dkc_sourcemgr_delete_test(void) {
-
-  dkc_init();
-  DkcApp* app = dkc_create_app();
   
-  DkcSourceMgr* src_mgr = NULL;
-  src_mgr = dkc_sourcemgr_create((DkcSourceCBs){NULL,NULL,NULL});
+  DkcSourceMgr* src_mgr = dkc_sourcemgr_create((DkcSourceCBs){NULL,NULL,NULL});
   src_mgr->sources[0] = 0xdeadbeef;
   CU_ASSERT_EQUAL(dkc_sourcemgr_delete(src_mgr), ERROR);
   src_mgr->sources[0] = NULL;
   CU_ASSERT_EQUAL(dkc_sourcemgr_delete(src_mgr), OK);
-
-  dkc_delete_app(app);
-  dkc_terminate();
-  
+    
 }
 
 void dkc_source_create_test(void) {
 
-  dkc_init();
-  DkcApp* app = dkc_create_app();
-  
-  DkcSourceMgr *src_mgr = dkc_sourcemgr_create((DkcSourceCBs){NULL,NULL,NULL});
+  DkcApp* app = dkc_app_create("dummy");
+  DkcSourceMgr *src_mgr = app->src_mgr;
 
   DkcSource* src = dkc_source_create(src_mgr, DUMMY_SRC, "whatever", "somename", NULL);
   //CU_ASSERT_EQUAL(dkc_source_create(src_mgr, "ymmud", &src, "somename", NULL), ERROR); // When there is no such source type.
-  CU_ASSERT_EQUAL(src, OK); // When there is the source type.
+  CU_ASSERT_NOT_EQUAL(src, NULL); // When there is the source type.
   CU_ASSERT_EQUAL(src->src_mgr, src_mgr);
   CU_ASSERT_EQUAL(src_mgr->nb_sources, 1);
 
-  dkc_delete_app(app);
-  dkc_terminate();
+  dkc_app_delete(app);
   
 }
 
 void dkc_source_delete_test(void){
 
-  dkc_init();
-  DkcApp* app = dkc_create_app();
-  
-  DkcSourceMgr *src_mgr = dkc_sourcemgr_create((DkcSourceCBs){NULL,NULL,NULL});
+  DkcApp* app = dkc_app_create("dummy");
+  DkcSourceMgr *src_mgr = app->src_mgr;
   
   DkcSource* src = dkc_source_create(src_mgr, DUMMY_SRC, "whatever", "somename", NULL);
 
@@ -71,15 +52,25 @@ void dkc_source_delete_test(void){
   CU_ASSERT_EQUAL(src_mgr->nb_sources, 0);
   CU_ASSERT_EQUAL(src_mgr->sources[id],NULL);
 
-  dkc_delete_app(app);
-  dkc_terminate();
+  dkc_app_delete(app);
   
 }
 
+int init_suite(void) {
+  
+  if (!dkc_init()) return 1;
+  
+  return 0;
+  
+}
 
+int clean_suite(void) {
 
-int init_suite(void) { return 0; }
-int clean_suite(void) { return 0; }
+  if (!dkc_terminate()) return 1;
+  
+  return 0;
+  
+}
 
 void* run_tests(void* arg) {
 

@@ -5,44 +5,31 @@
 #include <libdkc/dkc_sink.h>
 
 void dkc_sinkmgr_create_test(void) {
-  
-  dkc_init();
-  DkcApp* app = dkc_create_app();
-  
+    
   DkcSinkMgr* snk_mgr = NULL;
   snk_mgr = dkc_sinkmgr_create((DkcSinkCBs){NULL,NULL,NULL});
   CU_ASSERT_NOT_EQUAL(snk_mgr, NULL);
   CU_ASSERT_EQUAL(snk_mgr->nb_sinks,0);
   for(int i=0; i<NB_SINKS; i++)
     CU_ASSERT_EQUAL(snk_mgr->sinks[i], NULL);
-
-  dkc_delete_app(app);
-  dkc_terminate();
   
 }
 
 void dkc_sinkmgr_delete_test(void) {
 
-  dkc_init();
-  DkcApp* app = dkc_create_app();
   
   DkcSinkMgr* snk_mgr = dkc_sinkmgr_create((DkcSinkCBs){NULL,NULL,NULL});
   snk_mgr->sinks[0] = 0xdeadbeef;
   CU_ASSERT_EQUAL(dkc_sinkmgr_delete(snk_mgr), ERROR);
   snk_mgr->sinks[0] = NULL;
   CU_ASSERT_EQUAL(dkc_sinkmgr_delete(snk_mgr), OK);
-
-  dkc_delete_app(app);
-  dkc_terminate();
   
 }
 
 void dkc_sink_create_test(void) {
 
-  dkc_init();
-  DkcApp* app = dkc_create_app();
-  
-  DkcSinkMgr *snk_mgr = dkc_sinkmgr_create((DkcSinkCBs){NULL,NULL,NULL});
+  DkcApp* app = dkc_app_create("dummy");
+  DkcSinkMgr *snk_mgr = app->snk_mgr;
 
   DkcSink* snk = NULL;
   //CU_ASSERT_EQUAL(dkc_sink_create(snk_mgr, "ymmud", &snk, "somename", NULL), ERROR); // When there is no such sink type.
@@ -51,17 +38,14 @@ void dkc_sink_create_test(void) {
   CU_ASSERT_EQUAL(snk->snk_mgr, snk_mgr);
   CU_ASSERT_EQUAL(snk_mgr->nb_sinks, 1);
 
-  dkc_delete_app(app);
-  dkc_terminate();
+  dkc_app_delete(app);
   
 }
 
 void dkc_sink_delete_test(void){
 
-  dkc_init();
-  DkcApp* app = dkc_create_app(&app);
-  
-  DkcSinkMgr *snk_mgr = dkc_sinkmgr_create((DkcSinkCBs){NULL,NULL,NULL});
+  DkcApp* app = dkc_app_create("dummy");
+  DkcSinkMgr *snk_mgr = app->snk_mgr;
   
   DkcSink* snk = dkc_sink_create(snk_mgr, DUMMY_SNK, "whatever", "somename", NULL);
 
@@ -71,15 +55,25 @@ void dkc_sink_delete_test(void){
   CU_ASSERT_EQUAL(snk_mgr->nb_sinks, 0);
   CU_ASSERT_EQUAL(snk_mgr->sinks[id], NULL);
 
-  dkc_delete_app(app);
-  dkc_terminate();
+  dkc_app_delete(app);
   
 }
 
+int init_suite(void) {
+  
+  if (!dkc_init()) return 1;
+  
+  return 0;
+  
+}
 
+int clean_suite(void) {
 
-int init_suite(void) { return 0; }
-int clean_suite(void) { return 0; }
+  if (!dkc_terminate()) return 1;
+  
+  return 0;
+
+}
 
 void* run_tests(void* arg) {
 

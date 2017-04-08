@@ -36,10 +36,10 @@ typedef struct _DkcApp {
 
 /* App handling */
 
-DkcApp* dkc_create_app();
-dkc_rc dkc_delete_app(DkcApp* app);
+DkcApp* dkc_app_create(const char* bkn_type);
+dkc_rc dkc_app_delete(DkcApp* app);
 
-dkc_rc dkc_start_app(DkcApp* app);
-dkc_rc dkc_stop_app(DkcApp* app);
+dkc_rc dkc_app_start(DkcApp* app);
+dkc_rc dkc_app_stop(DkcApp* app);
 
 #endif //DKCST_APP_H	

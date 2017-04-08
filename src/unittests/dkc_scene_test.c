@@ -4,13 +4,6 @@
 #include <libdkc/dkc.h>
 #include <libdkc/dkc_scene.h>
 
-DkcSourceMgr *g_src_mgr, *g_src_mgr2;
-
-DkcParams* g_params;
-
-DkcSource *g_src, *g_src2;
-
-
 void dkc_scenemgr_create_test(void) {
 
   DkcSceneMgr* scn_mgr = NULL;
@@ -36,7 +29,8 @@ void dkc_scenemgr_delete_test(void) {
 
 void dkc_scene_create_test(void) {
 
-  DkcSceneMgr *scn_mgr = dkc_scenemgr_create((DkcSceneCBs){NULL,NULL,NULL,NULL,NULL});
+    DkcApp* app = dkc_app_create("dummy");
+    DkcSceneMgr *scn_mgr = app->scn_mgr;
   
   DkcScene* scn = NULL;
   scn = dkc_scene_create(scn_mgr);
@@ -45,12 +39,16 @@ void dkc_scene_create_test(void) {
   CU_ASSERT_EQUAL(scn->nb_sources, 0);
   for(int i=0; i<NB_WRP_SOURCES; i++)
     CU_ASSERT_EQUAL(scn->sources[i],NULL);
+
+    dkc_app_delete(app);
   
 }
 
 void dkc_scene_delete_test(void) {
 
-  DkcSceneMgr *scn_mgr = dkc_scenemgr_create((DkcSceneCBs){NULL,NULL,NULL,NULL,NULL});
+  DkcApp* app = dkc_app_create("dummy");
+    DkcSceneMgr *scn_mgr = app->scn_mgr;
+    
   DkcScene* scn = dkc_scene_create(scn_mgr);
   uint8_t id = scn->id;
 
@@ -62,68 +60,58 @@ void dkc_scene_delete_test(void) {
   scn->sources[0] = NULL;
   CU_ASSERT_EQUAL(dkc_scene_delete(scn), OK);
   CU_ASSERT_EQUAL(scn_mgr->scenes[id], NULL);
+
+    dkc_app_delete(app);
   
 }
 
 void dkc_source_wrap_test(void) {
 
-  DkcSceneMgr *scn_mgr = dkc_scenemgr_create((DkcSceneCBs){NULL,NULL,NULL,NULL,NULL});
-  DkcSceneMgr *scn_mgr2 = dkc_scenemgr_create((DkcSceneCBs){NULL,NULL,NULL,NULL,NULL});
+    DkcApp* app = dkc_app_create("dummy");
+  DkcSceneMgr *scn_mgr = app->scn_mgr;
   DkcScene *scn = dkc_scene_create(scn_mgr);
-  DkcScene *scn2 = dkc_scene_create(scn_mgr2);
-  DkcWrappedSource* wrpd_src = NULL;
+    DkcSource* src = dkc_source_create(app->src_mgr, DUMMY_SRC, "whatever", "dummy", NULL);
+    DkcWrappedSource* wrpd_src = NULL;
 
   /* Good case scenario */
-  wrpd_src = dkc_source_wrap(scn, g_src);
+  wrpd_src = dkc_source_wrap(scn, src);
   CU_ASSERT_NOT_EQUAL(wrpd_src, NULL);
   CU_ASSERT_EQUAL(wrpd_src->scn, scn);
   CU_ASSERT_EQUAL(scn->nb_sources, 1);
   CU_ASSERT_EQUAL(scn->sources[0], wrpd_src);  
-  CU_ASSERT_EQUAL(wrpd_src->source_id, g_src->id);
+  CU_ASSERT_EQUAL(wrpd_src->source_id, src->id);
 
-  /* When the source and the scene don't belong to the same manager */
-  CU_ASSERT_EQUAL(dkc_source_wrap(scn, g_src2), NULL);
-  CU_ASSERT_EQUAL(dkc_source_wrap(scn2, g_src), NULL);
+    dkc_app_delete(app);
   
 }
 
 void dkc_source_unwrap_test(void) {
 
-  DkcSceneMgr *scn_mgr = dkc_scenemgr_create((DkcSceneCBs){NULL,NULL,NULL,NULL,NULL});
-  DkcSceneMgr *scn_mgr2 = dkc_scenemgr_create((DkcSceneCBs){NULL,NULL,NULL,NULL,NULL});
+    DkcApp* app = dkc_app_create("dummy");
+  DkcSceneMgr *scn_mgr = app->scn_mgr;
   DkcScene *scn = dkc_scene_create(scn_mgr);
-  DkcScene *scn2 = dkc_scene_create(scn_mgr2);
-  DkcWrappedSource* wrpd_src = dkc_source_wrap(scn, g_src);
+    DkcSource* src = dkc_source_create(app->src_mgr, DUMMY_SRC, "whatever", "dummy", NULL);
+  DkcWrappedSource* wrpd_src = dkc_source_wrap(scn, src);
 
   CU_ASSERT_EQUAL(dkc_source_unwrap(wrpd_src), OK);
   CU_ASSERT_EQUAL(scn->nb_sources, 0);
   CU_ASSERT_EQUAL(scn->sources[0], NULL);
+
+    dkc_app_delete(app);
   
 }
 
 
 int init_suite(void) {
-
-  if (!(g_params = dkc_params_create())) return 1;
   
   if (!dkc_init()) return 1;
-  if (!(g_src_mgr = dkc_sourcemgr_create((DkcSourceCBs){NULL,NULL,NULL}))) return 1;
-  if (!(g_src = dkc_source_create(g_src_mgr, DUMMY_SRC, "whatever", "dummy", NULL))) return 1;
-  if (!(g_src_mgr2 = dkc_sourcemgr_create((DkcSourceCBs){NULL,NULL,NULL}))) return 1;
-  if (!(g_src2 = dkc_source_create(g_src_mgr2, DUMMY_SRC, "whatever", "dummy", NULL))) return 1;
   
   return 0;
   
 }
 int clean_suite(void) {
   
-  if (!dkc_source_delete(g_src)) return 1;
-  if (!dkc_sourcemgr_delete(g_src_mgr)) return 1;
-  if (!dkc_source_delete(g_src2)) return 1;
-  if (!dkc_sourcemgr_delete(g_src_mgr2)) return 1;
   if (!dkc_terminate()) return 1;
-
-  if (!dkc_params_delete(g_params)) return 1;
   
   return 0;
   
