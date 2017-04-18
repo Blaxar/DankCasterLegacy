@@ -29,7 +29,7 @@ void dkc_scenemgr_delete_test(void) {
 
 void dkc_scene_create_test(void) {
 
-    DkcApp* app = dkc_app_create("dummy");
+    DkcApp* app = dkc_app_create("dummy", NULL);
     DkcSceneMgr *scn_mgr = app->scn_mgr;
   
   DkcScene* scn = NULL;
@@ -46,7 +46,7 @@ void dkc_scene_create_test(void) {
 
 void dkc_scene_delete_test(void) {
 
-  DkcApp* app = dkc_app_create("dummy");
+  DkcApp* app = dkc_app_create("dummy", NULL);
     DkcSceneMgr *scn_mgr = app->scn_mgr;
     
   DkcScene* scn = dkc_scene_create(scn_mgr);
@@ -67,7 +67,7 @@ void dkc_scene_delete_test(void) {
 
 void dkc_source_wrap_test(void) {
 
-    DkcApp* app = dkc_app_create("dummy");
+    DkcApp* app = dkc_app_create("dummy", NULL);
   DkcSceneMgr *scn_mgr = app->scn_mgr;
   DkcScene *scn = dkc_scene_create(scn_mgr);
     DkcSource* src = dkc_source_create(app->src_mgr, DUMMY_SRC, "whatever", "dummy", NULL);
@@ -87,7 +87,7 @@ void dkc_source_wrap_test(void) {
 
 void dkc_source_unwrap_test(void) {
 
-    DkcApp* app = dkc_app_create("dummy");
+    DkcApp* app = dkc_app_create("dummy", NULL);
   DkcSceneMgr *scn_mgr = app->scn_mgr;
   DkcScene *scn = dkc_scene_create(scn_mgr);
     DkcSource* src = dkc_source_create(app->src_mgr, DUMMY_SRC, "whatever", "dummy", NULL);

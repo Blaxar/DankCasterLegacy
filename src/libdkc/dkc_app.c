@@ -6,11 +6,11 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-DkcApp* dkc_app_create(const char* bkn_type) {
+DkcApp* dkc_app_create(const char* bkn_type, DkcParams* params) {
 
   DkcApp* app = malloc(sizeof(DkcApp));
 
-  app->backend = dkc_backend_create(bkn_type, NULL);
+  app->backend = dkc_backend_create(bkn_type, params);
   if(!app->backend){ free(app); return NULL; }
   
   app->src_mgr = dkc_sourcemgr_create(

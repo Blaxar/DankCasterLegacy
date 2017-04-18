@@ -68,25 +68,53 @@ void dkc_params_set_string_test(void){
   
   CU_ASSERT_EQUAL(dkc_params_set_string(params, "long long long long long long l", "Some string here."), OK);
   CU_ASSERT_EQUAL(params->nb_params,1);
-  CU_ASSERT_EQUAL(strcmp(params->first->data.string_value.str,"Some string here."), 0);
+  CU_ASSERT_EQUAL(strcmp(params->first->data.string_value,"Some string here."), 0);
   CU_ASSERT_EQUAL(strcmp(params->first->name, "long long long long long long l"), 0);
   CU_ASSERT_EQUAL(dkc_params_set_string(params, "long long long long long long l", "Another string."), OK);
-  CU_ASSERT_EQUAL(strcmp(params->first->data.string_value.str,"Another string."), 0);
+  CU_ASSERT_EQUAL(strcmp(params->first->data.string_value,"Another string."), 0);
   CU_ASSERT_EQUAL(strcmp(params->first->name, "long long long long long long l"), 0);
   CU_ASSERT_EQUAL(dkc_params_set_string(params, "stupid string", "The brown fox jumps over the whatever idk m8"), OK);
   CU_ASSERT_EQUAL(params->nb_params,2);
-  CU_ASSERT_EQUAL(strcmp(params->first->next->data.string_value.str, "The brown fox jumps over the whatever idk m8"),0);
+  CU_ASSERT_EQUAL(strcmp(params->first->next->data.string_value, "The brown fox jumps over the whatever idk m8"),0);
   CU_ASSERT_EQUAL(strcmp(params->first->next->name, "stupid string"), 0);
   CU_ASSERT_EQUAL(dkc_params_set_string(params, "really mean parameter", "You'd be a huge disappointment to your parents, good thing they are both dead."), OK);
   CU_ASSERT_EQUAL(params->nb_params,3);
-  CU_ASSERT_EQUAL(strcmp(params->first->next->next->data.string_value.str,"You'd be a huge disappointment to your parents, good thing they are both dead."),0);
+  CU_ASSERT_EQUAL(strcmp(params->first->next->next->data.string_value,"You'd be a huge disappointment to your parents, good thing they are both dead."),0);
   CU_ASSERT_EQUAL(strcmp(params->first->next->next->name, "really mean parameter"), 0);
+
+}
+
+void dkc_params_set_fraction_test(void){
+  
+  DkcParams *params = dkc_params_create();
+
+  CU_ASSERT_EQUAL(dkc_params_set_fraction(params, "long long long long long long l",
+                                          (DkcFraction){4, 20}), OK);
+  CU_ASSERT_EQUAL(params->nb_params,1);
+  CU_ASSERT_EQUAL(params->first->data.fraction_value.num, 4);
+  CU_ASSERT_EQUAL(params->first->data.fraction_value.den, 20);
+  CU_ASSERT_EQUAL(strcmp(params->first->name, "long long long long long long l"), 0);
+  CU_ASSERT_EQUAL(dkc_params_set_fraction(params, "long long long long long long l",
+                                          (DkcFraction){-4, 30}), OK);
+  CU_ASSERT_EQUAL(params->first->data.fraction_value.num, -4);
+  CU_ASSERT_EQUAL(params->first->data.fraction_value.den, 30);
+  CU_ASSERT_EQUAL(strcmp(params->first->name, "long long long long long long l"), 0);
+  CU_ASSERT_EQUAL(dkc_params_set_fraction(params, "some parameter", (DkcFraction){20, 1}), OK);
+  CU_ASSERT_EQUAL(params->nb_params, 2);
+  CU_ASSERT_EQUAL(params->first->next->data.fraction_value.num, 20);
+  CU_ASSERT_EQUAL(params->first->next->data.fraction_value.den, 1);
+  CU_ASSERT_EQUAL(strcmp(params->first->next->name, "some parameter"), 0);
+  CU_ASSERT_EQUAL(dkc_params_set_fraction(params, "some other parameter", (DkcFraction){9, -9}), OK);
+  CU_ASSERT_EQUAL(params->nb_params, 3);
+  CU_ASSERT_EQUAL(params->first->next->next->data.fraction_value.num, 9);
+  CU_ASSERT_EQUAL(params->first->next->next->data.fraction_value.den, -9);
+  CU_ASSERT_EQUAL(strcmp(params->first->next->next->name, "some other parameter"), 0);
+
 }
 
 void dkc_params_get_int_test(void){
 
-  DkcParams *params;
-  params = dkc_params_create();
+  DkcParams *params = dkc_params_create();
 
   dkc_params_set_int(params, "some parameter", 3);
   dkc_params_set_int(params, "some other parameter", 4);
@@ -101,8 +129,7 @@ void dkc_params_get_int_test(void){
 
 void dkc_params_get_float_test(void){
 
-  DkcParams *params;
-  dkc_params_create(&params);
+  DkcParams *params = dkc_params_create();
 
   dkc_params_set_float(params, "some parameter", (float)3.14);
   dkc_params_set_float(params, "some other parameter", (float)4.9999);
@@ -117,8 +144,7 @@ void dkc_params_get_float_test(void){
 
 void dkc_params_get_string_test(void){
 
-  DkcParams *params;
-  dkc_params_create(&params);
+  DkcParams *params = dkc_params_create();
 
   dkc_params_set_string(params, "some parameter", "smok wed evryday");
   dkc_params_set_string(params, "some other parameter", "O SHIT WADDUP");
@@ -131,37 +157,61 @@ void dkc_params_get_string_test(void){
     
 }
 
+void dkc_params_get_fraction_test(void){
+
+  DkcParams *params = dkc_params_create();
+
+  dkc_params_set_fraction(params, "some parameter", (DkcFraction){3, 0});
+  dkc_params_set_fraction(params, "some other parameter", (DkcFraction){12, -1});
+  DkcFraction value;
+  CU_ASSERT_EQUAL(dkc_params_get_fraction(params, "some parameter", &value), OK);
+  CU_ASSERT_EQUAL(value.num, 3);
+  CU_ASSERT_EQUAL(value.den, 0)
+  CU_ASSERT_EQUAL(dkc_params_get_fraction(params, "some other parameter", &value), OK);
+  CU_ASSERT_EQUAL(value.num, 12);
+  CU_ASSERT_EQUAL(value.den, -1);
+  CU_ASSERT_EQUAL(dkc_params_get_fraction(params, "this one does not exist", &value), ERROR);
+  
+}
+
 void dkc_params_unset_test(void){
 
-  DkcParams *params;
-  dkc_params_create(&params);
+  DkcParams *params = dkc_params_create();
 
   dkc_params_set_string(params, "some string parameter", "smok wed evryday");
   dkc_params_set_float(params, "some float parameter", (float)3.14);
-  dkc_params_set_string(params, "some other string  parameter", "O SHIT WADDUP");
+  dkc_params_set_string(params, "some other string parameter", "O SHIT WADDUP");
+  dkc_params_set_fraction(params, "some fraction parameter", (DkcFraction){4, 20});
   dkc_params_set_int(params, "some int parameter", (int)420);
+  dkc_params_set_fraction(params, "some other fraction parameter", (DkcFraction){-100, 50});
   dkc_params_set_float(params, "some other float parameter", (float)41.3);
   dkc_params_set_int(params, "some other int parameter", (int)-9999);
 
   float f_value;
   CU_ASSERT_EQUAL(dkc_params_unset(params, "some other float parameter"),OK);
-  CU_ASSERT_EQUAL(params->nb_params,5);
+  CU_ASSERT_EQUAL(params->nb_params,7);
   CU_ASSERT_EQUAL(dkc_params_get_float(params, "some other float parameter", &f_value), ERROR);
   CU_ASSERT_EQUAL(dkc_params_unset(params, "some other float parameter"),ERROR);
 
   char *s_value;
   CU_ASSERT_EQUAL(dkc_params_unset(params, "some string parameter"), OK);
-  CU_ASSERT_EQUAL(params->nb_params,4);
+  CU_ASSERT_EQUAL(params->nb_params,6);
   CU_ASSERT_EQUAL(dkc_params_get_string(params, "some string parameter", &s_value), ERROR);
   CU_ASSERT_EQUAL(dkc_params_unset(params, "some string parameter"), ERROR);
 
   int i_value;
   CU_ASSERT_EQUAL(dkc_params_unset(params, "some other int parameter"), OK);
-  CU_ASSERT_EQUAL(params->nb_params,3);
+  CU_ASSERT_EQUAL(params->nb_params,5);
   CU_ASSERT_EQUAL(dkc_params_get_int(params, "some other int parameter", &i_value), ERROR);
   CU_ASSERT_EQUAL(dkc_params_unset(params, "some other int parameter"), ERROR);
 
-  CU_ASSERT_EQUAL(dkc_params_get_string(params, "some other string  parameter", &s_value), OK);
+  DkcFraction r_value;
+  CU_ASSERT_EQUAL(dkc_params_unset(params, "some other fraction parameter"), OK);
+  CU_ASSERT_EQUAL(params->nb_params,4);
+  CU_ASSERT_EQUAL(dkc_params_get_int(params, "some other fraction parameter", &r_value), ERROR);
+  CU_ASSERT_EQUAL(dkc_params_unset(params, "some other fraction parameter"), ERROR);
+  
+  CU_ASSERT_EQUAL(dkc_params_get_string(params, "some other string parameter", &s_value), OK);
   CU_ASSERT_EQUAL(strcmp("O SHIT WADDUP", s_value), 0);
 
   CU_ASSERT_EQUAL(dkc_params_get_float(params, "some float parameter", &f_value), OK);
@@ -170,21 +220,26 @@ void dkc_params_unset_test(void){
   CU_ASSERT_EQUAL(dkc_params_get_int(params, "some int parameter", &i_value), OK);
   CU_ASSERT_EQUAL(i_value, (int)420);
 
-  CU_ASSERT_EQUAL(dkc_params_unset(params, "some other string  parameter"),OK);
+  CU_ASSERT_EQUAL(dkc_params_get_fraction(params, "some fraction parameter", &r_value), OK);
+  CU_ASSERT_EQUAL(r_value.num, 4);
+  CU_ASSERT_EQUAL(r_value.den, 20);
+
+  CU_ASSERT_EQUAL(dkc_params_unset(params, "some other string parameter"),OK);
   CU_ASSERT_EQUAL(dkc_params_unset(params, "some float parameter"),OK);
   CU_ASSERT_EQUAL(dkc_params_unset(params, "some int parameter"),OK);
+  CU_ASSERT_EQUAL(dkc_params_unset(params, "some fraction parameter"),OK);
   CU_ASSERT_EQUAL(params->nb_params, 0);
   
 }
 
 void dkc_params_delete_test(void){
 
-  DkcParams *params;
-  dkc_params_create(&params);
+  DkcParams *params = dkc_params_create();
 
   dkc_params_set_string(params, "some string parameter", "smok wed evryday");
   dkc_params_set_float(params, "some float parameter", (float)3.14);
   dkc_params_set_int(params, "some int parameter", (int)420);
+  dkc_params_set_fraction(params, "some fraction parameter", (DkcFraction){4,20});
 
   CU_ASSERT_EQUAL(dkc_params_delete(params), OK);
   
@@ -195,9 +250,11 @@ void dkc_params_wrap_test(void){
   float f_value;
   char* s_value;
   int i_value;
+  DkcFraction r_value;
   
   DkcParams* params = dkc_params_wrap("some string parameter", STRING, "smok wed evryday",
                                       "some float parameter", FLOAT, (float)3.14,
+                                      "some fraction parameter", FRACTION, 6, 9,
                                       "some int parameter", INT, (int)420, NULL);
 
   CU_ASSERT_EQUAL(dkc_params_get_string(params, "some string parameter", &s_value), OK);
@@ -206,6 +263,10 @@ void dkc_params_wrap_test(void){
   CU_ASSERT_EQUAL(dkc_params_get_float(params, "some float parameter", &f_value), OK);
   CU_ASSERT_EQUAL(f_value, (float)3.14);
 
+  CU_ASSERT_EQUAL(dkc_params_get_fraction(params, "some fraction parameter", &r_value), OK);
+  CU_ASSERT_EQUAL(r_value.num, 6);
+  CU_ASSERT_EQUAL(r_value.den, 9);
+  
   CU_ASSERT_EQUAL(dkc_params_get_int(params, "some int parameter", &i_value), OK);
   CU_ASSERT_EQUAL(i_value, (int)420);
 
@@ -272,6 +333,25 @@ void dkc_params_pop_string_test(void) {
   
 }
 
+void dkc_params_pop_fraction_test(void) {
+
+  DkcFraction value;
+  DkcParams* params;
+  
+  params = dkc_params_create();
+  dkc_params_set_fraction(params, "some fraction parameter", (DkcFraction){5,66});
+  
+  value = dkc_params_pop_fraction(params, "some fraction parameter", (DkcFraction){6,9});
+  CU_ASSERT_EQUAL(value.num, 5);
+  CU_ASSERT_EQUAL(value.den, 66);
+  value = dkc_params_pop_fraction(params, "I do not exist", (DkcFraction){6,9});
+  CU_ASSERT_EQUAL(value.num, 6);
+  CU_ASSERT_EQUAL(value.den, 9);
+  
+  dkc_params_delete(params);
+  
+}
+
 int init_suite(void) { return 0; }
 int clean_suite(void) { return 0; }
 
@@ -306,15 +386,18 @@ int main ( void )
         (NULL == CU_add_test(pSuite, "dkc_params_set_int_test", dkc_params_set_int_test)) ||
         (NULL == CU_add_test(pSuite, "dkc_params_set_float_test", dkc_params_set_float_test)) ||
         (NULL == CU_add_test(pSuite, "dkc_params_set_string_test", dkc_params_set_string_test)) ||
+        (NULL == CU_add_test(pSuite, "dkc_params_set_fraction_test", dkc_params_set_fraction_test)) ||
         (NULL == CU_add_test(pSuite, "dkc_params_get_int_test", dkc_params_get_int_test)) ||
         (NULL == CU_add_test(pSuite, "dkc_params_get_float_test", dkc_params_get_float_test)) ||
         (NULL == CU_add_test(pSuite, "dkc_params_get_string_test", dkc_params_get_string_test)) ||
+        (NULL == CU_add_test(pSuite, "dkc_params_get_fraction_test", dkc_params_get_fraction_test)) ||
         (NULL == CU_add_test(pSuite, "dkc_params_unset_test", dkc_params_unset_test)) ||
         (NULL == CU_add_test(pSuite, "dkc_params_delete_test", dkc_params_delete_test)) ||
         (NULL == CU_add_test(pSuite, "dkc_params_wrap_test", dkc_params_wrap_test)) ||
         (NULL == CU_add_test(pSuite, "dkc_params_pop_int_test", dkc_params_pop_int_test)) ||
         (NULL == CU_add_test(pSuite, "dkc_params_pop_float_test", dkc_params_pop_float_test)) ||
-        (NULL == CU_add_test(pSuite, "dkc_params_pop_string_test", dkc_params_pop_string_test))
+        (NULL == CU_add_test(pSuite, "dkc_params_pop_string_test", dkc_params_pop_string_test)) ||
+        (NULL == CU_add_test(pSuite, "dkc_params_pop_fraction_test", dkc_params_pop_fraction_test))
     )
     {
       CU_cleanup_registry();

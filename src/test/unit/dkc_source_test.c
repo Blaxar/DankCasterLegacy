@@ -26,7 +26,7 @@ void dkc_sourcemgr_delete_test(void) {
 
 void dkc_source_create_test(void) {
 
-  DkcApp* app = dkc_app_create("dummy");
+  DkcApp* app = dkc_app_create("dummy", NULL);
   DkcSourceMgr *src_mgr = app->src_mgr;
 
   DkcSource* src = dkc_source_create(src_mgr, DUMMY_SRC, "whatever", "somename", NULL);
@@ -41,7 +41,7 @@ void dkc_source_create_test(void) {
 
 void dkc_source_delete_test(void){
 
-  DkcApp* app = dkc_app_create("dummy");
+    DkcApp* app = dkc_app_create("dummy", NULL);
   DkcSourceMgr *src_mgr = app->src_mgr;
   
   DkcSource* src = dkc_source_create(src_mgr, DUMMY_SRC, "whatever", "somename", NULL);

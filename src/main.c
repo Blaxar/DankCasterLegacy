@@ -12,7 +12,7 @@ int main(int argc, char* argv[]){
 
   DkcApp* app;
   
-  if(! (app = dkc_app_create("gst"))) printf("Failed to create app.\n");
+  if(! (app = dkc_app_create("gst", NULL))) printf("Failed to create app.\n");
   
   printf("Terminating Dkc\n");
   dkc_terminate();

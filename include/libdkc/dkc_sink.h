@@ -38,4 +38,6 @@ dkc_rc dkc_sinkmgr_delete(DkcSinkMgr* snk_mgr);
 DkcSink* dkc_sink_create(DkcSinkMgr* snk_mgr, DkcSinkType snk_type, const char* uri, const char* name, DkcParams* params);
 dkc_rc dkc_sink_delete(DkcSink* snk);
 
+DkcSink* dkc_app_sink_create(DkcApp* app, DkcSinkType snk_type, const char* uri, const char* name, DkcParams* params);
+
 #endif //DKCST_SINK_H	

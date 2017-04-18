@@ -28,7 +28,7 @@ void dkc_sinkmgr_delete_test(void) {
 
 void dkc_sink_create_test(void) {
 
-  DkcApp* app = dkc_app_create("dummy");
+    DkcApp* app = dkc_app_create("dummy", NULL);
   DkcSinkMgr *snk_mgr = app->snk_mgr;
 
   DkcSink* snk = NULL;
@@ -44,7 +44,7 @@ void dkc_sink_create_test(void) {
 
 void dkc_sink_delete_test(void){
 
-  DkcApp* app = dkc_app_create("dummy");
+    DkcApp* app = dkc_app_create("dummy", NULL);
   DkcSinkMgr *snk_mgr = app->snk_mgr;
   
   DkcSink* snk = dkc_sink_create(snk_mgr, DUMMY_SNK, "whatever", "somename", NULL);

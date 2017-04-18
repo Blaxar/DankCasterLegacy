@@ -50,9 +50,9 @@ static void release_pad_bin (GstElement *element, GstPad *pad) {
 
 }
 
-dkc_rc gstbkn_make_scenemanager_bin(GstElement** bin) {
+dkc_rc gstbkn_make_scenemanager_bin(GstElement** bin, DkcParams* params) {
   
-    *bin = gst_bin_new(NULL);
+  *bin = gst_bin_new(NULL);
   GstElementClass* klass = GST_ELEMENT_GET_CLASS(*bin);
   klass->request_new_pad = request_new_pad_bin;
   klass->release_pad = release_pad_bin;
@@ -64,7 +64,7 @@ dkc_rc gstbkn_make_scenemanager_bin(GstElement** bin) {
   GstElementClass* comp_klass = GST_ELEMENT_GET_CLASS(comp);
   klass->padtemplates = comp_klass->padtemplates;
   klass->numpadtemplates = comp_klass->numpadtemplates;
-    klass->pad_templ_cookie = comp_klass->pad_templ_cookie;
+  klass->pad_templ_cookie = comp_klass->pad_templ_cookie;
   
   gst_bin_add(GST_BIN(*bin), comp);
 

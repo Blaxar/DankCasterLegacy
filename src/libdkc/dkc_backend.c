@@ -14,7 +14,7 @@ DkcBackend* dkc_backend_create(const char* backend, DkcParams* params) {
   if(pthread_mutex_init(&bkn->lock, NULL)){ free(bkn); return ERROR; }
 
   if(strcmp(backend, "gst") == 0) {
-      
+    
     bkn->init = gstbkn_init;
     bkn->create_source = gstbkn_create_source;
     bkn->delete_source = gstbkn_delete_source;
@@ -41,7 +41,7 @@ DkcBackend* dkc_backend_create(const char* backend, DkcParams* params) {
       
   }
   
-  if(!bkn->init(&bkn->ctx)){
+  if(!bkn->init(&bkn->ctx, params)){
     free(bkn);
     bkn = NULL;
   }

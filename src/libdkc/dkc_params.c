@@ -7,7 +7,7 @@ DkcParams* dkc_params_wrap(const char* name, ...) {
   DkcParams* params = NULL;
   char* nname = name;
   DkcParamType type;
-  dkc_params_create(&params);
+  params = dkc_params_create();
   
   va_list valist;
   va_start(valist, name);
@@ -27,6 +27,11 @@ DkcParams* dkc_params_wrap(const char* name, ...) {
     break;
     case STRING: {
       dkc_params_set_string(params, nname, va_arg(valist, char*));
+    }
+    break;
+    case FRACTION: {
+        dkc_params_set_fraction(params, nname,
+                                (DkcFraction){va_arg(valist, int), va_arg(valist, int)});
     }
     break;
     default: {
@@ -75,6 +80,13 @@ dkc_rc dkc_params_pop_all(DkcParams *params, dkc_param_cb param_cb, void* ctx) {
       param_cb(rparam->name, rparam->type, value, ctx);
       free(value);
     }
+    break;
+    case FRACTION: {
+      DkcFraction *value;
+      dkc_params_get_fraction(params, rparam->name, &value);
+      param_cb(rparam->name, rparam->type, value, ctx);
+      free(value);
+    }
     }
         
     params->nb_params--;
@@ -102,7 +114,7 @@ float dkc_params_pop_float(DkcParams *params, const char* name, float default_va
   if(dkc_params_get_float(params, name, &value)) {
     dkc_params_unset(params, name);
     return value;
-  }else
+  } else
     return default_value;
     
 }
@@ -119,10 +131,19 @@ char* dkc_params_pop_string(DkcParams *params, const char* name, char* default_v
   
   return value;
 }
-    
+
+DkcFraction dkc_params_pop_fraction(DkcParams *params, const char* name, DkcFraction default_value) {
+
+  DkcFraction value;
+  if(dkc_params_get_fraction(params, name, &value)) {
+    dkc_params_unset(params, name);
+    return value;
+  } else 
+    return default_value;
+}
+
 DkcParams* dkc_params_create() {
 
-  
   DkcParams* params = malloc(sizeof(DkcParams));
   params->first = NULL;
   params->nb_params = 0;
@@ -144,9 +165,12 @@ dkc_rc dkc_set_param(DkcParams *params, const char* name, DkcParamType type, voi
     else if(type == FLOAT)
       params->first->data.float_value = *(float*)value;
     else if(type == STRING){
-      params->first->data.string_value.str = malloc((strlen(value)+1)*sizeof(char));
-      memcpy(params->first->data.string_value.str, value, (strlen(value)+1)*sizeof(char));
+      params->first->data.string_value = malloc((strlen(value)+1)*sizeof(char));
+      memcpy(params->first->data.string_value, value, (strlen(value)+1)*sizeof(char));
     }
+    else if(type == FRACTION)
+      params->first->data.fraction_value = *(DkcFraction*)value;
+    
     params->first->name = malloc((name_length+1)*sizeof(char));
     memcpy(params->first->name, name, name_length+1);
     params->first->next = NULL;
@@ -157,19 +181,19 @@ dkc_rc dkc_set_param(DkcParams *params, const char* name, DkcParamType type, voi
     DkcParam* param = params->first;
     while(param != NULL){ //Iterate over existing params
       if(strcmp(name, param->name) == 0) { //Param with this name already exists
-        if(param->type == type){ //Update if types do match
+        if(param->type == type) { //Update if types do match
           if(type == INT)
             param->data.int_value = *(int*)value;
           else if(type == FLOAT)
               param->data.float_value = *(float*)value;
           else if(type == STRING) {
-            free(param->data.string_value.str);
-            param->data.string_value.str = malloc((strlen(value)+1)*sizeof(char));
-            memcpy(param->data.string_value.str, value, (strlen(value)+1)*sizeof(char));
+            free(param->data.string_value);
+            param->data.string_value = malloc((strlen(value)+1)*sizeof(char));
+            memcpy(param->data.string_value, value, (strlen(value)+1)*sizeof(char));
           }
-        }
-          else //Something is wrong, types are differents
-          return ERROR;
+          else if(type == FRACTION)
+            param->data.fraction_value = *(DkcFraction*)value;
+        } else return ERROR; //Something is wrong, types are differents
         return OK;
       }
       prev_param = param;
@@ -185,9 +209,12 @@ dkc_rc dkc_set_param(DkcParams *params, const char* name, DkcParamType type, voi
     else if(type == FLOAT)
       prev_param->next->data.float_value = *(float*)value;
     else if(type == STRING) {
-      prev_param->next->data.string_value.str = malloc((strlen(value)+1)*sizeof(char));
-      memcpy(prev_param->next->data.string_value.str, value, (strlen(value)+1)*sizeof(char));
+      prev_param->next->data.string_value = malloc((strlen(value)+1)*sizeof(char));
+      memcpy(prev_param->next->data.string_value, value, (strlen(value)+1)*sizeof(char));
     }
+    else if(type == FRACTION)
+      prev_param->next->data.fraction_value = *(DkcFraction*)value;
+    
     prev_param->next->next = NULL;
     params->nb_params++;
     return OK;
@@ -206,6 +233,10 @@ dkc_rc dkc_params_set_string(DkcParams *params, const char* name, char* value) {
     return dkc_set_param(params, name, STRING, value);
 }
 
+dkc_rc dkc_params_set_fraction(DkcParams *params, const char* name, DkcFraction value) {
+    return dkc_set_param(params, name, FRACTION, &value);
+}
+
 dkc_rc dkc_get_param(DkcParams *params, const char* name, DkcParamType type, void** value) {
 
   uint16_t name_length = strlen(name);
@@ -215,14 +246,16 @@ dkc_rc dkc_get_param(DkcParams *params, const char* name, DkcParamType type, voi
     if(strcmp(name, param->name) == 0) { //Param with this name already exists
       if(param->type == type) //return value if types do match
         if(type == INT)
-            **(int**)value = param->data.int_value;
+          **(int**)value = param->data.int_value;
         else if(type == FLOAT)
           **(float**)value = param->data.float_value;
         else if(type == STRING) {
-          (*value) = malloc((strlen(param->data.string_value.str)+1)*sizeof(char));
-          memcpy(*value, param->data.string_value.str,
-               (strlen(param->data.string_value.str)+1)*sizeof(char));
+          (*value) = malloc((strlen(param->data.string_value)+1)*sizeof(char));
+          memcpy(*value, param->data.string_value,
+                (strlen(param->data.string_value)+1)*sizeof(char));
         }
+        else if(type == FRACTION)
+          **(DkcFraction**)value = param->data.fraction_value;
       else //Something is wrong, types are differents
         return ERROR;
       return OK;
@@ -245,6 +278,10 @@ dkc_rc dkc_params_get_string(DkcParams *params, const char* name, char** value) 
     return dkc_get_param(params, name, STRING, value);
 }
 
+dkc_rc dkc_params_get_fraction(DkcParams *params, const char* name, DkcFraction* value) {
+    return dkc_get_param(params, name, FRACTION, &value);
+}
+
 dkc_rc dkc_params_unset(DkcParams *params, const char* name) {
 
   if(params == NULL) return ERROR;
@@ -259,7 +296,7 @@ dkc_rc dkc_params_unset(DkcParams *params, const char* name) {
       
       free(param->name);
       if(param->type == STRING)
-        free(param->data.string_value.str);
+        free(param->data.string_value);
       free(param);
       params->nb_params--;
       return OK;
@@ -283,9 +320,9 @@ dkc_rc dkc_params_delete(DkcParams *params) {
     rparam = param;
     param=param->next;
 
-    free(param->name);
+    free(rparam->name);
     if(rparam->type == STRING)
-      free(rparam->data.string_value.str);
+      free(rparam->data.string_value);
     free(rparam);
     params->nb_params--;
     

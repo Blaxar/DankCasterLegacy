@@ -36,7 +36,7 @@ typedef struct _DkcApp {
 
 /* App handling */
 
-DkcApp* dkc_app_create(const char* bkn_type);
+DkcApp* dkc_app_create(const char* bkn_type, DkcParams* params);
 dkc_rc dkc_app_delete(DkcApp* app);
 
 dkc_rc dkc_app_start(DkcApp* app);

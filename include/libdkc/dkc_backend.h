@@ -12,7 +12,7 @@ typedef struct _DkcBackend {
   uint8_t type_id;
   void* ctx;
   char* name;
-  dkc_rc (*init)(void** ctx);
+  dkc_rc (*init)(void** ctx, DkcParams* params);
   DKCST_SOURCE_CBS();
   DKCST_SCENE_CBS();
   DKCST_SINK_CBS();

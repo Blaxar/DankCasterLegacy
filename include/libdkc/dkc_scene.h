@@ -59,4 +59,6 @@ dkc_rc dkc_scene_delete(DkcScene* scn);
 DkcWrappedSource* dkc_source_wrap(DkcScene* scn, DkcSource* src);
 dkc_rc dkc_source_unwrap(DkcWrappedSource* wrpd_src);
 
+DkcScene* dkc_app_scene_create(DkcApp* app);
+
 #endif //DKCST_SCENE_H	

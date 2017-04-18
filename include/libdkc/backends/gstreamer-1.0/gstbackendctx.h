@@ -21,7 +21,7 @@ typedef struct {
 
 // Bin handling
 
-dkc_rc gstbkn_make_scenemanager_bin(GstElement** bin);
-dkc_rc gstbkn_make_audiomixer_bin(GstElement** bin);
+dkc_rc gstbkn_make_scenemanager_bin(GstElement** bin, DkcParams* params);
+dkc_rc gstbkn_make_audiomixer_bin(GstElement** bin, DkcParams* params);
 
 #endif //GSTBACKENDCTX_H

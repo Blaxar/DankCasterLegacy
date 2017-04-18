@@ -140,3 +140,7 @@ dkc_rc dkc_source_unwrap(DkcWrappedSource* wrpd_src) {
   
 }
 
+DkcScene* dkc_app_scene_create(DkcApp* app) {
+    if(app == NULL || app->scn_mgr == NULL) return NULL;
+    return dkc_scene_create(app->scn_mgr);
+}

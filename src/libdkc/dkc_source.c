@@ -81,3 +81,8 @@ dkc_rc dkc_source_delete(DkcSource* src) {
   return OK;
   
 }
+
+DkcSource* dkc_app_source_create(DkcApp* app, DkcSourceType src_type, const char* uri, const char* name, DkcParams* params) {
+    if(app == NULL || app->src_mgr == NULL) return NULL;
+    return dkc_source_create(app->src_mgr, src_type, uri, name, params);
+}
