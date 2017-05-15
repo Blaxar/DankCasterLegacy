@@ -17,8 +17,8 @@ int main(int argc, char* argv[]){
   if(! (app = dkc_app_create("gst", dkc_params_wrap("width", INT, 640,
                                                     "height", INT, 360,
                                                     "framerate", FRACTION, 25, 1,
-                                                    "format", STRING, "NV12",
-                                                    "audiorate", INT, 48000,
+                                                    "videoformat", STRING, "NV12",
+                                                    "rate", INT, 48000,
                                                     "channels", INT, 2,
                                                     "audioformat", STRING, "S16LE",
                                                     NULL)))) printf("Failed to create app.\n");

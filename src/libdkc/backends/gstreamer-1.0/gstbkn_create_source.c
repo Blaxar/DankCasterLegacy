@@ -40,11 +40,11 @@ dkc_rc gstbkn_create_source(void* ctx, uint8_t id,  DkcSourceType src_type, cons
   /* fetching parameters */
   int width = dkc_params_pop_int(params, "width", 480);
   int height  = dkc_params_pop_int(params, "height", 360);
-  DkcFraction fps = dkc_params_pop_fraction(params, "fps", (DkcFraction){25, 1});
-  gchar* v_format = dkc_params_pop_string(params, "video_format", "NV12");
+  DkcFraction fps = dkc_params_pop_fraction(params, "framerate", (DkcFraction){25, 1});
+  gchar* v_format = dkc_params_pop_string(params, "videoformat", "NV12");
   int channels = dkc_params_pop_int(params, "channels", 2);
   int rate = dkc_params_pop_int(params, "rate", 48000);
-  gchar* a_format = dkc_params_pop_string(params, "audio_format", "S16LE");
+  gchar* a_format = dkc_params_pop_string(params, "audioformat", "S16LE");
   
   source_bin = gst_bin_new(name);
 
@@ -180,7 +180,9 @@ dkc_rc gstbkn_create_source(void* ctx, uint8_t id,  DkcSourceType src_type, cons
   if(gst_ctx->inputs[id] == NULL) {
 
     gst_bin_add(GST_BIN(gst_ctx->pipeline), source_bin);
-      
+
+    /* Link video/audio streams to the video-mixer/audio-mixer */
+    
     if(v_rate) {
       video_pad = gst_element_get_static_pad(v_valve, "src");
       gst_element_add_pad(source_bin, gst_ghost_pad_new("video_src", video_pad));
