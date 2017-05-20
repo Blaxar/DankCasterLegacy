@@ -6,6 +6,10 @@
 
 dkc_rc gstbkn_init(void** ctx, DkcParams* params);
 
+dkc_rc gstbkn_start(void* ctx);
+
+dkc_rc gstbkn_stop(void* ctx);
+
 dkc_rc gstbkn_create_source(void* ctx, uint8_t id, DkcSourceType src_type, const char* uri, const char* name, DkcParams* params);
 
 dkc_rc gstbkn_delete_source(void* ctx, uint8_t id);

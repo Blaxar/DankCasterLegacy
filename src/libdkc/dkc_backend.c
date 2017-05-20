@@ -16,6 +16,8 @@ DkcBackend* dkc_backend_create(const char* backend, DkcParams* params) {
   if(strcmp(backend, "gst") == 0) {
     
     bkn->init = gstbkn_init;
+    bkn->start = gstbkn_start;
+    bkn->stop = gstbkn_stop;
     bkn->create_source = gstbkn_create_source;
     bkn->delete_source = gstbkn_delete_source;
     bkn->create_scene = gstbkn_create_scene;
@@ -29,6 +31,8 @@ DkcBackend* dkc_backend_create(const char* backend, DkcParams* params) {
   } else if (strcmp(backend, "dummy") == 0) {
 
     bkn->init = dummybkn_init;
+    bkn->start = dummybkn_start;
+    bkn->stop = dummybkn_stop;
     bkn->create_source = dummybkn_create_source;
     bkn->delete_source = dummybkn_delete_source;
     bkn->create_scene = dummybkn_create_scene;

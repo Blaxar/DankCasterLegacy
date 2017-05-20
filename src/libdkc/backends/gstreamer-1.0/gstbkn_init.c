@@ -17,10 +17,12 @@ dkc_rc gstbkn_init(void** ctx, DkcParams* params) {
   
   bkn_ctx->pipeline = gst_pipeline_new(NULL);
   
-  gstbkn_make_scenemanager_bin(&bkn_ctx->scenemanager, params);
+  //gstbkn_make_scenemanager_bin(&bkn_ctx->scenemanager, params);
+  bkn_ctx->scenemanager = gst_element_factory_make("videomixer", NULL);
   gst_bin_add(GST_BIN(bkn_ctx->pipeline), bkn_ctx->scenemanager);
   
-  gstbkn_make_audiomixer_bin(&bkn_ctx->audiomixer, params);
+  //gstbkn_make_audiomixer_bin(&bkn_ctx->audiomixer, params);
+  bkn_ctx->audiomixer = gst_element_factory_make("audiomixer", NULL);
   gst_bin_add(GST_BIN(bkn_ctx->pipeline), bkn_ctx->audiomixer);
 
   dkc_params_unref(params);

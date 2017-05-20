@@ -2,11 +2,11 @@
 #include <libdkc/backends/gstreamer-1.0/dkc_gst_sources.h>
 #include <libdkc/backends/gstreamer-1.0/gstbackendctx.h>
 #include <stdlib.h>
+#include <assert.h>
 
 dkc_rc gstbkn_create_source(void* ctx, uint8_t id,  DkcSourceType src_type, const char* uri, const char* name, DkcParams* params) {
 
   GstBackendCtx* gst_ctx = (GstBackendCtx*) ctx;
-
 
   /* Base elements */
   GstElement* source_bin = NULL;
@@ -45,6 +45,9 @@ dkc_rc gstbkn_create_source(void* ctx, uint8_t id,  DkcSourceType src_type, cons
   int channels = dkc_params_pop_int(params, "channels", 2);
   int rate = dkc_params_pop_int(params, "rate", 48000);
   gchar* a_format = dkc_params_pop_string(params, "audioformat", "S16LE");
+
+  g_print("width: %d, height: %d, fps: %d/%d, video format: %s, channels: %d, rate: %d, audio format: %s\n",
+          width, height, fps.num, fps.den, v_format, channels, rate, a_format);
   
   source_bin = gst_bin_new(name);
 
@@ -75,7 +78,7 @@ dkc_rc gstbkn_create_source(void* ctx, uint8_t id,  DkcSourceType src_type, cons
 
   gst_bin_add(GST_BIN(source_bin), source);
   
-  video_pad = gst_element_get_static_pad(source, "video_pad");
+  video_pad = gst_element_get_static_pad(source, "video_src");
   if(video_pad){ // If the source has video capabilites...
   
     /* Making video specific elements */
@@ -84,42 +87,17 @@ dkc_rc gstbkn_create_source(void* ctx, uint8_t id,  DkcSourceType src_type, cons
     v_scale = gst_element_factory_make("videoscale", NULL);
     v_valve = gst_element_factory_make("valve", NULL);
 
-    /* Setting video specific caps */
-    v_rate_caps = gst_caps_new_simple("video/x-raw",
-                             "framerate", GST_TYPE_FRACTION, fps, 1,
-                             NULL);
-    v_convert_caps = gst_caps_new_simple("video/x-raw",
-                             "format", G_TYPE_STRING, v_format,
-                             NULL);
-    v_scale_caps = gst_caps_new_simple("video/x-raw",
-                             "width", G_TYPE_INT, width,
-                             "height", G_TYPE_INT, height,
-                             NULL);
-
-    g_free(v_format);
-
     gst_bin_add_many(GST_BIN(source_bin), v_rate, v_convert, v_scale, v_valve, NULL);
 
   }
 
-  audio_pad = gst_element_get_static_pad(source, "audio_pad");
+  audio_pad = gst_element_get_static_pad(source, "audio_src");
   if(audio_pad){ // If the source has audio capabilites...
   
     /* Making audio specific elements */
     a_rate = gst_element_factory_make("audiorate", NULL);
     a_convert = gst_element_factory_make("audioconvert", NULL);
     a_valve = gst_element_factory_make("valve", NULL);
-
-    /* Setting video specific caps */
-    a_rate_caps = gst_caps_new_simple("audio/x-raw",
-                             "rate", G_TYPE_INT, rate,
-                             NULL);
-    a_convert_caps = gst_caps_new_simple("audio/x-raw",
-                             "format", G_TYPE_STRING, a_format,
-                             "channels", G_TYPE_INT, channels,
-                             NULL);
-
-    g_free(a_format);
 
     gst_bin_add_many(GST_BIN(source_bin), a_rate, a_convert, a_valve, NULL);
     
@@ -137,12 +115,23 @@ dkc_rc gstbkn_create_source(void* ctx, uint8_t id,  DkcSourceType src_type, cons
   if(video_pad) gst_object_unref(video_pad);
   if(audio_pad) gst_object_unref(audio_pad);
 
-  g_object_set(v_valve, "allow-not-linked", TRUE, NULL);
-  g_object_set(a_valve, "allow-not-linked", TRUE, NULL);
-
   gboolean link_res = TRUE;
   
   if(v_rate) { // If the source has video capabilites...
+
+    /* Setting video specific caps */
+    v_rate_caps = gst_caps_new_simple("video/x-raw",
+                             "framerate", GST_TYPE_FRACTION, fps.num, fps.den,
+                             NULL);
+    v_convert_caps = gst_caps_new_simple("video/x-raw",
+                             "format", G_TYPE_STRING, v_format,
+                             NULL);
+    v_scale_caps = gst_caps_new_simple("video/x-raw",
+                             "width", G_TYPE_INT, width,
+                             "height", G_TYPE_INT, height,
+                             NULL);
+
+    g_free(v_format);
     
     link_res = link_res && gst_element_link(source, v_rate) &&
                gst_element_link_filtered(v_rate, v_convert, v_rate_caps) &&
@@ -159,7 +148,18 @@ dkc_rc gstbkn_create_source(void* ctx, uint8_t id,  DkcSourceType src_type, cons
   }
 
   if(a_rate) { // If the source has audio capabilites...
-    
+
+    /* Setting audio specific caps */
+    a_rate_caps = gst_caps_new_simple("audio/x-raw",
+                             "rate", G_TYPE_INT, rate,
+                             NULL);
+    a_convert_caps = gst_caps_new_simple("audio/x-raw",
+                             "format", G_TYPE_STRING, a_format,
+                             "channels", G_TYPE_INT, channels,
+                             NULL);
+
+    g_free(a_format);
+      
     link_res = link_res && gst_element_link(source, a_rate) &&
                gst_element_link_filtered(a_rate, a_convert, a_rate_caps) &&
                gst_element_link_filtered(a_convert, a_valve, a_convert_caps);
@@ -204,7 +204,7 @@ dkc_rc gstbkn_create_source(void* ctx, uint8_t id,  DkcSourceType src_type, cons
 
   gst_bin_remove(GST_BIN(source_bin), source);
   gst_object_unref(source_bin);
-  
+
   return ERROR;
   
 }

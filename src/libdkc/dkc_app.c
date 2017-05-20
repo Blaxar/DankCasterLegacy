@@ -52,8 +52,12 @@ dkc_rc dkc_app_delete(DkcApp* app) {
 
 dkc_rc dkc_app_start(DkcApp* app) {
 
+    return app->backend->start(app->backend->ctx);
+
 }
 
 dkc_rc dkc_app_stop(DkcApp* app){
+
+    return app->backend->stop(app->backend->ctx);
 
 }

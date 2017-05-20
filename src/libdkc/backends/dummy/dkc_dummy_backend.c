@@ -3,6 +3,10 @@
 
 dkc_rc dummybkn_init(void** ctx, DkcParams* params) { return OK; }
 
+dkc_rc dummybkn_start(void* ctx) { return OK; }
+
+dkc_rc dummybkn_stop(void* ctx) { return OK; }
+
 dkc_rc dummybkn_create_source(void* ctx, uint8_t id, DkcSourceType src_type, const char* uri, const char* name, DkcParams* params) { return OK; }
 
 dkc_rc dummybkn_delete_source(void* ctx, uint8_t id) { return OK; }

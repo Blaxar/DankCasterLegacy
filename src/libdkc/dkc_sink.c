@@ -81,6 +81,6 @@ dkc_rc dkc_sink_delete(DkcSink* snk) {
 }
 
 DkcSink* dkc_app_sink_create(DkcApp* app, DkcSinkType snk_type, const char* uri, const char* name, DkcParams* params) {
-  if(app == NULL || app->snk_mgr) return NULL;
+  if(app == NULL || app->snk_mgr == NULL) return NULL;
   return dkc_sink_create(app->snk_mgr, snk_type, uri, name, params);
 }

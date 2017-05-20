@@ -34,6 +34,9 @@ typedef struct _DkcApp {
 #define DKCST_SINK_CBS() dkc_rc (*create_sink)(void* ctx, uint8_t id, DkcSinkType snk_type, const char* uri, const char* name, DkcParams* params); \
                          dkc_rc (*delete_sink)(void* ctx, uint8_t id)
 
+#define DKCST_APP_CBS() dkc_rc (*start)(void* ctx); \
+                        dkc_rc (*stop)(void* ctx)
+
 /* App handling */
 
 DkcApp* dkc_app_create(const char* bkn_type, DkcParams* params);
