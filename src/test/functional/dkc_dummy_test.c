@@ -39,17 +39,8 @@ int main(int argc, char* argv[]){
                                                                "channels", INT, 2,
                                                                "audioformat", STRING, "S16LE",
                                                                NULL));
-
   assert(dummy_src != NULL);
-  
-  //DkcScene* scene = dkc_app_scene_create(app);
-  //assert(scene != NULL);
-  
-  //DkcWrappedSource* wrpd_src = dkc_source_wrap(scene, dummy_src);
-  //assert(wrpd_src != NULL);
 
-  assert(app->snk_mgr != NULL);
-  
   DkcSink* window_sink = dkc_app_sink_create(app, DUMMY_SNK, "test window", "test_window",
                                              dkc_params_wrap("width", INT, 640,
                                                              "height", INT, 360,
@@ -60,7 +51,13 @@ int main(int argc, char* argv[]){
                                                              "audioformat", STRING, "S16LE",
                                                              NULL));
   assert(window_sink != NULL);
-
+  
+  DkcScene* scene = dkc_app_scene_create(app);
+  assert(scene != NULL);
+  
+  DkcWrappedSource* wrpd_src = dkc_source_wrap(scene, dummy_src);
+  assert(wrpd_src != NULL);
+  
   assert(dkc_app_start(app) == OK);
 
   g_main_loop_run (loop);

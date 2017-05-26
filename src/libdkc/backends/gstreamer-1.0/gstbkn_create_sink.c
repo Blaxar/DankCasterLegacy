@@ -190,17 +190,18 @@ dkc_rc gstbkn_create_sink(void* ctx, uint8_t id, DkcSinkType snk_type, const cha
       video_pad = gst_element_get_static_pad(v_valve, "sink");
       gst_element_add_pad(sink_bin, gst_ghost_pad_new("video_sink", video_pad));
       gst_object_unref(GST_OBJECT(video_pad));
-      gst_element_link(gst_ctx->scenemanager, sink_bin);
+      gst_element_link(gst_ctx->video_tee, sink_bin);
     }
 
     if(a_rate) {
       audio_pad = gst_element_get_static_pad(a_valve, "sink");
       gst_element_add_pad(sink_bin, gst_ghost_pad_new("audio_sink", audio_pad));
       gst_object_unref(GST_OBJECT(audio_pad));
-      gst_element_link(gst_ctx->audiomixer, sink_bin);
+      gst_element_link(gst_ctx->audio_tee, sink_bin);
     }
       
     gst_ctx->outputs[id] = sink_bin;
+    gst_ctx->nb_outputs++;
     return OK;
     
   }

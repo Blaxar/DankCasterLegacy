@@ -11,6 +11,7 @@ DkcSceneMgr* dkc_scenemgr_create(DkcSceneCBs scn_cbs) {
 
   DkcSceneMgr* scn_mgr = malloc(sizeof(DkcSceneMgr));
   if(pthread_mutex_init(&scn_mgr->lock, NULL) != 0){ free(scn_mgr); return NULL; }
+  scn_mgr->bkn_ctx = scn_cbs.bkn_ctx;
   scn_mgr->create_scene = scn_cbs.create_scene;
   scn_mgr->delete_scene = scn_cbs.delete_scene;
   scn_mgr->wrap_source = scn_cbs.wrap_source;

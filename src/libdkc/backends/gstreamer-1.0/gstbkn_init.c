@@ -10,20 +10,31 @@ dkc_rc gstbkn_init(void** ctx, DkcParams* params) {
   if(gst_init_check (NULL, NULL, NULL) == FALSE) return ERROR;
 
   for(int i=0; i<NB_INPUTS; i++) bkn_ctx->inputs[i] = NULL;
+  for(int i=0; i<NB_SCENES; i++) bkn_ctx->scenes[i] = NULL;
   for(int i=0; i<NB_OUTPUTS; i++) bkn_ctx->outputs[i] = NULL;
-  
-  GstElement* outputs[NB_OUTPUTS];
-  uint8_t nb_outputs;
+
+  bkn_ctx->nb_inputs = 0;
+  bkn_ctx->nb_scenes = 0;
+  bkn_ctx->nb_outputs = 0;
   
   bkn_ctx->pipeline = gst_pipeline_new(NULL);
-  
-  //gstbkn_make_scenemanager_bin(&bkn_ctx->scenemanager, params);
-  bkn_ctx->scenemanager = gst_element_factory_make("videomixer", NULL);
-  gst_bin_add(GST_BIN(bkn_ctx->pipeline), bkn_ctx->scenemanager);
-  
-  //gstbkn_make_audiomixer_bin(&bkn_ctx->audiomixer, params);
-  bkn_ctx->audiomixer = gst_element_factory_make("audiomixer", NULL);
-  gst_bin_add(GST_BIN(bkn_ctx->pipeline), bkn_ctx->audiomixer);
+
+  bkn_ctx->video_selector = gst_element_factory_make("input-selector", "video_selector");
+  bkn_ctx->audio_selector = gst_element_factory_make("input-selector", "audio_selector");
+
+  bkn_ctx->video_tee = gst_element_factory_make("tee", "video_tee");
+  bkn_ctx->audio_tee = gst_element_factory_make("tee", "audio_tee");
+
+  gst_bin_add_many(GST_BIN(bkn_ctx->pipeline),
+                   bkn_ctx->video_selector, bkn_ctx->audio_selector,
+                   bkn_ctx->video_tee, bkn_ctx->audio_tee,
+                   NULL);
+
+  g_object_set(bkn_ctx->video_tee, "allow-not-linked", TRUE, NULL);
+  g_object_set(bkn_ctx->audio_tee, "allow-not-linked", TRUE, NULL);
+
+  gst_element_link_many(bkn_ctx->video_selector, bkn_ctx->video_tee, NULL);
+  gst_element_link_many(bkn_ctx->audio_selector, bkn_ctx->audio_tee, NULL);
 
   dkc_params_unref(params);
   
