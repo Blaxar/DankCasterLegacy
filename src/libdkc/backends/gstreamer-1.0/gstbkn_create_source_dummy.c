@@ -13,7 +13,7 @@ dkc_rc gstbkn_create_source_dummy(GstElement** source, DkcParams* params) {
   audio_src = gst_element_factory_make("audiotestsrc", NULL);
 
   gst_bin_add_many(GST_BIN(*source), video_src, audio_src,
-                   NULL);
+                     NULL);
 
   video_src_pad = gst_element_get_static_pad(video_src, "src");
   gst_element_add_pad(*source, gst_ghost_pad_new("video_src", video_src_pad));

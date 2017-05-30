@@ -122,8 +122,6 @@ dkc_rc gstbkn_create_source(void* ctx, uint8_t id,  DkcSourceType src_type, cons
   if(audio_pad) gst_object_unref(audio_pad);
 
   gboolean link_res = TRUE;
-
-  gst_bin_add(GST_BIN(gst_ctx->pipeline), source_bin);
   
   if(v_rate) { // If the source has video capabilites...
 
@@ -179,7 +177,7 @@ dkc_rc gstbkn_create_source(void* ctx, uint8_t id,  DkcSourceType src_type, cons
       gst_bin_remove_many(GST_BIN(source_bin), source, a_rate, a_convert, a_tee, NULL);
 
   }
-
+    
   if(!link_res){
       gst_object_unref(GST_OBJECT(source_bin));
       return ERROR;

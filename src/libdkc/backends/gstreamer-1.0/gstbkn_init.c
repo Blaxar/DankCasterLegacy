@@ -25,19 +25,19 @@ dkc_rc gstbkn_init(void** ctx, DkcParams* params) {
 
   /* Setting video specific caps */
   bkn_ctx->v_caps = gst_caps_new_simple("video/x-raw",
-                               "framerate", GST_TYPE_FRACTION, fps.num, fps.den,
-                               "format", G_TYPE_STRING, v_format,
-                               "width", G_TYPE_INT, width,
-                               "height", G_TYPE_INT, height,
-                               NULL);
+                                          "framerate", GST_TYPE_FRACTION, fps.num, fps.den,
+                                          "format", G_TYPE_STRING, v_format,
+                                          "width", G_TYPE_INT, width,
+                                          "height", G_TYPE_INT, height,
+                                          NULL);
   g_free(v_format);
 
   /* Setting audio specific caps */
   bkn_ctx->a_caps = gst_caps_new_simple("audio/x-raw",
-                               "rate", G_TYPE_INT, rate,
-                               "format", G_TYPE_STRING, a_format,
-                               "channels", G_TYPE_INT, channels,
-                               NULL);
+                                          "rate", G_TYPE_INT, rate,
+                                          "format", G_TYPE_STRING, a_format,
+                                          "channels", G_TYPE_INT, channels,
+                                          NULL);
   g_free(a_format);
   
   for(int i=0; i<NB_INPUTS; i++) bkn_ctx->inputs[i] = NULL;
@@ -66,7 +66,7 @@ dkc_rc gstbkn_init(void** ctx, DkcParams* params) {
 
   gst_element_link(bkn_ctx->video_selector, bkn_ctx->video_tee);
   gst_element_link(bkn_ctx->audio_selector, bkn_ctx->audio_tee);
-  
+
   return OK;
   
 }

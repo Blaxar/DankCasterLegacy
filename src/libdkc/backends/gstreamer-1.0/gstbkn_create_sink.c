@@ -13,14 +13,14 @@ dkc_rc gstbkn_create_sink(void* ctx, uint8_t id, DkcSinkType snk_type, const cha
   GstElement* sink = NULL;
 
   /* Video specific elements */
-  GstElement* v_valve = NULL;
+  GstElement* v_queue = NULL;
   GstElement* v_rate = NULL;
   GstElement* v_convert = NULL;
   GstElement* v_scale = NULL;
   GstElement* v_convert2 = NULL;
 
   /* Audio specific elements */
-  GstElement* a_valve = NULL;
+  GstElement* a_queue = NULL;
   GstElement* a_rate = NULL;
   GstElement* a_convert = NULL;
 
@@ -78,13 +78,13 @@ dkc_rc gstbkn_create_sink(void* ctx, uint8_t id, DkcSinkType snk_type, const cha
   if(video_pad){ // If the source has video capabilites...
   
     /* Making video specific elements */
-    v_valve = gst_element_factory_make("valve", NULL);
+    v_queue = gst_element_factory_make("queue", NULL);
     v_rate = gst_element_factory_make("videorate", NULL);
     v_convert = gst_element_factory_make("videoconvert", NULL);
     v_scale = gst_element_factory_make("videoscale", NULL);
     v_convert2 = gst_element_factory_make("videoconvert", NULL);
 
-    gst_bin_add_many(GST_BIN(sink_bin), v_valve, v_rate, v_convert, v_scale, v_convert2, NULL);
+    gst_bin_add_many(GST_BIN(sink_bin), v_queue, v_rate, v_convert, v_scale, v_convert2, NULL);
 
   }
 
@@ -92,11 +92,11 @@ dkc_rc gstbkn_create_sink(void* ctx, uint8_t id, DkcSinkType snk_type, const cha
   if(audio_pad){ // If the source has audio capabilites...
   
     /* Making audio specific elements */
-    a_valve = gst_element_factory_make("valve", NULL);
+    a_queue = gst_element_factory_make("queue", NULL);
     a_rate = gst_element_factory_make("audiorate", NULL);
     a_convert = gst_element_factory_make("audioconvert", NULL);
 
-    gst_bin_add_many(GST_BIN(sink_bin), a_valve, a_rate, a_convert, NULL);
+    gst_bin_add_many(GST_BIN(sink_bin), a_queue, a_rate, a_convert, NULL);
     
   }
 
@@ -116,7 +116,7 @@ dkc_rc gstbkn_create_sink(void* ctx, uint8_t id, DkcSinkType snk_type, const cha
   
   if(v_rate) { // If the source has video capabilites...
 
-    /* Setting video specific caps */
+        /* Setting video specific caps */
     v_rate_caps = gst_caps_new_simple("video/x-raw",
                              "framerate", GST_TYPE_FRACTION, fps.num, fps.den,
                              NULL);
@@ -130,7 +130,7 @@ dkc_rc gstbkn_create_sink(void* ctx, uint8_t id, DkcSinkType snk_type, const cha
 
     g_free(v_format);
     
-    link_res = link_res && gst_element_link(v_valve, v_rate) &&
+    link_res = link_res && gst_element_link(v_queue, v_rate) &&
                gst_element_link_filtered(v_rate, v_convert, v_rate_caps) &&
                gst_element_link_filtered(v_convert, v_scale, v_convert_caps) &&
                gst_element_link_filtered(v_scale, v_convert2, v_scale_caps) &&
@@ -141,7 +141,7 @@ dkc_rc gstbkn_create_sink(void* ctx, uint8_t id, DkcSinkType snk_type, const cha
     gst_caps_unref(v_scale_caps);
 
     if(!link_res)
-        gst_bin_remove_many(GST_BIN(sink_bin), v_valve, v_rate, v_convert, v_scale, v_convert2, sink, NULL);
+      gst_bin_remove_many(GST_BIN(sink_bin), v_queue, v_rate, v_convert, v_scale, v_convert2, sink, NULL);
 
   }
 
@@ -158,7 +158,7 @@ dkc_rc gstbkn_create_sink(void* ctx, uint8_t id, DkcSinkType snk_type, const cha
 
     g_free(a_format);
       
-    link_res = link_res && gst_element_link(a_valve, a_rate) &&
+    link_res = link_res && gst_element_link(a_queue, a_rate) &&
                gst_element_link_filtered(a_rate, a_convert, a_rate_caps) &&
                gst_element_link_filtered(a_convert, sink, a_convert_caps);
   
@@ -166,7 +166,7 @@ dkc_rc gstbkn_create_sink(void* ctx, uint8_t id, DkcSinkType snk_type, const cha
     gst_caps_unref(a_convert_caps);
 
     if(!link_res)
-      gst_bin_remove_many(GST_BIN(sink_bin), a_valve, a_rate, a_convert, sink, NULL);
+      gst_bin_remove_many(GST_BIN(sink_bin), a_queue, a_rate, a_convert, sink, NULL);
 
   }
 
@@ -182,17 +182,22 @@ dkc_rc gstbkn_create_sink(void* ctx, uint8_t id, DkcSinkType snk_type, const cha
     /* Link video/audio streams to the video-mixer/audio-mixer */
     
     if(v_rate) {
-      video_pad = gst_element_get_static_pad(v_valve, "sink");
+      video_pad = gst_element_get_static_pad(v_queue, "sink");
       gst_element_add_pad(sink_bin, gst_ghost_pad_new("video_sink", video_pad));
       gst_object_unref(GST_OBJECT(video_pad));
-      gst_element_link(gst_ctx->video_tee, sink_bin);
+      link_res = link_res && gst_element_link(gst_ctx->video_tee, sink_bin);
     }
 
     if(a_rate) {
-      audio_pad = gst_element_get_static_pad(a_valve, "sink");
+      audio_pad = gst_element_get_static_pad(a_queue, "sink");
       gst_element_add_pad(sink_bin, gst_ghost_pad_new("audio_sink", audio_pad));
       gst_object_unref(GST_OBJECT(audio_pad));
-      gst_element_link(gst_ctx->audio_tee, sink_bin);
+      link_res = link_res && gst_element_link(gst_ctx->audio_tee, sink_bin);
+    }
+
+    if(!link_res){
+      gst_bin_remove(GST_BIN(gst_ctx->pipeline), sink_bin);
+      return ERROR;
     }
       
     gst_ctx->outputs[id] = sink_bin;

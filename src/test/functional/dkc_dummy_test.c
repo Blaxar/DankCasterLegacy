@@ -18,10 +18,10 @@ int main(int argc, char* argv[]){
 
   DkcApp* app;
   
-  if(! (app = dkc_app_create("gst", dkc_params_wrap("width", INT, 640,
-                                                    "height", INT, 360,
+  if(! (app = dkc_app_create("gst", dkc_params_wrap("width", INT, 640*2,
+                                                    "height", INT, 360*2,
                                                     "framerate", FRACTION, 25, 1,
-                                                    "videoformat", STRING, "RGB32",
+                                                    "videoformat", STRING, "NV12",
                                                     "rate", INT, 48000,
                                                     "channels", INT, 2,
                                                     "audioformat", STRING, "S16LE",

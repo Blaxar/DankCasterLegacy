@@ -6,7 +6,6 @@ dkc_rc gstbkn_wrap_source(void* ctx, uint8_t scn_id, uint8_t src_id, uint8_t id)
 
   GstBackendCtx* gst_ctx = (GstBackendCtx*) ctx;
 
-  
   /* Video specific elements */
   GstElement* v_queue = NULL;
   GstElement* v_rate = NULL;
@@ -86,7 +85,7 @@ dkc_rc gstbkn_wrap_source(void* ctx, uint8_t scn_id, uint8_t src_id, uint8_t id)
     
   }
       
-  gst_bin_add_many(GST_BIN(gst_ctx->pipeline), //source_bin,
+  gst_bin_add_many(GST_BIN(gst_ctx->pipeline), source_bin,
                    scene->sources[id],
                    NULL);
   
