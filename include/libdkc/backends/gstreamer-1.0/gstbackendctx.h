@@ -30,12 +30,9 @@ typedef struct {
   GstElement* video_tee;
   GstElement* audio_selector;
   GstElement* audio_tee;
+  GstPad* v_caps;
+  GstPad* a_caps;
   
 } GstBackendCtx;
-
-// Bin handling
-
-dkc_rc gstbkn_make_scenemanager_bin(GstElement** bin, DkcParams* params);
-dkc_rc gstbkn_make_audiomixer_bin(GstElement** bin, DkcParams* params);
 
 #endif //GSTBACKENDCTX_H

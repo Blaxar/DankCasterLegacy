@@ -2,7 +2,6 @@
 #include <libdkc/backends/gstreamer-1.0/dkc_gst_sources.h>
 #include <libdkc/backends/gstreamer-1.0/gstbackendctx.h>
 #include <stdlib.h>
-#include <assert.h>
 
 dkc_rc gstbkn_create_source(void* ctx, uint8_t id,  DkcSourceType src_type, const char* uri, const char* name, DkcParams* params) {
 
@@ -43,9 +42,6 @@ dkc_rc gstbkn_create_source(void* ctx, uint8_t id,  DkcSourceType src_type, cons
   int channels = dkc_params_pop_int(params, "channels", 2);
   int rate = dkc_params_pop_int(params, "rate", 48000);
   gchar* a_format = dkc_params_pop_string(params, "audioformat", "S16LE");
-
-  g_print("width: %d, height: %d, fps: %d/%d, video format: %s, channels: %d, rate: %d, audio format: %s\n",
-          width, height, fps.num, fps.den, v_format, channels, rate, a_format);
   
   source_bin = gst_bin_new(name);
 
@@ -157,8 +153,6 @@ dkc_rc gstbkn_create_source(void* ctx, uint8_t id,  DkcSourceType src_type, cons
     if(!link_res)
       gst_bin_remove_many(GST_BIN(source_bin), source, v_rate, v_convert, v_scale, v_tee, NULL);
 
-    //gst_element_link(v_tee, gst_ctx->video_selector);
-
   }
 
   if(a_rate) { // If the source has audio capabilites...
@@ -184,8 +178,6 @@ dkc_rc gstbkn_create_source(void* ctx, uint8_t id,  DkcSourceType src_type, cons
     if(!link_res)
       gst_bin_remove_many(GST_BIN(source_bin), source, a_rate, a_convert, a_tee, NULL);
 
-    //gst_element_link(a_tee, gst_ctx->audio_selector);
-
   }
 
   if(!link_res){
@@ -194,20 +186,6 @@ dkc_rc gstbkn_create_source(void* ctx, uint8_t id,  DkcSourceType src_type, cons
   }
   
   if(gst_ctx->inputs[id] == NULL) {
-      /*
-    if(v_rate) {
-      video_pad = gst_element_get_static_pad(v_tee, "src");
-      gst_element_add_pad(source_bin, gst_ghost_pad_new("video_src", video_pad));
-      gst_object_unref(GST_OBJECT(video_pad));
-      //gst_element_link(source_bin, gst_ctx->video_selector);
-    }
-
-    if(a_rate) {
-      audio_pad = gst_element_get_static_pad(a_tee, "src");
-      gst_element_add_pad(source_bin, gst_ghost_pad_new("audio_src", audio_pad));
-      gst_object_unref(GST_OBJECT(audio_pad));
-      //gst_element_link(source_bin, gst_ctx->audio_selector);
-    } */
     
     gst_ctx->inputs[id] = source_bin;
     gst_ctx->nb_inputs++;

@@ -8,6 +8,9 @@ dkc_rc gstbkn_uninit(void** ctx) {
 
   gst_element_set_state (gst_ctx->pipeline, GST_STATE_NULL);
   gst_object_unref (gst_ctx->pipeline);
+
+  gst_caps_unref(gst_ctx->v_caps);
+  gst_caps_unref(gst_ctx->a_caps);
   
   free(gst_ctx);
   *ctx = NULL;

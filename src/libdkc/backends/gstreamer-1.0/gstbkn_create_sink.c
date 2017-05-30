@@ -36,8 +36,6 @@ dkc_rc gstbkn_create_sink(void* ctx, uint8_t id, DkcSinkType snk_type, const cha
   GstPad *video_pad = NULL;
   GstPad *audio_pad = NULL;
 
-  
-
   /* fetching parameters */
   int width = dkc_params_pop_int(params, "width", 480);
   int height  = dkc_params_pop_int(params, "height", 360);
@@ -46,9 +44,6 @@ dkc_rc gstbkn_create_sink(void* ctx, uint8_t id, DkcSinkType snk_type, const cha
   int channels = dkc_params_pop_int(params, "channels", 2);
   int rate = dkc_params_pop_int(params, "rate", 48000);
   gchar* a_format = dkc_params_pop_string(params, "audioformat", "S16LE");
-
-  g_print("width: %d, height: %d, fps: %d/%d, video format: %s, channels: %d, rate: %d, audio format: %s\n",
-          width, height, fps.num, fps.den, v_format, channels, rate, a_format);
   
   sink_bin = gst_bin_new(name);
 
@@ -120,7 +115,7 @@ dkc_rc gstbkn_create_sink(void* ctx, uint8_t id, DkcSinkType snk_type, const cha
   gboolean link_res = TRUE;
   
   if(v_rate) { // If the source has video capabilites...
-    g_print("VIDEO\n");
+
     /* Setting video specific caps */
     v_rate_caps = gst_caps_new_simple("video/x-raw",
                              "framerate", GST_TYPE_FRACTION, fps.num, fps.den,

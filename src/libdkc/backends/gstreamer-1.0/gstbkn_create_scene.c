@@ -16,7 +16,12 @@ dkc_rc gstbkn_create_scene(void* ctx, uint8_t id) {
   gst_ctx->scenes[id]->audio_mixer = gst_element_factory_make("audiomixer", NULL);
   gst_bin_add(GST_BIN(gst_ctx->pipeline), gst_ctx->scenes[id]->audio_mixer);
 
+  //gst_element_link_filtered(gst_ctx->scenes[id]->video_mixer, gst_ctx->video_selector, gst_ctx->v_caps);
+  //gst_element_link_filtered(gst_ctx->scenes[id]->audio_mixer, gst_ctx->audio_selector, gst_ctx->a_caps);
+
   gst_element_link(gst_ctx->scenes[id]->video_mixer, gst_ctx->video_selector);
   gst_element_link(gst_ctx->scenes[id]->audio_mixer, gst_ctx->audio_selector);
+
+  return OK;
   
 }
