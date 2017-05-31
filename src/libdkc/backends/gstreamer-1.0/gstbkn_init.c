@@ -8,13 +8,13 @@ dkc_rc gstbkn_init(void** ctx, DkcParams* params) {
   GstBackendCtx* bkn_ctx = *ctx;
 
   /* fetching parameters */
-  int width = dkc_params_pop_int(params, "width", 480);
-  int height  = dkc_params_pop_int(params, "height", 360);
-  DkcFraction fps = dkc_params_pop_fraction(params, "framerate", (DkcFraction){25, 1});
-  gchar* v_format = dkc_params_pop_string(params, "videoformat", "NV12");
-  int channels = dkc_params_pop_int(params, "channels", 2);
-  int rate = dkc_params_pop_int(params, "rate", 48000);
-  gchar* a_format = dkc_params_pop_string(params, "audioformat", "S16LE");
+  int width = dkc_params_fetch_int(params, "width", 480);
+  int height  = dkc_params_fetch_int(params, "height", 360);
+  DkcFraction fps = dkc_params_fetch_fraction(params, "framerate", (DkcFraction){25, 1});
+  gchar* v_format = dkc_params_fetch_string(params, "videoformat", "NV12");
+  int channels = dkc_params_fetch_int(params, "channels", 2);
+  int rate = dkc_params_fetch_int(params, "rate", 48000);
+  gchar* a_format = dkc_params_fetch_string(params, "audioformat", "S16LE");
 
   bkn_ctx->v_caps = NULL;
   bkn_ctx->a_caps = NULL;

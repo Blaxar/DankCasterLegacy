@@ -275,7 +275,7 @@ void dkc_params_wrap_test(void){
 }
 
 
-void dkc_params_pop_int_test(void) {
+void dkc_params_fetch_int_test(void) {
 
   int value;
   DkcParams* params;
@@ -283,17 +283,16 @@ void dkc_params_pop_int_test(void) {
   params = dkc_params_create();
   dkc_params_set_int(params, "some int parameter", 420);
   
-  value = dkc_params_pop_int(params, "some int parameter", 69);
+  value = dkc_params_fetch_int(params, "some int parameter", 69);
   CU_ASSERT_EQUAL(value, (int)420);
-  value = dkc_params_pop_int(params, "I do not exist", 69);
+  value = dkc_params_fetch_int(params, "I do not exist", 69);
   CU_ASSERT_EQUAL(value, (int)69);
 
-  dkc_params_unset(params, "some int parameter");
   dkc_params_delete(params);
   
 }
 
-void dkc_params_pop_float_test(void) {
+void dkc_params_fetch_float_test(void) {
 
   float value;
   DkcParams* params;
@@ -301,17 +300,16 @@ void dkc_params_pop_float_test(void) {
   params = dkc_params_create();
   dkc_params_set_float(params, "some float parameter", (float)3.14);
   
-  value = dkc_params_pop_float(params, "some float parameter", (float)-6.9);
+  value = dkc_params_fetch_float(params, "some float parameter", (float)-6.9);
   CU_ASSERT_EQUAL(value, (float)3.14);
-  value = dkc_params_pop_float(params, "I do not exist", (float)-6.9);
+  value = dkc_params_fetch_float(params, "I do not exist", (float)-6.9);
   CU_ASSERT_EQUAL(value, (float)-6.9);
 
-  dkc_params_unset(params, "some float parameter");
   dkc_params_delete(params);
   
 }
 
-void dkc_params_pop_string_test(void) {
+void dkc_params_fetch_string_test(void) {
     
   char* value;
   DkcParams* params;
@@ -320,20 +318,19 @@ void dkc_params_pop_string_test(void) {
   dkc_params_set_string(params, "some string parameter", "I am a simple string therefore neither me nor any of my kind "
                                                          "are able to comprehend the concept of capitalism.");
   
-  value = dkc_params_pop_string(params, "some string parameter", "Your mom is fat tho.");
+  value = dkc_params_fetch_string(params, "some string parameter", "Your mom is fat tho.");
   CU_ASSERT_EQUAL(strcmp(value, "I am a simple string therefore neither me nor any of my kind "
                                 "are able to comprehend the concept of capitalism."), 0);
   free(value);
-  value = dkc_params_pop_string(params, "I do not exist", "Your mom is fat tho.");
+  value = dkc_params_fetch_string(params, "I do not exist", "Your mom is fat tho.");
   CU_ASSERT_EQUAL(strcmp(value, "Your mom is fat tho."), 0);
   free(value);
 
-  dkc_params_unset(params, "some string parameter");
   dkc_params_delete(params);
   
 }
 
-void dkc_params_pop_fraction_test(void) {
+void dkc_params_fetch_fraction_test(void) {
 
   DkcFraction value;
   DkcParams* params;
@@ -341,10 +338,10 @@ void dkc_params_pop_fraction_test(void) {
   params = dkc_params_create();
   dkc_params_set_fraction(params, "some fraction parameter", (DkcFraction){5,66});
   
-  value = dkc_params_pop_fraction(params, "some fraction parameter", (DkcFraction){6,9});
+  value = dkc_params_fetch_fraction(params, "some fraction parameter", (DkcFraction){6,9});
   CU_ASSERT_EQUAL(value.num, 5);
   CU_ASSERT_EQUAL(value.den, 66);
-  value = dkc_params_pop_fraction(params, "I do not exist", (DkcFraction){6,9});
+  value = dkc_params_fetch_fraction(params, "I do not exist", (DkcFraction){6,9});
   CU_ASSERT_EQUAL(value.num, 6);
   CU_ASSERT_EQUAL(value.den, 9);
   
@@ -394,10 +391,10 @@ int main ( void )
         (NULL == CU_add_test(pSuite, "dkc_params_unset_test", dkc_params_unset_test)) ||
         (NULL == CU_add_test(pSuite, "dkc_params_delete_test", dkc_params_delete_test)) ||
         (NULL == CU_add_test(pSuite, "dkc_params_wrap_test", dkc_params_wrap_test)) ||
-        (NULL == CU_add_test(pSuite, "dkc_params_pop_int_test", dkc_params_pop_int_test)) ||
-        (NULL == CU_add_test(pSuite, "dkc_params_pop_float_test", dkc_params_pop_float_test)) ||
-        (NULL == CU_add_test(pSuite, "dkc_params_pop_string_test", dkc_params_pop_string_test)) ||
-        (NULL == CU_add_test(pSuite, "dkc_params_pop_fraction_test", dkc_params_pop_fraction_test))
+        (NULL == CU_add_test(pSuite, "dkc_params_fetch_int_test", dkc_params_fetch_int_test)) ||
+        (NULL == CU_add_test(pSuite, "dkc_params_fetch_float_test", dkc_params_fetch_float_test)) ||
+        (NULL == CU_add_test(pSuite, "dkc_params_fetch_string_test", dkc_params_fetch_string_test)) ||
+        (NULL == CU_add_test(pSuite, "dkc_params_fetch_fraction_test", dkc_params_fetch_fraction_test))
     )
     {
       CU_cleanup_registry();

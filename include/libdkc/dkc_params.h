@@ -49,10 +49,10 @@ typedef dkc_rc (*dkc_param_cb)(const char* name, DkcParamType type, void* value,
 DkcParams* dkc_params_wrap(const char* name, ...);
 dkc_rc dkc_params_pop_all(DkcParams *params, dkc_param_cb param_cb, void* ctx);
 
-int dkc_params_pop_int(DkcParams *params, const char* name, int default_value);
-float dkc_params_pop_float(DkcParams *params, const char* name, float default_value);
-char* dkc_params_pop_string(DkcParams *params, const char* name, char* default_value);
-DkcFraction dkc_params_pop_fraction(DkcParams *params, const char* name, DkcFraction value);
+int dkc_params_fetch_int(DkcParams *params, const char* name, int default_value);
+float dkc_params_fetch_float(DkcParams *params, const char* name, float default_value);
+char* dkc_params_fetch_string(DkcParams *params, const char* name, char* default_value);
+DkcFraction dkc_params_fetch_fraction(DkcParams *params, const char* name, DkcFraction value);
 
 DkcParams* dkc_params_create();
 

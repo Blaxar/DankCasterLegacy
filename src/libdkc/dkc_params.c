@@ -97,49 +97,46 @@ dkc_rc dkc_params_pop_all(DkcParams *params, dkc_param_cb param_cb, void* ctx) {
     
 }
 
-int dkc_params_pop_int(DkcParams *params, const char* name, int default_value) {
+int dkc_params_fetch_int(DkcParams *params, const char* name, int default_value) {
     
   int value;
-  if(dkc_params_get_int(params, name, &value)) {
-    dkc_params_unset(params, name);
+  if(dkc_params_get_int(params, name, &value))
     return value;
-  }else
+  else
     return default_value;
   
 }
 
-float dkc_params_pop_float(DkcParams *params, const char* name, float default_value) {
+float dkc_params_fetch_float(DkcParams *params, const char* name, float default_value) {
 
   float value;
-  if(dkc_params_get_float(params, name, &value)) {
-    dkc_params_unset(params, name);
+  if(dkc_params_get_float(params, name, &value))
     return value;
-  } else
+  else
     return default_value;
     
 }
 
-char* dkc_params_pop_string(DkcParams *params, const char* name, char* default_value) {
+char* dkc_params_fetch_string(DkcParams *params, const char* name, char* default_value) {
 
   char* value;
-  if(dkc_params_get_string(params, name, &value))
-    dkc_params_unset(params, name);
-  else {
+  if(!dkc_params_get_string(params, name, &value)) {
     value = malloc((strlen(default_value)+1)*sizeof(char));
     memcpy(value, default_value, (strlen(default_value)+1)*sizeof(char));
   }
   
   return value;
+  
 }
 
-DkcFraction dkc_params_pop_fraction(DkcParams *params, const char* name, DkcFraction default_value) {
+DkcFraction dkc_params_fetch_fraction(DkcParams *params, const char* name, DkcFraction default_value) {
 
   DkcFraction value;
   if(dkc_params_get_fraction(params, name, &value)) {
-    dkc_params_unset(params, name);
     return value;
   } else 
     return default_value;
+  
 }
 
 DkcParams* dkc_params_create() {
