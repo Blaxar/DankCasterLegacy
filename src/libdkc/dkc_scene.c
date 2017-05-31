@@ -6,7 +6,6 @@
 
 /* Scene handling */
 
-
 DkcSceneMgr* dkc_scenemgr_create(DkcSceneCBs scn_cbs) {
 
   DkcSceneMgr* scn_mgr = malloc(sizeof(DkcSceneMgr));
@@ -48,7 +47,7 @@ DkcScene* dkc_scene_create(DkcSceneMgr* scn_mgr){
         free(scn_mgr->scenes[i]);
         scn_mgr->scenes[i] = NULL;
         pthread_mutex_unlock(&scn_mgr->lock);
-        return scn;
+        return NULL;
       }
       scn_mgr->scenes[i]->scn_mgr = scn_mgr;
       for(int j=0 ; j<NB_WRP_SOURCES; j++) {
@@ -90,9 +89,8 @@ dkc_rc dkc_scene_delete(DkcScene* scn){
 
 /* Source wrapping */
 
-DkcWrappedSource* dkc_source_wrap(DkcScene* scn,
-                                  DkcSource* src) {
-
+DkcWrappedSource* dkc_source_wrap(DkcScene* scn, DkcSource* src) {
+    
   DkcWrappedSource* wrpd_src = NULL;
   DkcSceneMgr* scn_mgr = scn->scn_mgr;
   pthread_mutex_lock(&scn->lock);
@@ -105,7 +103,7 @@ DkcWrappedSource* dkc_source_wrap(DkcScene* scn,
         free(scn->sources[i]);
         scn->sources[i] = NULL;
         pthread_mutex_unlock(&scn->lock);
-        return wrpd_src;
+        return NULL;
       }
       scn->sources[i]->scn = scn;
       scn->sources[i]->id = i;
@@ -142,6 +140,6 @@ dkc_rc dkc_source_unwrap(DkcWrappedSource* wrpd_src) {
 }
 
 DkcScene* dkc_app_scene_create(DkcApp* app) {
-    if(app == NULL || app->scn_mgr == NULL) return NULL;
-    return dkc_scene_create(app->scn_mgr);
+  if(app == NULL || app->scn_mgr == NULL) return NULL;
+  return dkc_scene_create(app->scn_mgr);
 }

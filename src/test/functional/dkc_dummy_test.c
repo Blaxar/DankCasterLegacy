@@ -6,16 +6,14 @@
 #include <libdkc/dkc_sink.h>
 #include <gst/gst.h>
 
-#include <assert.h>
-
 int main(int argc, char* argv[]){
-
-  GMainLoop* loop = g_main_loop_new (NULL, FALSE);
   
   printf("Initializing Dkc\n");
   dkc_init();
   printf("Initialized Dkc\n");
 
+  GMainLoop* loop = g_main_loop_new (NULL, FALSE);
+  
   DkcApp* app;
   
   if(! (app = dkc_app_create("gst", dkc_params_wrap("width", INT, 640*2,
@@ -27,7 +25,10 @@ int main(int argc, char* argv[]){
                                                     "audioformat", STRING, "S16LE",
                                                     NULL)))) printf("Failed to create app.\n");
 
-  assert(app != NULL);
+  if (!app) {
+      fprintf(stderr, "Failed to create app.\n");
+      return 1;
+  }
   printf("Created app.\n");
 
   DkcSource* dummy_src = dkc_app_source_create(app, DUMMY_SRC, "/some/uri", "dummy_src",
@@ -39,7 +40,10 @@ int main(int argc, char* argv[]){
                                                                "channels", INT, 2,
                                                                "audioformat", STRING, "S16LE",
                                                                NULL));
-  assert(dummy_src != NULL);
+  if (!dummy_src) {
+      fprintf(stderr, "Failed to create source.\n");
+      return 1;
+  }
   printf("Created source.\n");
 
   DkcSink* window_sink = dkc_app_sink_create(app, DUMMY_SNK, "test window", "test_window",
@@ -51,21 +55,39 @@ int main(int argc, char* argv[]){
                                                              "channels", INT, 2,
                                                              "audioformat", STRING, "S16LE",
                                                              NULL));
-  assert(window_sink != NULL);
+  if (!window_sink) {
+      fprintf(stderr, "Failed to create sink.\n");
+      return 1;
+  }
   printf("Created sink.\n");
   
   DkcScene* scene = dkc_app_scene_create(app);
-  assert(scene != NULL);
+  if (!scene) {
+      fprintf(stderr, "Failed to create scene.\n");
+      return 1;
+  }
   printf("Created scene.\n");
   
   DkcWrappedSource* wrpd_src = dkc_source_wrap(scene, dummy_src);
-  assert(wrpd_src != NULL);
+  if (!wrpd_src) {
+      fprintf(stderr, "Failed to wrap source.\n");
+      return 1;
+  }
   printf("Wrapped source.\n");
-  
-  assert(dkc_app_start(app) == OK);
+
+  if (!dkc_app_start(app)) {
+      fprintf(stderr, "Failed to start app.\n");
+      return 1;
+  }
   printf("Started app.\n");
 
   g_main_loop_run (loop);
+
+  if (!dkc_app_stop(app)) {
+      fprintf(stderr, "Failed to stop app.\n");
+      return 1;
+  }
+  printf("Stopped app.\n");
   
   printf("Terminating Dkc\n");
   dkc_terminate();

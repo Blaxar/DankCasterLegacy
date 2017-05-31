@@ -43,7 +43,7 @@ DkcSink* dkc_sink_create(DkcSinkMgr* snk_mgr, DkcSinkType snk_type, const char* 
         free(snk_mgr->sinks[j]);
         snk_mgr->sinks[j] = NULL;
         pthread_mutex_unlock(&snk_mgr->lock);
-        return snk;
+        return NULL;
       }
       snk_mgr->nb_sinks++;
       snk = snk_mgr->sinks[j];

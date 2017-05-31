@@ -43,7 +43,7 @@ DkcSource* dkc_source_create(DkcSourceMgr* src_mgr, DkcSourceType src_type, cons
         free(src_mgr->sources[j]);
         src_mgr->sources[j] = NULL;
         pthread_mutex_unlock(&src_mgr->lock);
-        return src;
+        return NULL;
       }
       src_mgr->nb_sources++;
       src = src_mgr->sources[j];

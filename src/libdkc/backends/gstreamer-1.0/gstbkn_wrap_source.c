@@ -41,6 +41,8 @@ dkc_rc gstbkn_wrap_source(void* ctx, uint8_t scn_id, uint8_t src_id, uint8_t id)
 
   }
 
+  gboolean link_res = TRUE;
+  
   if(source_video_tee) { //Source has video capablities
 
     v_queue = gst_element_factory_make("queue", NULL);
@@ -52,16 +54,13 @@ dkc_rc gstbkn_wrap_source(void* ctx, uint8_t scn_id, uint8_t src_id, uint8_t id)
     gst_bin_add_many(GST_BIN(scene->sources[id]), v_queue,
                      v_rate, v_convert, v_scale, v_filter,
                      NULL);
-    gst_element_link_many(v_queue, v_rate, v_convert, v_scale, v_filter, NULL);
+    link_res = link_res && gst_element_link_many(v_queue, v_rate, v_convert, v_scale, v_filter, NULL);
 
-    GstPad* sink_pad = gst_element_get_static_pad(v_queue, "sink");
-    gst_element_add_pad(scene->sources[id], gst_ghost_pad_new("video_sink", sink_pad));
-    gst_object_unref(GST_OBJECT(sink_pad));
+    if(!link_res)
+      gst_bin_remove_many(GST_BIN(scene->sources[id]), v_queue,
+                          v_rate, v_convert, v_scale, v_filter,
+                          NULL);
 
-    GstPad* src_pad = gst_element_get_static_pad(v_filter, "src");
-    gst_element_add_pad(scene->sources[id], gst_ghost_pad_new("video_src", src_pad));
-    gst_object_unref(GST_OBJECT(src_pad));
-    
   }
 
   if(source_audio_tee) { //Source has audio capablities
@@ -73,8 +72,34 @@ dkc_rc gstbkn_wrap_source(void* ctx, uint8_t scn_id, uint8_t src_id, uint8_t id)
 
     gst_bin_add_many(GST_BIN(scene->sources[id]), a_queue, a_rate, a_convert, a_filter,
                      NULL);
-    gst_element_link_many(a_queue, a_rate, a_convert, a_filter, NULL);
+    link_res = link_res && gst_element_link_many(a_queue, a_rate, a_convert, a_filter, NULL);
 
+    if(!link_res)
+      gst_bin_remove_many(GST_BIN(scene->sources[id]), a_queue, a_rate, a_convert, a_filter,
+                          NULL);
+
+  }
+
+  if(!link_res) {
+    gst_object_unref(scene->sources[id]);
+    scene->sources[id] = NULL;
+    return ERROR;
+  }
+
+  if(source_video_tee) {
+    
+    GstPad* sink_pad = gst_element_get_static_pad(v_queue, "sink");
+    gst_element_add_pad(scene->sources[id], gst_ghost_pad_new("video_sink", sink_pad));
+    gst_object_unref(GST_OBJECT(sink_pad));
+
+    GstPad* src_pad = gst_element_get_static_pad(v_filter, "src");
+    gst_element_add_pad(scene->sources[id], gst_ghost_pad_new("video_src", src_pad));
+    gst_object_unref(GST_OBJECT(src_pad));
+    
+  }
+
+  if(source_audio_tee) {
+  
     GstPad* sink_pad = gst_element_get_static_pad(a_queue, "sink");
     gst_element_add_pad(scene->sources[id], gst_ghost_pad_new("audio_sink", sink_pad));
     gst_object_unref(GST_OBJECT(sink_pad));
@@ -91,16 +116,24 @@ dkc_rc gstbkn_wrap_source(void* ctx, uint8_t scn_id, uint8_t src_id, uint8_t id)
   
   if(source_video_tee) {
 
-      gst_element_link_pads(source_video_tee, NULL, scene->sources[id], "video_sink");
-      gst_element_link_pads(scene->sources[id], "video_src", gst_ctx->scenes[scn_id]->video_mixer, NULL);
+      link_res = link_res && gst_element_link_pads(source_video_tee, NULL, scene->sources[id], "video_sink") &&
+                             gst_element_link_pads(scene->sources[id], "video_src", gst_ctx->scenes[scn_id]->video_mixer, NULL);
 
   }
 
   if(source_audio_tee) {
 
-    gst_element_link_pads(source_audio_tee, NULL, scene->sources[id], "audio_sink");
-    gst_element_link_pads(scene->sources[id], "audio_src", gst_ctx->scenes[scn_id]->audio_mixer, NULL);
+    link_res = link_res && gst_element_link_pads(source_audio_tee, NULL, scene->sources[id], "audio_sink") &&
+                           gst_element_link_pads(scene->sources[id], "audio_src", gst_ctx->scenes[scn_id]->audio_mixer, NULL);
 
+  }
+
+  if(!link_res) {
+    gst_bin_remove_many(GST_BIN(gst_ctx->pipeline), source_bin,
+                        scene->sources[id],
+                        NULL);
+    scene->sources[id] = NULL;
+    return ERROR;
   }
 
   return OK;
