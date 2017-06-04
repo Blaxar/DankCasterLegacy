@@ -30,8 +30,8 @@ int main(int argc, char* argv[]){
       return 1;
   }
   printf("Created app.\n");
-
-  DkcSource* dummy_src = dkc_app_source_create(app, DUMMY_SRC, "/some/uri", "dummy_src",
+    
+  DkcSource* dummy_src = dkc_app_source_create(app, DUMMY_SRC, "/dev/video0", "dummy",
                                                dkc_params_wrap("width", INT, 640,
                                                                "height", INT, 360,
                                                                "framerate", FRACTION, 25, 1,
@@ -41,6 +41,18 @@ int main(int argc, char* argv[]){
                                                                "audioformat", STRING, "S16LE",
                                                                NULL));
   if (!dummy_src) {
+      fprintf(stderr, "Failed to create source.\n");
+      return 1;
+  }
+  printf("Created source.\n");
+
+  DkcSource* v4l2_src = dkc_app_source_create(app, V4L2_SRC, "/dev/video0", "webcam",
+                                               dkc_params_wrap("width", INT, 752,
+                                                               "height", INT, 416,
+                                                               "framerate", FRACTION, 25, 1,
+                                                               "format", STRING, "YUY2",
+                                                               NULL));
+  if (!v4l2_src) {
       fprintf(stderr, "Failed to create source.\n");
       return 1;
   }
@@ -68,8 +80,15 @@ int main(int argc, char* argv[]){
   }
   printf("Created scene.\n");
   
-  DkcWrappedSource* wrpd_src = dkc_source_wrap(scene, dummy_src);
-  if (!wrpd_src) {
+  DkcWrappedSource* wrpd_dummy_src = dkc_source_wrap(scene, dummy_src);
+  if (!wrpd_dummy_src) {
+      fprintf(stderr, "Failed to wrap source.\n");
+      return 1;
+  }
+  printf("Wrapped source.\n");
+
+  DkcWrappedSource* wrpd_v4l2_src = dkc_source_wrap(scene, v4l2_src);
+  if (!wrpd_v4l2_src) {
       fprintf(stderr, "Failed to wrap source.\n");
       return 1;
   }

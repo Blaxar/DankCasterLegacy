@@ -15,6 +15,8 @@ dkc_rc gstbkn_create_sink_dummy(GstElement** sink, DkcParams* params) {
   gst_bin_add_many(GST_BIN(*sink), video_snk, audio_snk,
                    NULL);
 
+  g_object_set(video_snk, "sync", FALSE, NULL);
+
   video_snk_pad = gst_element_get_static_pad(video_snk, "sink");
   gst_element_add_pad(*sink, gst_ghost_pad_new("video_sink", video_snk_pad));
   gst_object_unref(GST_OBJECT(video_snk_pad));
@@ -22,6 +24,8 @@ dkc_rc gstbkn_create_sink_dummy(GstElement** sink, DkcParams* params) {
   audio_snk_pad = gst_element_get_static_pad(audio_snk, "sink");
   gst_element_add_pad(*sink, gst_ghost_pad_new("audio_sink", audio_snk_pad));
   gst_object_unref(GST_OBJECT(audio_snk_pad));
+
+  if(params) dkc_params_unref(params);
   
   return OK;
   

@@ -22,6 +22,8 @@ dkc_rc gstbkn_create_source_dummy(GstElement** source, DkcParams* params) {
   audio_src_pad = gst_element_get_static_pad(audio_src, "src");
   gst_element_add_pad(*source, gst_ghost_pad_new("audio_src", audio_src_pad));
   gst_object_unref(GST_OBJECT(audio_src_pad));
+
+  if(params) dkc_params_unref(params);
   
   return OK;
   

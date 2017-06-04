@@ -16,6 +16,11 @@ typedef enum _DkcSourceType {
 typedef enum _DkcSinkType {
 
     DUMMY_SNK = 0,
+    V4L2_SNK,
+    X11_SNK,
+    ALSA_SNK,
+    RTMP_SNK,
+    FILE_SNK,
     
 } DkcSinkType;
 
