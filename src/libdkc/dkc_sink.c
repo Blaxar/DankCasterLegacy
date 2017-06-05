@@ -1,6 +1,6 @@
 #include <libdkc/dkc_sink.h>
+#include <libdkc/dkc_app_internal.h>
 #include <dlfcn.h>
-#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -81,6 +81,6 @@ dkc_rc dkc_sink_delete(DkcSink* snk) {
 }
 
 DkcSink* dkc_app_sink_create(DkcApp* app, DkcSinkType snk_type, const char* uri, const char* name, DkcParams* params) {
-  if(app == NULL || app->snk_mgr == NULL) return NULL;
-  return dkc_sink_create(app->snk_mgr, snk_type, uri, name, params);
+  if(app == NULL) return NULL;
+  return dkc_sink_create(APP_SNK_MGR(app), snk_type, uri, name, params);
 }

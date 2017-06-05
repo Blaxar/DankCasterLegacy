@@ -3,6 +3,7 @@
 
 #include <libdkc/dkc.h>
 #include <libdkc/dkc_scene.h>
+#include <libdkc/dkc_app_internal.h>
 
 void dkc_scenemgr_create_test(void) {
 
@@ -29,8 +30,8 @@ void dkc_scenemgr_delete_test(void) {
 
 void dkc_scene_create_test(void) {
 
-    DkcApp* app = dkc_app_create("dummy", NULL);
-    DkcSceneMgr *scn_mgr = app->scn_mgr;
+  DkcApp* app = dkc_app_create("dummy", NULL);
+  DkcSceneMgr *scn_mgr = APP_SCN_MGR(app);
   
   DkcScene* scn = NULL;
   scn = dkc_scene_create(scn_mgr);

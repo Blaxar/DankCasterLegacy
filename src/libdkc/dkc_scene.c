@@ -1,6 +1,6 @@
 #include <libdkc/dkc_scene.h>
+#include <libdkc/dkc_app_internal.h>
 #include <dlfcn.h>
-#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -140,6 +140,6 @@ dkc_rc dkc_source_unwrap(DkcWrappedSource* wrpd_src) {
 }
 
 DkcScene* dkc_app_scene_create(DkcApp* app) {
-  if(app == NULL || app->scn_mgr == NULL) return NULL;
-  return dkc_scene_create(app->scn_mgr);
+  if(app == NULL) return NULL;
+  return dkc_scene_create(APP_SCN_MGR(app));
 }

@@ -3,6 +3,7 @@
 
 #include <libdkc/dkc.h>
 #include <libdkc/dkc_source.h>
+#include <libdkc/dkc_app_internal.h>
 
 void dkc_sourcemgr_create_test(void) {
   
@@ -27,7 +28,7 @@ void dkc_sourcemgr_delete_test(void) {
 void dkc_source_create_test(void) {
 
   DkcApp* app = dkc_app_create("dummy", NULL);
-  DkcSourceMgr *src_mgr = app->src_mgr;
+  DkcSourceMgr *src_mgr = APP_SRC_MGR(app);
 
   DkcSource* src = dkc_source_create(src_mgr, DUMMY_SRC, "whatever", "somename", NULL);
   //CU_ASSERT_EQUAL(dkc_source_create(src_mgr, "ymmud", &src, "somename", NULL), ERROR); // When there is no such source type.
