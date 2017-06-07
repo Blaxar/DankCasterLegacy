@@ -8,6 +8,11 @@
 
 DkcBackend* dkc_backend_create(const char* backend, DkcParams* params) {
   
+  if(!backend) {
+    if(params) dkc_params_unref(params);
+    return NULL;
+  }
+  
   DkcBackend* bkn = NULL;
   
   bkn = malloc(sizeof(DkcBackend));

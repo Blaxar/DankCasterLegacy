@@ -12,6 +12,7 @@ struct _DkcApp
   
   GObject parent_instance;
 
+  gchar* bkn_type;
   DkcParams* params;
   pthread_mutex_t lock;
   DkcSourceMgr* src_mgr;
