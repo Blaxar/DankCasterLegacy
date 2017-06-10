@@ -288,7 +288,7 @@ dkc_scene_constructed (GObject *obj)
 
   DkcScene* scn = DKC_SCENE(obj);
   
-  if(pthread_mutex_init(&scn->lock, NULL) != 0) g_error("");
+  if(pthread_mutex_init(&scn->lock, NULL) != 0) g_error("Scene creation failed.");
 
   for(int j=0 ; j<NB_WRP_SOURCES; j++) {
     scn->sources[j] = NULL;
