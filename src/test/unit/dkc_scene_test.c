@@ -2,8 +2,7 @@
 #include "CUnit/Basic.h"
 
 #include <libdkc/dkc.h>
-#include <libdkc/dkc_scene.h>
-#include <libdkc/dkc_app_internal.h>
+#include <libdkc/dkc_scene_internal.h>
 
 void dkc_scenemgr_create_test(void) {
 

@@ -1,43 +1,28 @@
-#ifndef DKCST_SCENE_H
-#define DKCST_SCENE_H
+#ifndef __DKCST_SCENE_H__
+#define __DKCST_SCENE_H__
 
+#include <glib-object.h>
 #include "dkc_source.h"
 #include "dkc_rc.h"
 
 #define NB_WRP_SOURCES 255
 #define NB_SCENES 255
 
-typedef struct _DkcWrappedSource {
+G_BEGIN_DECLS
 
-  pthread_mutex_t lock;
-  struct _DkcScene* scn;
-  uint8_t id;
-  uint8_t source_id;
-  uint16_t x, y;
-  uint16_t width, height;
-  float volume;
+#define DKC_TYPE_WRAPPED_SOURCE dkc_wrapped_source_get_type ()
+G_DECLARE_FINAL_TYPE (DkcWrappedSource, dkc_wrapped_source, DKC, WRAPPED_SOURCE, GObject)
+DkcWrappedSource *dkc_wrapped_source_new (void);
 
-} DkcWrappedSource;
+#define DKC_TYPE_SCENE dkc_scene_get_type ()
+G_DECLARE_FINAL_TYPE (DkcScene, dkc_scene, DKC, SCENE, GObject)
+DkcScene *dkc_scene_new (void);
 
-typedef struct _DkcScene {
+#define DKC_TYPE_SCENE_MGR dkc_scene_mgr_get_type ()
+G_DECLARE_FINAL_TYPE (DkcSceneMgr, dkc_scene_mgr, DKC, SCENE_MGR, GObject)
+DkcSceneMgr *dkc_scene_mgr_new (void);
 
-  pthread_mutex_t lock;
-  struct _DkcSceneMgr* scn_mgr;
-  uint8_t id;
-  DkcWrappedSource* sources[NB_WRP_SOURCES];
-  uint8_t nb_sources;
-
-} DkcScene;
-
-typedef struct _DkcSceneMgr {
-
-  pthread_mutex_t lock;
-  DkcScene* scenes[NB_SCENES];
-  uint8_t nb_scenes;
-  void* bkn_ctx;
-  DKCST_SCENE_CBS();
-  
-} DkcSceneMgr;
+G_END_DECLS
 
 typedef struct _DkcSceneCBs {
 
@@ -61,4 +46,4 @@ dkc_rc dkc_source_unwrap(DkcWrappedSource* wrpd_src);
 
 DkcScene* dkc_app_scene_create(DkcApp* app);
 
-#endif //DKCST_SCENE_H	
+#endif //__DKCST_SCENE_H__	

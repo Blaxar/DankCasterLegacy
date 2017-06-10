@@ -1,25 +1,184 @@
-#include <libdkc/dkc_scene.h>
-#include <libdkc/dkc_app_internal.h>
+#include <libdkc/dkc_scene_internal.h>
 #include <dlfcn.h>
 #include <stdlib.h>
 #include <string.h>
+
+G_DEFINE_TYPE (DkcSceneMgr, dkc_scene_mgr, G_TYPE_OBJECT)
+
+enum
+{
+  PROP_BACKEND_CTX = 1,
+  PROP_CREATE_SCENE_FUNC,
+  PROP_DELETE_SCENE_FUNC,
+  PROP_WRAP_SOURCE_FUNC,
+  PROP_UNWRAP_SOURCE_FUNC,
+  N_PROPERTIES
+};
+
+static GParamSpec *obj_properties[N_PROPERTIES] = { NULL, };
+
+static void dkc_scene_mgr_constructed (GObject *obj);
+
+static void
+dkc_scene_mgr_set_property (GObject      *object,
+                            guint         property_id,
+                            const GValue *value,
+                            GParamSpec   *pspec)
+{
+  
+  DkcSceneMgr *self = DKC_SCENE_MGR (object);
+
+  switch (property_id)
+    {
+      
+    case PROP_BACKEND_CTX:
+      self->bkn_ctx = g_value_get_pointer(value);
+      break;
+
+    case PROP_CREATE_SCENE_FUNC:
+      self->create_scene = g_value_get_pointer(value);
+      break;
+
+    case PROP_DELETE_SCENE_FUNC:
+      self->delete_scene = g_value_get_pointer(value);
+      break;
+
+    case PROP_WRAP_SOURCE_FUNC:
+      self->wrap_source = g_value_get_pointer(value);
+      break;
+
+    case PROP_UNWRAP_SOURCE_FUNC:
+      self->unwrap_source = g_value_get_pointer(value);
+      break;
+
+    default:
+      G_OBJECT_WARN_INVALID_PROPERTY_ID (object, property_id, pspec);
+      break;
+      
+    }
+}
+
+static void
+dkc_scene_mgr_get_property (GObject    *object,
+                            guint       property_id,
+                            GValue     *value,
+                            GParamSpec *pspec)
+{
+  DkcSceneMgr *self = DKC_SCENE_MGR (object);
+
+  switch (property_id)
+    {
+    
+    case PROP_BACKEND_CTX:
+      g_value_set_pointer(value, self->bkn_ctx);
+      break;
+
+    case PROP_CREATE_SCENE_FUNC:
+      g_value_set_pointer(value, self->create_scene);
+      break;
+
+    case PROP_DELETE_SCENE_FUNC:
+      g_value_set_pointer(value, self->delete_scene);
+      break;
+
+    case PROP_WRAP_SOURCE_FUNC:
+      g_value_set_pointer(value, self->wrap_source);
+      break;
+
+    case PROP_UNWRAP_SOURCE_FUNC:
+      g_value_set_pointer(value, self->unwrap_source);
+      break;
+
+    default:
+      G_OBJECT_WARN_INVALID_PROPERTY_ID (object, property_id, pspec);
+      break;
+      
+    }
+}
+
+
+
+static void
+dkc_scene_mgr_class_init (DkcSceneMgrClass *klass)
+{
+  
+  GObjectClass *object_class = G_OBJECT_CLASS (klass);
+
+  object_class->set_property = dkc_scene_mgr_set_property;
+  object_class->get_property = dkc_scene_mgr_get_property;
+
+  obj_properties[PROP_BACKEND_CTX] =
+    g_param_spec_pointer ("backend_ctx",
+                         "Backend Context Pointer",
+                         "Pointer to backend context to be used.",
+                         G_PARAM_CONSTRUCT_ONLY | G_PARAM_READWRITE);
+  
+  obj_properties[PROP_CREATE_SCENE_FUNC] =
+    g_param_spec_pointer ("create_scene_func",
+                          "create_scene() function",
+                          "Pointer to create_scene() backend implementation.",
+                          G_PARAM_CONSTRUCT_ONLY | G_PARAM_READWRITE);
+
+  obj_properties[PROP_DELETE_SCENE_FUNC] =
+    g_param_spec_pointer ("delete_scene_func",
+                          "delete_scene() function",
+                          "Pointer to delete_scene() backend implementation.",
+                          G_PARAM_CONSTRUCT_ONLY | G_PARAM_READWRITE);
+
+  obj_properties[PROP_WRAP_SOURCE_FUNC] =
+    g_param_spec_pointer ("wrap_source_func",
+                          "wrap_source() function",
+                          "Pointer to wrap_source() backend implementation.",
+                          G_PARAM_CONSTRUCT_ONLY | G_PARAM_READWRITE);
+
+  obj_properties[PROP_UNWRAP_SOURCE_FUNC] =
+    g_param_spec_pointer ("unwrap_source_func",
+                          "unwrap_source() function",
+                          "Pointer to unwrap_source() backend implementation.",
+                          G_PARAM_CONSTRUCT_ONLY | G_PARAM_READWRITE);
+
+  g_object_class_install_properties (object_class,
+                                     N_PROPERTIES,
+                                     obj_properties);
+
+  object_class->constructed = dkc_scene_mgr_constructed;
+  
+}
+
+static void
+dkc_scene_mgr_init (DkcSceneMgr *self)
+{
+
+}
+
+static void
+dkc_scene_mgr_constructed (GObject *obj)
+{
+
+  DkcSceneMgr* scn_mgr = DKC_SCENE_MGR(obj);
+  
+  if(pthread_mutex_init(&scn_mgr->lock, NULL) != 0){ free(scn_mgr); g_error("Scene Mgr creation failed."); }
+  for(int i=0 ; i<NB_SCENES; i++) {
+    scn_mgr->scenes[i] = NULL;
+  }
+  scn_mgr->nb_scenes=0;
+
+  GObjectClass* klass = g_type_class_peek_parent(G_OBJECT_GET_CLASS(obj));
+  if(klass) klass->constructed(obj);
+
+}
 
 /* Scene handling */
 
 DkcSceneMgr* dkc_scenemgr_create(DkcSceneCBs scn_cbs) {
 
-  DkcSceneMgr* scn_mgr = malloc(sizeof(DkcSceneMgr));
-  if(pthread_mutex_init(&scn_mgr->lock, NULL) != 0){ free(scn_mgr); return NULL; }
-  scn_mgr->bkn_ctx = scn_cbs.bkn_ctx;
-  scn_mgr->create_scene = scn_cbs.create_scene;
-  scn_mgr->delete_scene = scn_cbs.delete_scene;
-  scn_mgr->wrap_source = scn_cbs.wrap_source;
-  scn_mgr->unwrap_source = scn_cbs.unwrap_source;
-  for(int i=0 ; i<NB_SCENES; i++) {
-    scn_mgr->scenes[i] = NULL;
-  }
-  scn_mgr->nb_scenes=0;
-  return scn_mgr;
+  return g_object_new (DKC_TYPE_SCENE_MGR,
+                       "backend_ctx", scn_cbs.bkn_ctx,
+                       "create_scene_func", scn_cbs.create_scene,
+                       "delete_scene_func", scn_cbs.delete_scene,
+                       "wrap_source_func", scn_cbs.wrap_source,
+                       "unwrap_source_func", scn_cbs.unwrap_source,
+                       NULL);
   
 }
 

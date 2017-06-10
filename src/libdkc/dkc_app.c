@@ -140,7 +140,7 @@ dkc_app_constructed (GObject *obj)
 
 DkcApp* dkc_app_create(const char* bkn_type, DkcParams* params) {
 
-  return g_object_new (DKC_TYPE_APP, "backend", bkn_type, "params", params, NULL); //malloc(sizeof(DkcApp));
+  return g_object_new (DKC_TYPE_APP, "backend", bkn_type, "params", params, NULL);
   
 }
 
