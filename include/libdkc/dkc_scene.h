@@ -19,11 +19,9 @@ G_BEGIN_DECLS
 
 #define DKC_TYPE_WRAPPED_SOURCE dkc_wrapped_source_get_type ()
 G_DECLARE_FINAL_TYPE (DkcWrappedSource, dkc_wrapped_source, DKC, WRAPPED_SOURCE, GObject)
-DkcWrappedSource *dkc_wrapped_source_new (void);
 
 #define DKC_TYPE_SCENE dkc_scene_get_type ()
 G_DECLARE_FINAL_TYPE (DkcScene, dkc_scene, DKC, SCENE, GObject)
-DkcScene *dkc_scene_new (void);
 
 #define DKC_TYPE_SCENE_MGR dkc_scene_mgr_get_type ()
 G_DECLARE_FINAL_TYPE (DkcSceneMgr, dkc_scene_mgr, DKC, SCENE_MGR, GObject)

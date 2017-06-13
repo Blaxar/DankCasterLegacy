@@ -2,9 +2,11 @@
 #include <dlfcn.h>
 #include <stdlib.h>
 #include <string.h>
+#include <limits.h>
 
 G_DEFINE_TYPE (DkcSceneMgr, dkc_scene_mgr, G_TYPE_OBJECT)
 G_DEFINE_TYPE (DkcScene, dkc_scene, G_TYPE_OBJECT)
+G_DEFINE_TYPE (DkcWrappedSource, dkc_wrapped_source, G_TYPE_OBJECT)
 
 enum
 {
@@ -23,14 +25,32 @@ enum
   SCN_N_PROPERTIES,
 };
 
+enum
+{
+  PROP_SCENE_PTR = 1,
+  PROP_WRPD_SOURCE_ID,
+  PROP_SOURCE_ID,
+  PROP_X, PROP_Y,
+  PROP_WIDTH, PROP_HEIGHT,
+  PROP_VOLUME,
+  WRPD_SRC_N_PROPERTIES
+};
+
 static GParamSpec *scn_mgr_properties[SCN_MGR_N_PROPERTIES] = { NULL, };
 static GParamSpec *scn_properties[SCN_N_PROPERTIES] = { NULL, };
+static GParamSpec *wrpd_src_properties[WRPD_SRC_N_PROPERTIES] = { NULL, };
 
 static void dkc_scene_mgr_constructed (GObject *obj);
 static void dkc_scene_mgr_dispose (GObject *obj);
 
 static void dkc_scene_constructed (GObject *obj);
 static void dkc_scene_dispose (GObject *obj);
+
+static void dkc_wrapped_source_constructed (GObject *obj);
+static void dkc_wrapped_source_dispose (GObject *obj);
+
+
+/* DkcSceneMgr GObject methods */
 
 static void
 dkc_scene_mgr_set_property (GObject      *object,
@@ -109,8 +129,6 @@ dkc_scene_mgr_get_property (GObject    *object,
   }
 }
 
-
-
 static void
 dkc_scene_mgr_class_init (DkcSceneMgrClass *klass)
 {
@@ -188,6 +206,8 @@ static void dkc_scene_mgr_dispose (GObject *obj) {
   pthread_mutex_destroy(&scn_mgr->lock);
   
 }
+
+/* DkcScene GObject methods */
 
 static void
 dkc_scene_set_property (GObject      *object,
@@ -306,6 +326,208 @@ static void dkc_scene_dispose (GObject *obj) {
   
 }
 
+/* DkcWrappedSource GObject methods */
+
+static void
+dkc_wrapped_source_set_property (GObject      *object,
+                                 guint         property_id,
+                                 const GValue *value,
+                                 GParamSpec   *pspec)
+{
+  
+  DkcWrappedSource *self = DKC_WRAPPED_SOURCE (object);
+
+  switch (property_id)
+  {
+      
+    case PROP_SCENE_PTR:
+      self->scn = g_value_get_pointer(value);
+      break;
+
+    case PROP_WRPD_SOURCE_ID:
+      self->id = g_value_get_uchar(value);
+      break;
+
+    case PROP_SOURCE_ID:
+      self->source_id = g_value_get_uchar(value);
+      break;
+
+    case PROP_X:
+      self->x = g_value_get_int(value);
+      break;
+
+    case PROP_Y:
+      self->y = g_value_get_int(value);
+      break;
+
+    case PROP_WIDTH:
+      self->width = g_value_get_uint(value);
+      break;
+
+    case PROP_HEIGHT:
+      self->height = g_value_get_uint(value);
+      break;
+
+    case PROP_VOLUME:
+      self->volume = g_value_get_float(value);
+      break;
+      
+    default:
+      G_OBJECT_WARN_INVALID_PROPERTY_ID (object, property_id, pspec);
+      break;
+      
+  }
+  
+}
+
+static void
+dkc_wrapped_source_get_property (GObject    *object,
+                                 guint       property_id,
+                                 GValue     *value,
+                                 GParamSpec *pspec)
+{
+  
+  DkcWrappedSource *self = DKC_WRAPPED_SOURCE (object);
+
+  switch (property_id)
+  {
+    
+    case PROP_SCENE_PTR:
+      g_value_set_pointer(value, self->scn);
+      break;
+
+    case PROP_WRPD_SOURCE_ID:
+      g_value_set_uchar(value, self->id);
+      break;
+
+    case PROP_SOURCE_ID:
+      g_value_set_uchar(value, self->source_id);
+      break;
+
+    case PROP_X:
+      g_value_set_int(value, self->x);
+      break;
+
+    case PROP_Y:
+      g_value_set_int(value, self->y);
+      break;
+
+    case PROP_WIDTH:
+      g_value_set_uint(value, self->width);
+      break;
+
+    case PROP_HEIGHT:
+      g_value_set_uint(value, self->height);
+      break;
+
+    case PROP_VOLUME:
+      g_value_set_float(value, self->volume);
+      break;
+
+    default:
+      G_OBJECT_WARN_INVALID_PROPERTY_ID (object, property_id, pspec);
+      break;
+      
+  }
+  
+}
+
+static void
+dkc_wrapped_source_class_init (DkcWrappedSourceClass *klass)
+{
+  
+  GObjectClass *object_class = G_OBJECT_CLASS (klass);
+
+  object_class->set_property = dkc_wrapped_source_set_property;
+  object_class->get_property = dkc_wrapped_source_get_property;
+
+  wrpd_src_properties[PROP_SCENE_PTR] =
+    g_param_spec_pointer ("scn",
+                          "Scene",
+                          "Pointer to parent Scene.",
+                          G_PARAM_CONSTRUCT_ONLY | G_PARAM_READWRITE);
+
+  wrpd_src_properties[PROP_WRPD_SOURCE_ID] =
+    g_param_spec_uchar ("id",
+                        "WrappedSource ID",
+                        "ID of the wrapped source.",
+                        0, 255, 0,
+                        G_PARAM_CONSTRUCT_ONLY | G_PARAM_READWRITE);
+
+  wrpd_src_properties[PROP_SOURCE_ID] =
+    g_param_spec_uchar ("src_id",
+                        "Source ID",
+                        "ID of the original source being wrapped.",
+                        0, 255, 0,
+                        G_PARAM_CONSTRUCT_ONLY | G_PARAM_READWRITE);
+
+  wrpd_src_properties[PROP_X] =
+    g_param_spec_int ("x",
+                      "x",
+                      "x coordinate of the wrapped source in the scene.",
+                      SHRT_MIN, SHRT_MAX, 0, G_PARAM_READWRITE);
+
+  wrpd_src_properties[PROP_Y] =
+    g_param_spec_int ("y",
+                      "y",
+                      "y coordinate of the wrapped source in the scene.",
+                      SHRT_MIN, SHRT_MAX, 0, G_PARAM_READWRITE);
+
+  wrpd_src_properties[PROP_WIDTH] =
+    g_param_spec_uint ("width",
+                       "Width",
+                       "Width the wrapped source in the scene.",
+                       0, USHRT_MAX, 0, G_PARAM_READWRITE);
+
+  wrpd_src_properties[PROP_HEIGHT] =
+    g_param_spec_uint ("height",
+                       "Height",
+                       "Height of the wrapped source in the scene.",
+                       0, USHRT_MAX, 0, G_PARAM_READWRITE);
+
+  wrpd_src_properties[PROP_VOLUME] =
+    g_param_spec_float ("volume",
+                        "Volume",
+                        "Volume of the wrapped source in the scene.",
+                        0.0, 1.0, 1.0, G_PARAM_READWRITE);
+
+  g_object_class_install_properties (object_class,
+                                     WRPD_SRC_N_PROPERTIES,
+                                     wrpd_src_properties);
+
+  object_class->constructed = dkc_wrapped_source_constructed;
+  object_class->dispose = dkc_wrapped_source_dispose;
+  
+}
+
+static void
+dkc_wrapped_source_init (DkcWrappedSource *self)
+{
+
+  self->volume = 1.0;
+  
+}
+
+static void
+dkc_wrapped_source_constructed (GObject *obj)
+{
+
+  DkcWrappedSource* wrpd_src = DKC_WRAPPED_SOURCE(obj);
+  
+  if(pthread_mutex_init(&wrpd_src->lock, NULL) != 0) g_error("Source wrapping failed.");
+
+  GObjectClass* klass = g_type_class_peek_parent(G_OBJECT_GET_CLASS(obj));
+  if(klass) klass->constructed(obj);
+
+}
+
+static void dkc_wrapped_source_dispose (GObject *obj) {
+
+  DkcWrappedSource* wrpd_src = DKC_WRAPPED_SOURCE(obj);
+  pthread_mutex_destroy(&wrpd_src->lock);
+  
+}
+
 /* Scene handling */
 
 DkcSceneMgr* dkc_scenemgr_create(DkcSceneCBs scn_cbs) {
@@ -386,17 +608,12 @@ DkcWrappedSource* dkc_source_wrap(DkcScene* scn, DkcSource* src) {
   
   for(int i=0; i<NB_WRP_SOURCES; i++) {
     if(scn->sources[i] == NULL) {
-      scn->sources[i] = malloc(sizeof(DkcWrappedSource));
-      if(pthread_mutex_init(&scn->sources[i]->lock, NULL) != 0 ||
-         scn_mgr->wrap_source(scn_mgr->bkn_ctx, scn->id, src->id, i) != OK){
-        free(scn->sources[i]);
+      scn->sources[i] = g_object_new (DKC_TYPE_WRAPPED_SOURCE, "scn", scn, "src_id", src->id, "id", i, NULL);
+      if(scn_mgr->wrap_source(scn_mgr->bkn_ctx, scn->id, src->id, i) != OK){
         scn->sources[i] = NULL;
         pthread_mutex_unlock(&scn->lock);
         return NULL;
       }
-      scn->sources[i]->scn = scn;
-      scn->sources[i]->id = i;
-      scn->sources[i]->source_id = src->id;
       wrpd_src = scn->sources[i];
       scn->nb_sources++;
       pthread_mutex_unlock(&scn->lock);
@@ -419,7 +636,7 @@ dkc_rc dkc_source_unwrap(DkcWrappedSource* wrpd_src) {
     return ERROR;
   }
   pthread_mutex_destroy(&wrpd_src->lock);
-  free(scn->sources[id]);
+  g_object_unref(scn->sources[id]);
   scn->sources[id] = NULL;
   scn->nb_sources--;
 
