@@ -1,4 +1,5 @@
 #include <libdkc/dkc_scene_internal.h>
+#include <libdkc/dkc_source_internal.h>
 #include <dlfcn.h>
 #include <stdlib.h>
 #include <string.h>
@@ -189,7 +190,7 @@ dkc_scene_mgr_constructed (GObject *obj)
 
   DkcSceneMgr* scn_mgr = DKC_SCENE_MGR(obj);
   
-  if(pthread_mutex_init(&scn_mgr->lock, NULL) != 0){ free(scn_mgr); g_error("Scene Mgr creation failed."); }
+  if(pthread_mutex_init(&scn_mgr->lock, NULL) != 0){ g_error("Scene Mgr creation failed."); }
   for(int i=0 ; i<NB_SCENES; i++) {
     scn_mgr->scenes[i] = NULL;
   }
@@ -608,8 +609,8 @@ DkcWrappedSource* dkc_source_wrap(DkcScene* scn, DkcSource* src) {
   
   for(int i=0; i<NB_WRP_SOURCES; i++) {
     if(scn->sources[i] == NULL) {
-      scn->sources[i] = g_object_new (DKC_TYPE_WRAPPED_SOURCE, "scn", scn, "src_id", src->id, "id", i, NULL);
-      if(scn_mgr->wrap_source(scn_mgr->bkn_ctx, scn->id, src->id, i) != OK){
+      scn->sources[i] = g_object_new (DKC_TYPE_WRAPPED_SOURCE, "scn", scn, "src_id", SRC(src)->id, "id", i, NULL);
+      if(scn_mgr->wrap_source(scn_mgr->bkn_ctx, scn->id, SRC(src)->id, i) != OK){
         scn->sources[i] = NULL;
         pthread_mutex_unlock(&scn->lock);
         return NULL;

@@ -3,6 +3,7 @@
 
 #include <libdkc/dkc.h>
 #include <libdkc/dkc_scene_internal.h>
+#include <libdkc/dkc_source_internal.h>
 
 void dkc_scenemgr_create_test(void) {
 
@@ -79,7 +80,7 @@ void dkc_source_wrap_test(void) {
   CU_ASSERT_EQUAL(wrpd_src->scn, scn);
   CU_ASSERT_EQUAL(scn->nb_sources, 1);
   CU_ASSERT_EQUAL(scn->sources[0], wrpd_src);  
-  CU_ASSERT_EQUAL(wrpd_src->source_id, src->id);
+  CU_ASSERT_EQUAL(wrpd_src->source_id, SRC(src)->id);
 
     dkc_app_delete(app);
   

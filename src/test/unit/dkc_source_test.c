@@ -2,14 +2,14 @@
 #include "CUnit/Basic.h"
 
 #include <libdkc/dkc.h>
-#include <libdkc/dkc_source.h>
+#include <libdkc/dkc_source_internal.h>
 #include <libdkc/dkc_app_internal.h>
 
 void dkc_sourcemgr_create_test(void) {
   
   DkcSourceMgr* src_mgr = dkc_sourcemgr_create((DkcSourceCBs){NULL,NULL,NULL});
   CU_ASSERT_NOT_EQUAL(src_mgr, NULL);
-  CU_ASSERT_EQUAL(src_mgr->nb_sources,0);
+  CU_ASSERT_EQUAL(SRC_MGR(src_mgr)->nb_sources,0);
   for(int i=0; i<NB_SOURCES; i++)
     CU_ASSERT_EQUAL(src_mgr->sources[i], NULL);
   
@@ -33,8 +33,8 @@ void dkc_source_create_test(void) {
   DkcSource* src = dkc_source_create(src_mgr, DUMMY_SRC, "whatever", "somename", NULL);
   //CU_ASSERT_EQUAL(dkc_source_create(src_mgr, "ymmud", &src, "somename", NULL), ERROR); // When there is no such source type.
   CU_ASSERT_NOT_EQUAL(src, NULL); // When there is the source type.
-  CU_ASSERT_EQUAL(src->src_mgr, src_mgr);
-  CU_ASSERT_EQUAL(src_mgr->nb_sources, 1);
+  CU_ASSERT_EQUAL(SRC(src)->src_mgr, src_mgr);
+  CU_ASSERT_EQUAL(SRC_MGR(src_mgr)->nb_sources, 1);
 
   dkc_app_delete(app);
   

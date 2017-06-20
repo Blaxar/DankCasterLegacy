@@ -112,12 +112,12 @@ dkc_app_constructed (GObject *obj)
   DkcApp* app = DKC_APP(obj);
 
   app->backend = dkc_backend_create(app->bkn_type, app->params);
-  if(!app->backend){ free(app); g_error("Backend creation failed."); }
+  if(!app->backend){ g_error("Backend creation failed."); }
   app->src_mgr = dkc_sourcemgr_create(
                      (DkcSourceCBs) {app->backend->ctx,
                                      app->backend->create_source,
                                      app->backend->delete_source});
-  if(!app->src_mgr) { free(app); g_error("Source manager creation failed."); }
+  if(!app->src_mgr) { g_error("Source manager creation failed."); }
   
   app->scn_mgr = dkc_scenemgr_create(
                      (DkcSceneCBs) {app->backend->ctx,
@@ -125,13 +125,13 @@ dkc_app_constructed (GObject *obj)
                                     app->backend->delete_scene,
                                     app->backend->wrap_source,
                                     app->backend->unwrap_source});
-  if(!app->scn_mgr) { free(app); g_error("Scene manager creation failed."); }
+  if(!app->scn_mgr) { g_error("Scene manager creation failed."); }
   
   app->snk_mgr = dkc_sinkmgr_create(
                      (DkcSinkCBs) {app->backend->ctx,
                                    app->backend->create_sink,
                                    app->backend->delete_sink});
-  if(!app->snk_mgr) { free(app); g_error("Sink manager creation failed."); }
+  if(!app->snk_mgr) { g_error("Sink manager creation failed."); }
 
   GObjectClass* klass = g_type_class_peek_parent(G_OBJECT_GET_CLASS(obj));
   if(klass) klass->constructed(obj);

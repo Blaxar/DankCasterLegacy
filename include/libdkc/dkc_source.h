@@ -1,5 +1,5 @@
-#ifndef DKCST_SOURCE_H
-#define DKCST_SOURCE_H
+#ifndef __DKCST_SOURCE_H__
+#define __DKCST_SOURCE_H__
 
 #include "dkc_app.h"
 #include "dkc_rc.h"
@@ -7,31 +7,20 @@
 
 #define NB_SOURCES 255
 
-typedef struct _DkcSource {
-
-  pthread_mutex_t lock;
-  struct _DkcSourceMgr* src_mgr;
-  uint8_t id;
-  DkcSourceType src_type;
-  
-} DkcSource;
-
-typedef struct _DkcSourceMgr {
-
-  pthread_mutex_t lock;
-  DkcSource* sources[NB_SOURCES];
-  uint8_t nb_sources;
-  void* bkn_ctx;
-  DKCST_SOURCE_CBS();
-  
-} DkcSourceMgr;
-
 typedef struct _DkcSourceCBs {
 
   void* bkn_ctx;
   DKCST_SOURCE_CBS();
   
 } DkcSourceCBs;
+
+G_BEGIN_DECLS
+
+#define DKC_TYPE_SOURCE dkc_source_get_type ()
+G_DECLARE_FINAL_TYPE (DkcSource, dkc_source, DKC, SOURCE, GObject)
+
+#define DKC_TYPE_SOURCE_MGR dkc_source_mgr_get_type ()
+G_DECLARE_FINAL_TYPE (DkcSourceMgr, dkc_source_mgr, DKC, SOURCE_MGR, GObject)
 
 DkcSourceMgr* dkc_sourcemgr_create(DkcSourceCBs src_cbs);
 dkc_rc dkc_sourcemgr_delete(DkcSourceMgr* src_mgr);
@@ -41,4 +30,6 @@ dkc_rc dkc_source_delete(DkcSource*  src);
 
 DkcSource* dkc_app_source_create(DkcApp* app, DkcSourceType src_type, const char* uri, const char* name, DkcParams* params);
 
-#endif //DKCST_SOURCE_H	
+G_END_DECLS
+
+#endif //__DKCST_SOURCE_H__
