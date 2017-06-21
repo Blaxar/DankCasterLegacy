@@ -219,8 +219,8 @@ dkc_source_constructed (GObject *obj)
   
   if(pthread_mutex_init(&src->lock, NULL) != 0) g_error("Source creation failed.");
 
-  //GObjectClass* klass = g_type_class_peek_parent(G_OBJECT_GET_CLASS(obj));
-  //if(klass) klass->constructed(obj);
+  GObjectClass* klass = g_type_class_peek_parent(G_OBJECT_GET_CLASS(obj));
+  if(klass) klass->constructed(obj);
 
 }
 
@@ -228,6 +228,9 @@ static void dkc_source_dispose (GObject *obj) {
 
   DkcSource* src = DKC_SOURCE(obj);
   pthread_mutex_destroy(&src->lock);
+
+  GObjectClass* klass = g_type_class_peek_parent(G_OBJECT_GET_CLASS(obj));
+  if(klass) klass->dispose(obj);
   
 }
 
@@ -292,7 +295,6 @@ dkc_rc dkc_sourcemgr_delete(DkcSourceMgr*  src_mgr) {
 
 DkcSource* dkc_source_create(DkcSourceMgr* src_mgr, DkcSourceType src_type, const char* uri, const char* name, DkcParams* params) {
 
-  DkcSource* src;
   pthread_mutex_lock(&src_mgr->lock);
   
   for(int j=0; j<NB_SOURCES; j++) {
@@ -337,5 +339,5 @@ dkc_rc dkc_source_delete(DkcSource* src) {
 
 DkcSource* dkc_app_source_create(DkcApp* app, DkcSourceType src_type, const char* uri, const char* name, DkcParams* params) {
     if(app == NULL) return NULL;
-    return dkc_source_create(APP_SRC_MGR(app), src_type, uri, name, params);
+    return dkc_source_create(app->src_mgr, src_type, uri, name, params);
 }

@@ -38,7 +38,7 @@ typedef struct _DkcSceneMgr {
   DkcScene* scenes[NB_SCENES];
   uint8_t nb_scenes;
   void* bkn_ctx;
-  DKCST_SCENE_CBS();
+  DKC_SCENE_CBS();
   
 };
 

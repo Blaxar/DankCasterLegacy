@@ -22,8 +22,4 @@ struct _DkcApp
   
 };
 
-#define APP_SRC_MGR(app) ((struct _DkcApp*)app)->src_mgr
-#define APP_SCN_MGR(app) ((struct _DkcApp*)app)->scn_mgr
-#define APP_SNK_MGR(app) ((struct _DkcApp*)app)->snk_mgr
-
 #endif //__DKCST_APP_INTERNAL_H__

@@ -31,7 +31,7 @@ void dkc_scenemgr_delete_test(void) {
 void dkc_scene_create_test(void) {
 
   DkcApp* app = dkc_app_create("dummy", NULL);
-  DkcSceneMgr *scn_mgr = APP_SCN_MGR(app);
+  DkcSceneMgr *scn_mgr = app->scn_mgr;
   
   DkcScene* scn = NULL;
   scn = dkc_scene_create(scn_mgr);
@@ -80,7 +80,7 @@ void dkc_source_wrap_test(void) {
   CU_ASSERT_EQUAL(wrpd_src->scn, scn);
   CU_ASSERT_EQUAL(scn->nb_sources, 1);
   CU_ASSERT_EQUAL(scn->sources[0], wrpd_src);  
-  CU_ASSERT_EQUAL(wrpd_src->source_id, SRC(src)->id);
+  CU_ASSERT_EQUAL(wrpd_src->source_id, src->id);
 
     dkc_app_delete(app);
   

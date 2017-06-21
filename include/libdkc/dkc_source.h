@@ -10,7 +10,7 @@
 typedef struct _DkcSourceCBs {
 
   void* bkn_ctx;
-  DKCST_SOURCE_CBS();
+  DKC_SOURCE_CBS();
   
 } DkcSourceCBs;
 

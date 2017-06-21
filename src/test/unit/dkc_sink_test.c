@@ -2,8 +2,7 @@
 #include "CUnit/Basic.h"
 
 #include <libdkc/dkc.h>
-#include <libdkc/dkc_sink.h>
-#include <libdkc/dkc_app_internal.h>
+#include <libdkc/dkc_sink_internal.h>
 
 void dkc_sinkmgr_create_test(void) {
     
@@ -29,7 +28,7 @@ void dkc_sinkmgr_delete_test(void) {
 void dkc_sink_create_test(void) {
 
   DkcApp* app = dkc_app_create("dummy", NULL);
-  DkcSinkMgr *snk_mgr = APP_SNK_MGR(app);
+  DkcSinkMgr *snk_mgr = app->snk_mgr;
 
   DkcSink* snk = NULL;
   //CU_ASSERT_EQUAL(dkc_sink_create(snk_mgr, "ymmud", &snk, "somename", NULL), ERROR); // When there is no such sink type.

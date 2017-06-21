@@ -13,10 +13,10 @@ typedef struct _DkcBackend {
   void* ctx;
   char* name;
   dkc_rc (*init)(void** ctx, DkcParams* params);
-  DKCST_APP_CBS();
-  DKCST_SOURCE_CBS();
-  DKCST_SCENE_CBS();
-  DKCST_SINK_CBS();
+  DKC_APP_CBS();
+  DKC_SOURCE_CBS();
+  DKC_SCENE_CBS();
+  DKC_SINK_CBS();
   dkc_rc (*uninit)(void** ctx);
   
 } DkcBackend;

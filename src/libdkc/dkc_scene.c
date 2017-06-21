@@ -205,6 +205,9 @@ static void dkc_scene_mgr_dispose (GObject *obj) {
 
   DkcSceneMgr* scn_mgr = DKC_SCENE_MGR(obj);
   pthread_mutex_destroy(&scn_mgr->lock);
+
+  GObjectClass* klass = g_type_class_peek_parent(G_OBJECT_GET_CLASS(obj));
+  if(klass) klass->dispose(obj);
   
 }
 
@@ -609,8 +612,8 @@ DkcWrappedSource* dkc_source_wrap(DkcScene* scn, DkcSource* src) {
   
   for(int i=0; i<NB_WRP_SOURCES; i++) {
     if(scn->sources[i] == NULL) {
-      scn->sources[i] = g_object_new (DKC_TYPE_WRAPPED_SOURCE, "scn", scn, "src_id", SRC(src)->id, "id", i, NULL);
-      if(scn_mgr->wrap_source(scn_mgr->bkn_ctx, scn->id, SRC(src)->id, i) != OK){
+      scn->sources[i] = g_object_new (DKC_TYPE_WRAPPED_SOURCE, "scn", scn, "src_id", src->id, "id", i, NULL);
+      if(scn_mgr->wrap_source(scn_mgr->bkn_ctx, scn->id, src->id, i) != OK){
         scn->sources[i] = NULL;
         pthread_mutex_unlock(&scn->lock);
         return NULL;
@@ -648,5 +651,5 @@ dkc_rc dkc_source_unwrap(DkcWrappedSource* wrpd_src) {
 
 DkcScene* dkc_app_scene_create(DkcApp* app) {
   if(app == NULL) return NULL;
-  return dkc_scene_create(APP_SCN_MGR(app));
+  return dkc_scene_create(app->snk_mgr);
 }
