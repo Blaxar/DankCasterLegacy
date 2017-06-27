@@ -2,7 +2,7 @@
 #include "CUnit/Basic.h"
 
 #include <libdkc/dkc.h>
-#include <libdkc/dkc_sink.h>
+#include <libdkc/dkc_sink_internal.h>
 
 void dkc_sinkmgr_create_test(void) {
     
@@ -17,7 +17,6 @@ void dkc_sinkmgr_create_test(void) {
 
 void dkc_sinkmgr_delete_test(void) {
 
-  
   DkcSinkMgr* snk_mgr = dkc_sinkmgr_create((DkcSinkCBs){NULL,NULL,NULL});
   snk_mgr->sinks[0] = 0xdeadbeef;
   CU_ASSERT_EQUAL(dkc_sinkmgr_delete(snk_mgr), ERROR);
@@ -28,7 +27,7 @@ void dkc_sinkmgr_delete_test(void) {
 
 void dkc_sink_create_test(void) {
 
-    DkcApp* app = dkc_app_create("dummy", NULL);
+  DkcApp* app = dkc_app_create("dummy", NULL);
   DkcSinkMgr *snk_mgr = app->snk_mgr;
 
   DkcSink* snk = NULL;

@@ -1,5 +1,5 @@
-#ifndef DKCST_APP_H
-#define DKCST_APP_H
+#ifndef __DKCST_APP_H__
+#define __DKCST_APP_H__
 
 #include <inttypes.h>
 #include <stddef.h>
@@ -8,34 +8,12 @@
 #include "dkc_params.h"
 #include "dkc_types.h"
 
-struct _DkcSourceMgr;
-struct _DkcSceneMgr;
-struct _DkcSinkMgr;
-struct _DkcBackend;
+#include <glib-object.h>
 
-typedef struct _DkcApp {
+G_BEGIN_DECLS
 
-  pthread_mutex_t lock;
-  struct _DkcSourceMgr* src_mgr;
-  struct _DkcSceneMgr* scn_mgr;
-  struct _DkcSinkMgr* snk_mgr;
-  struct _DkcBackend* backend;
-
-} DkcApp;
-
-#define DKCST_SOURCE_CBS() dkc_rc (*create_source)(void* ctx, uint8_t id, DkcSourceType src_type, const char* uri, const char* name, DkcParams* params); \
-                         dkc_rc (*delete_source)(void* ctx, uint8_t id)
-
-#define DKCST_SCENE_CBS() dkc_rc (*create_scene)(void* ctx, uint8_t id); \
-                        dkc_rc (*delete_scene)(void* ctx, uint8_t id); \
-              dkc_rc (*wrap_source)(void* ctx, uint8_t scn_id, uint8_t src_id, uint8_t id); \
-              dkc_rc (*unwrap_source)(void* ctx, uint8_t id)
-
-#define DKCST_SINK_CBS() dkc_rc (*create_sink)(void* ctx, uint8_t id, DkcSinkType snk_type, const char* uri, const char* name, DkcParams* params); \
-                         dkc_rc (*delete_sink)(void* ctx, uint8_t id)
-
-#define DKCST_APP_CBS() dkc_rc (*start)(void* ctx); \
-                        dkc_rc (*stop)(void* ctx)
+#define DKC_TYPE_APP dkc_app_get_type ()
+G_DECLARE_FINAL_TYPE (DkcApp, dkc_app, DKC, APP, GObject)
 
 /* App handling */
 
@@ -45,4 +23,21 @@ dkc_rc dkc_app_delete(DkcApp* app);
 dkc_rc dkc_app_start(DkcApp* app);
 dkc_rc dkc_app_stop(DkcApp* app);
 
-#endif //DKCST_APP_H	
+G_END_DECLS
+
+#define DKC_SOURCE_CBS() dkc_rc (*create_source)(void* ctx, uint8_t id, DkcSourceType src_type, const char* uri, const char* name, DkcParams* params); \
+                         dkc_rc (*delete_source)(void* ctx, uint8_t id)
+
+#define DKC_SCENE_CBS() dkc_rc (*create_scene)(void* ctx, uint8_t id); \
+                        dkc_rc (*delete_scene)(void* ctx, uint8_t id); \
+                        dkc_rc (*wrap_source)(void* ctx, uint8_t scn_id, uint8_t src_id, uint8_t id); \
+                        dkc_rc (*unwrap_source)(void* ctx, uint8_t id)
+
+#define DKC_SINK_CBS() dkc_rc (*create_sink)(void* ctx, uint8_t id, DkcSinkType snk_type, const char* uri, const char* name, DkcParams* params); \
+                       dkc_rc (*delete_sink)(void* ctx, uint8_t id)
+
+#define DKC_APP_CBS() dkc_rc (*start)(void* ctx); \
+                      dkc_rc (*stop)(void* ctx)
+                       
+
+#endif //__DKCST_APP_H__

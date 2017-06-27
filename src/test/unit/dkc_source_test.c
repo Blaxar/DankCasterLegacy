@@ -2,7 +2,7 @@
 #include "CUnit/Basic.h"
 
 #include <libdkc/dkc.h>
-#include <libdkc/dkc_source.h>
+#include <libdkc/dkc_source_internal.h>
 
 void dkc_sourcemgr_create_test(void) {
   
