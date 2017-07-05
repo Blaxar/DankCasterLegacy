@@ -5,33 +5,43 @@
 DkcParams* dkc_params_wrap(const char* name, ...) {
 
   DkcParams* params = NULL;
+  
+  va_list args;
+  va_start(args, name);
+  params = vdkc_params_wrap(name, args);
+  va_end(args);
+
+  return params;
+  
+}
+  
+DkcParams* vdkc_params_wrap(const char* name, va_list args) {
+
+  DkcParams* params = NULL;
   char* nname = name;
   DkcParamType type;
   params = dkc_params_create();
   
-  va_list valist;
-  va_start(valist, name);
-  
   while(nname != NULL){
       
-    type = va_arg(valist, DkcParamType);
+    type = va_arg(args, DkcParamType);
     
     switch(type){
     case INT: {
-      dkc_params_set_int(params, nname, va_arg(valist, int));
+      dkc_params_set_int(params, nname, va_arg(args, int));
     }
     break;
     case FLOAT: {
-      dkc_params_set_float(params, nname, va_arg(valist, double));
+      dkc_params_set_float(params, nname, va_arg(args, double));
     }
     break;
     case STRING: {
-      dkc_params_set_string(params, nname, va_arg(valist, char*));
+      dkc_params_set_string(params, nname, va_arg(args, char*));
     }
     break;
     case FRACTION: {
         dkc_params_set_fraction(params, nname,
-                                (DkcFraction){va_arg(valist, int), va_arg(valist, int)});
+                                (DkcFraction){va_arg(args, int), va_arg(args, int)});
     }
     break;
     default: {
@@ -40,7 +50,7 @@ DkcParams* dkc_params_wrap(const char* name, ...) {
     break;
     }
     
-    nname = va_arg(valist, char*);
+    nname = va_arg(args, char*);
         
   }
 

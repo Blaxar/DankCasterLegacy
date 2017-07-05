@@ -112,6 +112,7 @@ dkc_app_constructed (GObject *obj)
   DkcApp* app = DKC_APP(obj);
 
   app->backend = dkc_backend_create(app->bkn_type, app->params);
+
   if(!app->backend){ g_error("Backend creation failed."); }
   app->src_mgr = dkc_sourcemgr_create(
                      (DkcSourceCBs) {app->backend->ctx,
@@ -138,8 +139,15 @@ dkc_app_constructed (GObject *obj)
 
 }
 
-DkcApp* dkc_app_create(const char* bkn_type, DkcParams* params) {
+DkcApp* dkc_app_create(const char* bkn_type, ...) {
 
+  DkcParams* params = NULL;
+  va_list args;
+  va_start(args, bkn_type);
+  char* fname = va_arg(args, char*);
+  if(fname) params = vdkc_params_wrap(fname, args);
+  va_end(args);
+  
   return g_object_new (DKC_TYPE_APP, "backend", bkn_type, "params", params, NULL);
   
 }

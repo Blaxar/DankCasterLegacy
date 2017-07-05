@@ -16,14 +16,14 @@ int main(int argc, char* argv[]){
   
   DkcApp* app;
   
-  if(! (app = dkc_app_create("gst", dkc_params_wrap("width", INT, 640*2,
-                                                    "height", INT, 360*2,
-                                                    "framerate", FRACTION, 25, 1,
-                                                    "videoformat", STRING, "NV12",
-                                                    "rate", INT, 48000,
-                                                    "channels", INT, 2,
-                                                    "audioformat", STRING, "S16LE",
-                                                    NULL)))) printf("Failed to create app.\n");
+  if(! (app = dkc_app_create("gst", "width", INT, 640*2,
+                                    "height", INT, 360*2,
+                                    "framerate", FRACTION, 25, 1,
+                                    "videoformat", STRING, "NV12",
+                                    "rate", INT, 48000,
+                                    "channels", INT, 2,
+                                    "audioformat", STRING, "S16LE",
+                                    NULL))) printf("Failed to create app.\n");
 
   if (!app) {
       fprintf(stderr, "Failed to create app.\n");
@@ -32,14 +32,14 @@ int main(int argc, char* argv[]){
   printf("Created app.\n");
     
   DkcSource* dummy_src = dkc_app_source_create(app, DUMMY_SRC, "/dev/video0", "dummy",
-                                               dkc_params_wrap("width", INT, 640,
-                                                               "height", INT, 360,
-                                                               "framerate", FRACTION, 25, 1,
-                                                               "format", STRING, "NV12",
-                                                               "audiorate", INT, 48000,
-                                                               "channels", INT, 2,
-                                                               "audioformat", STRING, "S16LE",
-                                                               NULL));
+                                               "width", INT, 640,
+                                               "height", INT, 360,
+                                               "framerate", FRACTION, 25, 1,
+                                               "format", STRING, "NV12",
+                                               "audiorate", INT, 48000,
+                                               "channels", INT, 2,
+                                               "audioformat", STRING, "S16LE",
+                                               NULL);
   if (!dummy_src) {
       fprintf(stderr, "Failed to create source.\n");
       return 1;
@@ -47,11 +47,11 @@ int main(int argc, char* argv[]){
   printf("Created source.\n");
 
   DkcSource* v4l2_src = dkc_app_source_create(app, V4L2_SRC, "/dev/video0", "webcam",
-                                               dkc_params_wrap("width", INT, 752,
-                                                               "height", INT, 416,
-                                                               "framerate", FRACTION, 25, 1,
-                                                               "format", STRING, "YUY2",
-                                                               NULL));
+                                              "width", INT, 752,
+                                              "height", INT, 416,
+                                              "framerate", FRACTION, 25, 1,
+                                              "format", STRING, "YUY2",
+                                              NULL);
   if (!v4l2_src) {
       fprintf(stderr, "Failed to create source.\n");
       return 1;
@@ -59,14 +59,14 @@ int main(int argc, char* argv[]){
   printf("Created source.\n");
 
   DkcSink* window_sink = dkc_app_sink_create(app, DUMMY_SNK, "test window", "test_window",
-                                             dkc_params_wrap("width", INT, 640,
+                                                             "width", INT, 640,
                                                              "height", INT, 360,
                                                              "framerate", FRACTION, 25, 1,
                                                              "format", STRING, "NV12",
                                                              "audiorate", INT, 48000,
                                                              "channels", INT, 2,
                                                              "audioformat", STRING, "S16LE",
-                                                             NULL));
+                                                             NULL);
   if (!window_sink) {
       fprintf(stderr, "Failed to create sink.\n");
       return 1;

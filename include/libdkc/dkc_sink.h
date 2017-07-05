@@ -24,10 +24,10 @@ G_DECLARE_FINAL_TYPE (DkcSinkMgr, dkc_sink_mgr, DKC, SINK_MGR, GObject)
 DkcSinkMgr* dkc_sinkmgr_create(DkcSinkCBs snk_cbs);
 dkc_rc dkc_sinkmgr_delete(DkcSinkMgr* snk_mgr);
 
-DkcSink* dkc_sink_create(DkcSinkMgr* snk_mgr, DkcSinkType snk_type, const char* uri, const char* name, DkcParams* params);
+DkcSink* dkc_sink_create(DkcSinkMgr* snk_mgr, DkcSinkType snk_type, const char* uri, const char* name, ...);
 dkc_rc dkc_sink_delete(DkcSink* snk);
 
-DkcSink* dkc_app_sink_create(DkcApp* app, DkcSinkType snk_type, const char* uri, const char* name, DkcParams* params);
+DkcSink* dkc_app_sink_create(DkcApp* app, DkcSinkType snk_type, const char* uri, const char* name, ...);
 
 G_END_DECLS
 

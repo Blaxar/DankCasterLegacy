@@ -293,14 +293,18 @@ dkc_rc dkc_sourcemgr_delete(DkcSourceMgr*  src_mgr) {
   
 }
 
-DkcSource* dkc_source_create(DkcSourceMgr* src_mgr, DkcSourceType src_type, const char* uri, const char* name, DkcParams* params) {
+DkcSource* vdkc_source_create(DkcSourceMgr* src_mgr, DkcSourceType src_type, const char* uri, const char* name, va_list args) {
 
+  DkcParams* params = NULL;
+  char* fname = va_arg(args, char*);
+  if(fname) params = vdkc_params_wrap(fname, args);
+  
   pthread_mutex_lock(&src_mgr->lock);
   
   for(int j=0; j<NB_SOURCES; j++) {
     if(src_mgr->sources[j] == NULL) {
       src_mgr->sources[j] = g_object_new (DKC_TYPE_SOURCE, "src_mgr", src_mgr, "id", j, NULL);
-      if(src_mgr->create_source(src_mgr->bkn_ctx, j, src_type, uri, name, params) != OK) {
+      if(!src_mgr->create_source(src_mgr->bkn_ctx, j, src_type, uri, name, params)) {
         g_object_unref(src_mgr->sources[j]);
         src_mgr->sources[j] = NULL;
         pthread_mutex_unlock(&src_mgr->lock);
@@ -317,6 +321,18 @@ DkcSource* dkc_source_create(DkcSourceMgr* src_mgr, DkcSourceType src_type, cons
   
 }
 
+DkcSource* dkc_source_create(DkcSourceMgr* src_mgr, DkcSourceType src_type, const char* uri, const char* name, ...) {
+
+  DkcSource* source = NULL;
+  
+  va_list args;
+  va_start(args, name);
+  source = vdkc_source_create(src_mgr, src_type, uri, name, args);
+  va_end(args);
+
+  return source;
+  
+}
 
 dkc_rc dkc_source_delete(DkcSource* src) {
 
@@ -337,7 +353,17 @@ dkc_rc dkc_source_delete(DkcSource* src) {
   
 }
 
-DkcSource* dkc_app_source_create(DkcApp* app, DkcSourceType src_type, const char* uri, const char* name, DkcParams* params) {
+DkcSource* dkc_app_source_create(DkcApp* app, DkcSourceType src_type, const char* uri, const char* name, ...) {
+  
     if(app == NULL) return NULL;
-    return dkc_source_create(app->src_mgr, src_type, uri, name, params);
+
+    DkcSource* source = NULL;
+    
+    va_list args;
+    va_start(args, name);
+    source = vdkc_source_create(app->src_mgr, src_type, uri, name, args);
+    va_end(args);
+    
+    return source;
+    
 }

@@ -47,6 +47,7 @@ typedef struct _DkcParams {
 typedef dkc_rc (*dkc_param_cb)(const char* name, DkcParamType type, void* value, void* ctx);
 
 DkcParams* dkc_params_wrap(const char* name, ...);
+DkcParams* vdkc_params_wrap(const char* name, va_list args);
 dkc_rc dkc_params_pop_all(DkcParams *params, dkc_param_cb param_cb, void* ctx);
 
 int dkc_params_fetch_int(DkcParams *params, const char* name, int default_value);

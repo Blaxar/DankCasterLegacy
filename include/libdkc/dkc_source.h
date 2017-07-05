@@ -25,10 +25,10 @@ G_DECLARE_FINAL_TYPE (DkcSourceMgr, dkc_source_mgr, DKC, SOURCE_MGR, GObject)
 DkcSourceMgr* dkc_sourcemgr_create(DkcSourceCBs src_cbs);
 dkc_rc dkc_sourcemgr_delete(DkcSourceMgr* src_mgr);
 
-DkcSource* dkc_source_create(DkcSourceMgr* src_mgr, DkcSourceType src_type, const char* uri, const char* name, DkcParams* params);
+DkcSource* dkc_source_create(DkcSourceMgr* src_mgr, DkcSourceType src_type, const char* uri, const char* name, ...);
 dkc_rc dkc_source_delete(DkcSource*  src);
 
-DkcSource* dkc_app_source_create(DkcApp* app, DkcSourceType src_type, const char* uri, const char* name, DkcParams* params);
+DkcSource* dkc_app_source_create(DkcApp* app, DkcSourceType src_type, const char* uri, const char* name, ...);
 
 G_END_DECLS
 

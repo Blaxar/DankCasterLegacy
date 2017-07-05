@@ -293,7 +293,11 @@ dkc_rc dkc_sinkmgr_delete(DkcSinkMgr*  snk_mgr) {
   
 }
 
-DkcSink* dkc_sink_create(DkcSinkMgr* snk_mgr, DkcSinkType snk_type, const char* uri, const char* name, DkcParams* params) {
+DkcSink* vdkc_sink_create(DkcSinkMgr* snk_mgr, DkcSinkType snk_type, const char* uri, const char* name, va_list args) {
+
+  DkcParams* params = NULL;
+  char* fname = va_arg(args, char*);
+  if(fname) params = vdkc_params_wrap(fname, args);
 
   DkcSink* snk;
   pthread_mutex_lock(&snk_mgr->lock);
@@ -318,6 +322,19 @@ DkcSink* dkc_sink_create(DkcSinkMgr* snk_mgr, DkcSinkType snk_type, const char* 
   
 }
 
+DkcSink* dkc_sink_create(DkcSinkMgr* snk_mgr, DkcSinkType snk_type, const char* uri, const char* name, ...) {
+
+  DkcSink* sink = NULL;
+  
+  va_list args;
+  va_start(args, name);
+  sink = vdkc_sink_create(snk_mgr, snk_type, uri, name, args);
+  va_end(args);
+
+  return sink;
+  
+}
+
 
 dkc_rc dkc_sink_delete(DkcSink* snk) {
 
@@ -338,7 +355,17 @@ dkc_rc dkc_sink_delete(DkcSink* snk) {
   
 }
 
-DkcSink* dkc_app_sink_create(DkcApp* app, DkcSinkType snk_type, const char* uri, const char* name, DkcParams* params) {
+DkcSink* dkc_app_sink_create(DkcApp* app, DkcSinkType snk_type, const char* uri, const char* name, ...) {
+
   if(app == NULL) return NULL;
-  return dkc_sink_create(app->snk_mgr, snk_type, uri, name, params);
+
+  DkcSink* sink = NULL;
+    
+  va_list args;
+  va_start(args, name);
+  sink = vdkc_sink_create(app->snk_mgr, snk_type, uri, name, args);
+  va_end(args);
+  
+  return sink;
+  
 }
