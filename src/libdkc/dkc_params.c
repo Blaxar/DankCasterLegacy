@@ -8,14 +8,14 @@ DkcParams* dkc_params_wrap(const char* name, ...) {
   
   va_list args;
   va_start(args, name);
-  params = vdkc_params_wrap(name, args);
+  params = dkc_params_vwrap(name, args);
   va_end(args);
 
   return params;
   
 }
   
-DkcParams* vdkc_params_wrap(const char* name, va_list args) {
+DkcParams* dkc_params_vwrap(const char* name, va_list args) {
 
   DkcParams* params = NULL;
   char* nname = name;
