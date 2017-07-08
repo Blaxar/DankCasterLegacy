@@ -18,6 +18,7 @@ G_DECLARE_FINAL_TYPE (DkcApp, dkc_app, DKC, APP, GObject)
 /* App handling */
 
 DkcApp* dkc_app_create(const char* bkn_type, ...);
+DkcApp* dkc_app_pcreate(const char* bkn_type, DkcParams* params);
 
 dkc_rc dkc_app_delete(DkcApp* app);
 

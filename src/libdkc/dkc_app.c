@@ -147,6 +147,12 @@ DkcApp* dkc_app_create(const char* bkn_type, ...) {
   char* fname = va_arg(args, char*);
   if(fname) params = dkc_params_vwrap(fname, args);
   va_end(args);
+
+  return dkc_app_pcreate(bkn_type, params);
+  
+}
+  
+DkcApp* dkc_app_pcreate(const char* bkn_type, DkcParams* params) {
   
   return g_object_new (DKC_TYPE_APP, "backend", bkn_type, "params", params, NULL);
   

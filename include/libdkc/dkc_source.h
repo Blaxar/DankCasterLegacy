@@ -26,9 +26,13 @@ DkcSourceMgr* dkc_sourcemgr_create(DkcSourceCBs src_cbs);
 dkc_rc dkc_sourcemgr_delete(DkcSourceMgr* src_mgr);
 
 DkcSource* dkc_source_create(DkcSourceMgr* src_mgr, DkcSourceType src_type, const char* uri, const char* name, ...);
+DkcSource* dkc_source_vcreate(DkcSourceMgr* src_mgr, DkcSourceType src_type, const char* uri, const char* name, va_list args);
+DkcSource* dkc_source_pcreate(DkcSourceMgr* src_mgr, DkcSourceType src_type, const char* uri, const char* name, DkcParams* params);
+
 dkc_rc dkc_source_delete(DkcSource*  src);
 
 DkcSource* dkc_app_source_create(DkcApp* app, DkcSourceType src_type, const char* uri, const char* name, ...);
+DkcSource* dkc_app_source_pcreate(DkcApp* app, DkcSourceType src_type, const char* uri, const char* name, DkcParams* params);
 
 G_END_DECLS
 

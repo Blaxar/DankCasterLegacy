@@ -293,11 +293,31 @@ dkc_rc dkc_sourcemgr_delete(DkcSourceMgr*  src_mgr) {
   
 }
 
+
+DkcSource* dkc_source_create(DkcSourceMgr* src_mgr, DkcSourceType src_type, const char* uri, const char* name, ...) {
+
+  DkcSource* source = NULL;
+  
+  va_list args;
+  va_start(args, name);
+  source = dkc_source_vcreate(src_mgr, src_type, uri, name, args);
+  va_end(args);
+
+  return source;
+  
+}
+
 DkcSource* dkc_source_vcreate(DkcSourceMgr* src_mgr, DkcSourceType src_type, const char* uri, const char* name, va_list args) {
 
   DkcParams* params = NULL;
   char* fname = va_arg(args, char*);
   if(fname) params = dkc_params_vwrap(fname, args);
+
+  return dkc_source_pcreate(src_mgr, src_type, uri, name, params);
+  
+}
+
+DkcSource* dkc_source_pcreate(DkcSourceMgr* src_mgr, DkcSourceType src_type, const char* uri, const char* name, DkcParams* params) {
   
   pthread_mutex_lock(&src_mgr->lock);
   
@@ -318,19 +338,6 @@ DkcSource* dkc_source_vcreate(DkcSourceMgr* src_mgr, DkcSourceType src_type, con
   
   pthread_mutex_unlock(&src_mgr->lock);
   return NULL;
-  
-}
-
-DkcSource* dkc_source_create(DkcSourceMgr* src_mgr, DkcSourceType src_type, const char* uri, const char* name, ...) {
-
-  DkcSource* source = NULL;
-  
-  va_list args;
-  va_start(args, name);
-  source = dkc_source_vcreate(src_mgr, src_type, uri, name, args);
-  va_end(args);
-
-  return source;
   
 }
 
@@ -365,5 +372,13 @@ DkcSource* dkc_app_source_create(DkcApp* app, DkcSourceType src_type, const char
     va_end(args);
     
     return source;
+    
+}
+
+DkcSource* dkc_app_source_pcreate(DkcApp* app, DkcSourceType src_type, const char* uri, const char* name, DkcParams* params) {
+  
+    if(app == NULL) return NULL;
+    
+    return dkc_source_pcreate(app->src_mgr, src_type, uri, name, params);
     
 }
