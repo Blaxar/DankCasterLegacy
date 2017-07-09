@@ -4,23 +4,24 @@
 typedef enum _DkcSourceType {
 
     DUMMY_SRC = 0,
-    V4L2_SRC,
-    X11_SRC,
-    ALSA_SRC,
-    RTMP_SRC,
-    RTSP_SRC,
+    VIDEO_DEV_SRC,
+    WINDOW_SRC,
+    AUDIO_DEV_SRC,
+    STREAM_SRC,
     FILE_SRC,
+    NB_SRC_TYPES
     
 } DkcSourceType;
 
 typedef enum _DkcSinkType {
 
     DUMMY_SNK = 0,
-    V4L2_SNK,
-    X11_SNK,
-    ALSA_SNK,
-    RTMP_SNK,
+    VIDEO_DEV_SNK,
+    WINDOW_SNK,
+    AUDIO_DEV_SNK,
+    STREAM_SNK,
     FILE_SNK,
+    NB_SNK_TYPES
     
 } DkcSinkType;
 

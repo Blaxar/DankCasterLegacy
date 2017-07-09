@@ -546,7 +546,7 @@ DkcSceneMgr* dkc_scenemgr_create(DkcSceneCBs scn_cbs) {
   
 }
 
-dkc_rc dkc_scenemgr_delete(DkcSceneMgr* scn_mgr) {
+gboolean dkc_scenemgr_delete(DkcSceneMgr* scn_mgr) {
 
   for(int i=0; i<NB_SCENES; i++) {
     if(scn_mgr->scenes[i] != NULL) return ERROR;
@@ -581,7 +581,7 @@ DkcScene* dkc_scene_create(DkcSceneMgr* scn_mgr){
   
 }
 
-dkc_rc dkc_scene_delete(DkcScene* scn){
+gboolean dkc_scene_delete(DkcScene* scn){
 
   DkcSceneMgr* scn_mgr = scn->scn_mgr;
   pthread_mutex_lock(&scn_mgr->lock);
@@ -629,7 +629,7 @@ DkcWrappedSource* dkc_source_wrap(DkcScene* scn, DkcSource* src) {
   
 }
 
-dkc_rc dkc_source_unwrap(DkcWrappedSource* wrpd_src) {
+gboolean dkc_source_unwrap(DkcWrappedSource* wrpd_src) {
 
   DkcScene* scn = wrpd_src->scn;
   DkcSceneMgr* scn_mgr = scn->scn_mgr;

@@ -12,17 +12,17 @@ typedef struct _DkcBackend {
   uint8_t type_id;
   void* ctx;
   char* name;
-  dkc_rc (*init)(void** ctx, DkcParams* params);
+  gboolean (*init)(void** ctx, DkcParams* params);
   DKC_APP_CBS();
   DKC_SOURCE_CBS();
   DKC_SCENE_CBS();
   DKC_SINK_CBS();
-  dkc_rc (*uninit)(void** ctx);
+  gboolean (*uninit)(void** ctx);
   
 } DkcBackend;
 
 DkcBackend* dkc_backend_create(const char* type, DkcParams* params);
-dkc_rc dkc_backend_delete(DkcBackend* bkn);
+gboolean dkc_backend_delete(DkcBackend* bkn);
 
 
 #endif //DKCST_BACKEND_H

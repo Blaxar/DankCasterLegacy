@@ -60,7 +60,7 @@ DkcBackend* dkc_backend_create(const char* backend, DkcParams* params) {
 }
 
 
-dkc_rc dkc_backend_delete(DkcBackend* bkn) {
+gboolean dkc_backend_delete(DkcBackend* bkn) {
 
   if(bkn->uninit(&bkn->ctx)) {
     pthread_mutex_destroy(&bkn->lock);

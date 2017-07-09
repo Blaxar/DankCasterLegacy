@@ -139,26 +139,26 @@ dkc_app_constructed (GObject *obj)
 
 }
 
-DkcApp* dkc_app_create(const char* bkn_type, ...) {
+DkcApp* dkc_app_create(const char* bkn_type, GError** err, ...) {
 
   DkcParams* params = NULL;
   va_list args;
-  va_start(args, bkn_type);
+  va_start(args, err);
   char* fname = va_arg(args, char*);
   if(fname) params = dkc_params_vwrap(fname, args);
   va_end(args);
 
-  return dkc_app_pcreate(bkn_type, params);
+  return dkc_app_pcreate(bkn_type, params, err);
   
 }
   
-DkcApp* dkc_app_pcreate(const char* bkn_type, DkcParams* params) {
+DkcApp* dkc_app_pcreate(const char* bkn_type, DkcParams* params, GError** err) {
   
   return g_object_new (DKC_TYPE_APP, "backend", bkn_type, "params", params, NULL);
   
 }
 
-dkc_rc dkc_app_delete(DkcApp* app) {
+gboolean dkc_app_delete(DkcApp* app, GError** err) {
 
   if(!dkc_sinkmgr_delete(app->snk_mgr)) return ERROR;
   if(!dkc_scenemgr_delete(app->scn_mgr)) return ERROR;
@@ -171,13 +171,13 @@ dkc_rc dkc_app_delete(DkcApp* app) {
   
 }
 
-dkc_rc dkc_app_start(DkcApp* app) {
+gboolean dkc_app_start(DkcApp* app, GError** err) {
 
     return app->backend->start(app->backend->ctx);
 
 }
 
-dkc_rc dkc_app_stop(DkcApp* app){
+gboolean dkc_app_stop(DkcApp* app, GError** err){
 
     return app->backend->stop(app->backend->ctx);
 

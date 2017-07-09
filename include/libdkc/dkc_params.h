@@ -4,6 +4,7 @@
 #include <inttypes.h>
 #include <stddef.h>
 #include <stdarg.h>
+#include <glib.h>
 #include "dkc_rc.h"
 
 struct _DkcParam;
@@ -44,11 +45,11 @@ typedef struct _DkcParams {
   
 } DkcParams;
 
-typedef dkc_rc (*dkc_param_cb)(const char* name, DkcParamType type, void* value, void* ctx);
+typedef gboolean (*dkc_param_cb)(const char* name, DkcParamType type, void* value, void* ctx);
 
 DkcParams* dkc_params_wrap(const char* name, ...);
 DkcParams* dkc_params_vwrap(const char* name, va_list args);
-dkc_rc dkc_params_pop_all(DkcParams *params, dkc_param_cb param_cb, void* ctx);
+gboolean dkc_params_pop_all(DkcParams *params, dkc_param_cb param_cb, void* ctx);
 
 int dkc_params_fetch_int(DkcParams *params, const char* name, int default_value);
 float dkc_params_fetch_float(DkcParams *params, const char* name, float default_value);
@@ -57,20 +58,20 @@ DkcFraction dkc_params_fetch_fraction(DkcParams *params, const char* name, DkcFr
 
 DkcParams* dkc_params_create();
 
-dkc_rc dkc_params_set_int(DkcParams *params, const char* name, int value);
-dkc_rc dkc_params_set_float(DkcParams *params, const char* name, float value);
-dkc_rc dkc_params_set_string(DkcParams *params, const char* name, char* value);
-dkc_rc dkc_params_set_fraction(DkcParams *params, const char* name, DkcFraction value);
+gboolean dkc_params_set_int(DkcParams *params, const char* name, int value);
+gboolean dkc_params_set_float(DkcParams *params, const char* name, float value);
+gboolean dkc_params_set_string(DkcParams *params, const char* name, char* value);
+gboolean dkc_params_set_fraction(DkcParams *params, const char* name, DkcFraction value);
 
-dkc_rc dkc_params_get_int(DkcParams *params, const char* name, int* value);
-dkc_rc dkc_params_get_float(DkcParams *params, const char* name, float* value);
-dkc_rc dkc_params_get_string(DkcParams *params, const char* name, char** value);
-dkc_rc dkc_params_get_fraction(DkcParams *params, const char* name, DkcFraction* value);
+gboolean dkc_params_get_int(DkcParams *params, const char* name, int* value);
+gboolean dkc_params_get_float(DkcParams *params, const char* name, float* value);
+gboolean dkc_params_get_string(DkcParams *params, const char* name, char** value);
+gboolean dkc_params_get_fraction(DkcParams *params, const char* name, DkcFraction* value);
 
-dkc_rc dkc_params_unset(DkcParams *params, const char* name);
+gboolean dkc_params_unset(DkcParams *params, const char* name);
 
-dkc_rc dkc_params_delete(DkcParams *params);
-dkc_rc dkc_params_ref(DkcParams *params);
-dkc_rc dkc_params_unref(DkcParams *params);
+gboolean dkc_params_delete(DkcParams *params);
+gboolean dkc_params_ref(DkcParams *params);
+gboolean dkc_params_unref(DkcParams *params);
 
 #endif //DKCST_PARAMS_H	

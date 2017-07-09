@@ -283,7 +283,7 @@ DkcSourceMgr* dkc_sourcemgr_create(DkcSourceCBs src_cbs) {
   
 }
 
-dkc_rc dkc_sourcemgr_delete(DkcSourceMgr*  src_mgr) {
+gboolean dkc_sourcemgr_delete(DkcSourceMgr*  src_mgr) {
 
   for(int i=0; i<NB_SOURCES; i++) {
     if(src_mgr->sources[i] != NULL) return ERROR;
@@ -341,7 +341,7 @@ DkcSource* dkc_source_pcreate(DkcSourceMgr* src_mgr, DkcSourceType src_type, con
   
 }
 
-dkc_rc dkc_source_delete(DkcSource* src) {
+gboolean dkc_source_delete(DkcSource* src) {
 
   pthread_mutex_lock(&src->src_mgr->lock);
   

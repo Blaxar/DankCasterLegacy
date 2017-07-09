@@ -16,14 +16,14 @@ int main(int argc, char* argv[]){
   
   DkcApp* app;
   
-  if(! (app = dkc_app_create("gst", "width", INT, 640*2,
-                                    "height", INT, 360*2,
-                                    "framerate", FRACTION, 25, 1,
-                                    "videoformat", STRING, "NV12",
-                                    "rate", INT, 48000,
-                                    "channels", INT, 2,
-                                    "audioformat", STRING, "S16LE",
-                                    NULL))) printf("Failed to create app.\n");
+  if(! (app = dkc_app_create("gst", NULL, "width", INT, 640*2,
+                                          "height", INT, 360*2,
+                                          "framerate", FRACTION, 25, 1,
+                                          "videoformat", STRING, "NV12",
+                                          "rate", INT, 48000,
+                                          "channels", INT, 2,
+                                          "audioformat", STRING, "S16LE",
+                                          NULL))) printf("Failed to create app.\n");
 
   if (!app) {
       fprintf(stderr, "Failed to create app.\n");
@@ -46,7 +46,7 @@ int main(int argc, char* argv[]){
   }
   printf("Created source.\n");
 
-  DkcSource* v4l2_src = dkc_app_source_create(app, V4L2_SRC, "/dev/video0", "webcam",
+  DkcSource* v4l2_src = dkc_app_source_create(app, VIDEO_DEV_SRC, "/dev/video0", "webcam",
                                               "width", INT, 752,
                                               "height", INT, 416,
                                               "framerate", FRACTION, 25, 1,
@@ -94,15 +94,15 @@ int main(int argc, char* argv[]){
   }
   printf("Wrapped source.\n");
 
-  if (!dkc_app_start(app)) {
+  if (!dkc_app_start(app, NULL)) {
       fprintf(stderr, "Failed to start app.\n");
       return 1;
   }
   printf("Started app.\n");
 
-  g_main_loop_run (loop);
+  g_main_loop_run(loop);
 
-  if (!dkc_app_stop(app)) {
+  if (!dkc_app_stop(app, NULL)) {
       fprintf(stderr, "Failed to stop app.\n");
       return 1;
   }

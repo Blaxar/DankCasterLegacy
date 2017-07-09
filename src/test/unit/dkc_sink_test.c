@@ -27,7 +27,7 @@ void dkc_sinkmgr_delete_test(void) {
 
 void dkc_sink_create_test(void) {
 
-  DkcApp* app = dkc_app_create("dummy", NULL);
+  DkcApp* app = dkc_app_create("dummy", NULL, NULL);
   DkcSinkMgr *snk_mgr = app->snk_mgr;
 
   DkcSink* snk = NULL;
@@ -37,7 +37,7 @@ void dkc_sink_create_test(void) {
   CU_ASSERT_EQUAL(snk->snk_mgr, snk_mgr);
   CU_ASSERT_EQUAL(snk_mgr->nb_sinks, 1);
 
-  dkc_app_delete(app);
+  dkc_app_delete(app, NULL);
   
 }
 
@@ -54,7 +54,7 @@ void dkc_sink_delete_test(void){
   CU_ASSERT_EQUAL(snk_mgr->nb_sinks, 0);
   CU_ASSERT_EQUAL(snk_mgr->sinks[id], NULL);
 
-  dkc_app_delete(app);
+  dkc_app_delete(app, NULL);
   
 }
 

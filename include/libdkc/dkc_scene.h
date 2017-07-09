@@ -29,15 +29,15 @@ G_DECLARE_FINAL_TYPE (DkcSceneMgr, dkc_scene_mgr, DKC, SCENE_MGR, GObject)
 /* Scene handling */
 
 DkcSceneMgr* dkc_scenemgr_create(DkcSceneCBs scn_sbs);
-dkc_rc dkc_scenemgr_delete(DkcSceneMgr* scn_mgr);
+gboolean dkc_scenemgr_delete(DkcSceneMgr* scn_mgr);
 
 DkcScene* dkc_scene_create(DkcSceneMgr* scn_mgr);
-dkc_rc dkc_scene_delete(DkcScene* scn);
+gboolean dkc_scene_delete(DkcScene* scn);
 
 /* Source wrapping */
 
 DkcWrappedSource* dkc_source_wrap(DkcScene* scn, DkcSource* src);
-dkc_rc dkc_source_unwrap(DkcWrappedSource* wrpd_src);
+gboolean dkc_source_unwrap(DkcWrappedSource* wrpd_src);
 
 DkcScene* dkc_app_scene_create(DkcApp* app);
 

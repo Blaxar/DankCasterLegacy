@@ -58,7 +58,7 @@ DkcParams* dkc_params_vwrap(const char* name, va_list args) {
     
 }
 
-dkc_rc dkc_params_pop_all(DkcParams *params, dkc_param_cb param_cb, void* ctx) {
+gboolean dkc_params_pop_all(DkcParams *params, dkc_param_cb param_cb, void* ctx) {
 
   if(params == NULL) return ERROR;
     
@@ -69,7 +69,7 @@ dkc_rc dkc_params_pop_all(DkcParams *params, dkc_param_cb param_cb, void* ctx) {
      
     rparam = param;
     param=param->next;
-    dkc_rc rc;
+    gboolean rc;
     
     switch(rparam->type){
     case INT: {
@@ -160,7 +160,7 @@ DkcParams* dkc_params_create() {
   
 }
 
-dkc_rc dkc_set_param(DkcParams *params, const char* name, DkcParamType type, void* value) {
+gboolean dkc_set_param(DkcParams *params, const char* name, DkcParamType type, void* value) {
   
   uint16_t name_length = strlen(name);
   
@@ -228,23 +228,23 @@ dkc_rc dkc_set_param(DkcParams *params, const char* name, DkcParamType type, voi
   }
 }
 
-dkc_rc dkc_params_set_int(DkcParams *params, const char* name, int value) {
+gboolean dkc_params_set_int(DkcParams *params, const char* name, int value) {
     return dkc_set_param(params, name, INT, &value);
 }
 
-dkc_rc dkc_params_set_float(DkcParams *params, const char* name, float value) {
+gboolean dkc_params_set_float(DkcParams *params, const char* name, float value) {
   return dkc_set_param(params, name, FLOAT, &value);
 }
 
-dkc_rc dkc_params_set_string(DkcParams *params, const char* name, char* value) {
+gboolean dkc_params_set_string(DkcParams *params, const char* name, char* value) {
     return dkc_set_param(params, name, STRING, value);
 }
 
-dkc_rc dkc_params_set_fraction(DkcParams *params, const char* name, DkcFraction value) {
+gboolean dkc_params_set_fraction(DkcParams *params, const char* name, DkcFraction value) {
     return dkc_set_param(params, name, FRACTION, &value);
 }
 
-dkc_rc dkc_get_param(DkcParams *params, const char* name, DkcParamType type, void** value) {
+gboolean dkc_get_param(DkcParams *params, const char* name, DkcParamType type, void** value) {
 
   uint16_t name_length = strlen(name);
   
@@ -273,23 +273,23 @@ dkc_rc dkc_get_param(DkcParams *params, const char* name, DkcParamType type, voi
   return ERROR;
 }
 
-dkc_rc dkc_params_get_int(DkcParams *params, const char* name, int* value) {
+gboolean dkc_params_get_int(DkcParams *params, const char* name, int* value) {
     return dkc_get_param(params, name, INT, &value);
 }
 
-dkc_rc dkc_params_get_float(DkcParams *params, const char* name, float* value) {
+gboolean dkc_params_get_float(DkcParams *params, const char* name, float* value) {
     return dkc_get_param(params, name, FLOAT, &value);
 }
 
-dkc_rc dkc_params_get_string(DkcParams *params, const char* name, char** value) {
+gboolean dkc_params_get_string(DkcParams *params, const char* name, char** value) {
     return dkc_get_param(params, name, STRING, value);
 }
 
-dkc_rc dkc_params_get_fraction(DkcParams *params, const char* name, DkcFraction* value) {
+gboolean dkc_params_get_fraction(DkcParams *params, const char* name, DkcFraction* value) {
     return dkc_get_param(params, name, FRACTION, &value);
 }
 
-dkc_rc dkc_params_unset(DkcParams *params, const char* name) {
+gboolean dkc_params_unset(DkcParams *params, const char* name) {
 
   if(params == NULL) return ERROR;
   
@@ -315,7 +315,7 @@ dkc_rc dkc_params_unset(DkcParams *params, const char* name) {
   return ERROR;
 }
 
-dkc_rc dkc_params_delete(DkcParams *params) {
+gboolean dkc_params_delete(DkcParams *params) {
 
   if(params == NULL) return ERROR;
     
@@ -343,13 +343,13 @@ dkc_rc dkc_params_delete(DkcParams *params) {
   
 }
 
-dkc_rc dkc_params_ref(DkcParams *params) {
+gboolean dkc_params_ref(DkcParams *params) {
 
   params->refs++;
     
 }
     
-dkc_rc dkc_params_unref(DkcParams *params) {
+gboolean dkc_params_unref(DkcParams *params) {
 
   params->refs--;
   if(params->refs == 0) dkc_params_delete(params);

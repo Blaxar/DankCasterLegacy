@@ -26,7 +26,7 @@ void dkc_sourcemgr_delete_test(void) {
 
 void dkc_source_create_test(void) {
 
-  DkcApp* app = dkc_app_create("dummy", NULL);
+  DkcApp* app = dkc_app_create("dummy", NULL, NULL);
   DkcSourceMgr *src_mgr = app->src_mgr;
 
   DkcSource* src = dkc_source_create(src_mgr, DUMMY_SRC, "whatever", "somename", NULL);
@@ -35,13 +35,13 @@ void dkc_source_create_test(void) {
   CU_ASSERT_EQUAL(src->src_mgr, src_mgr);
   CU_ASSERT_EQUAL(src_mgr->nb_sources, 1);
 
-  dkc_app_delete(app);
+  dkc_app_delete(app, NULL);
   
 }
 
 void dkc_source_delete_test(void){
 
-    DkcApp* app = dkc_app_create("dummy", NULL);
+  DkcApp* app = dkc_app_create("dummy", NULL, NULL);
   DkcSourceMgr *src_mgr = app->src_mgr;
   
   DkcSource* src = dkc_source_create(src_mgr, DUMMY_SRC, "whatever", "somename", NULL);
@@ -52,7 +52,7 @@ void dkc_source_delete_test(void){
   CU_ASSERT_EQUAL(src_mgr->nb_sources, 0);
   CU_ASSERT_EQUAL(src_mgr->sources[id],NULL);
 
-  dkc_app_delete(app);
+  dkc_app_delete(app, NULL);
   
 }
 

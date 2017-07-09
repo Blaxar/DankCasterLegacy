@@ -30,7 +30,7 @@ void dkc_scenemgr_delete_test(void) {
 
 void dkc_scene_create_test(void) {
 
-  DkcApp* app = dkc_app_create("dummy", NULL);
+  DkcApp* app = dkc_app_create("dummy", NULL, NULL);
   DkcSceneMgr *scn_mgr = app->scn_mgr;
   
   DkcScene* scn = NULL;
@@ -41,14 +41,14 @@ void dkc_scene_create_test(void) {
   for(int i=0; i<NB_WRP_SOURCES; i++)
     CU_ASSERT_EQUAL(scn->sources[i],NULL);
 
-    dkc_app_delete(app);
+  dkc_app_delete(app, NULL);
   
 }
 
 void dkc_scene_delete_test(void) {
 
-  DkcApp* app = dkc_app_create("dummy", NULL);
-    DkcSceneMgr *scn_mgr = app->scn_mgr;
+  DkcApp* app = dkc_app_create("dummy", NULL, NULL);
+  DkcSceneMgr *scn_mgr = app->scn_mgr;
     
   DkcScene* scn = dkc_scene_create(scn_mgr);
   uint8_t id = scn->id;
@@ -62,17 +62,17 @@ void dkc_scene_delete_test(void) {
   CU_ASSERT_EQUAL(dkc_scene_delete(scn), OK);
   CU_ASSERT_EQUAL(scn_mgr->scenes[id], NULL);
 
-    dkc_app_delete(app);
+  dkc_app_delete(app, NULL);
   
 }
 
 void dkc_source_wrap_test(void) {
 
-    DkcApp* app = dkc_app_create("dummy", NULL);
+  DkcApp* app = dkc_app_create("dummy", NULL, NULL);
   DkcSceneMgr *scn_mgr = app->scn_mgr;
   DkcScene *scn = dkc_scene_create(scn_mgr);
-    DkcSource* src = dkc_source_create(app->src_mgr, DUMMY_SRC, "whatever", "dummy", NULL);
-    DkcWrappedSource* wrpd_src = NULL;
+  DkcSource* src = dkc_source_create(app->src_mgr, DUMMY_SRC, "whatever", "dummy", NULL);
+  DkcWrappedSource* wrpd_src = NULL;
 
   /* Good case scenario */
   wrpd_src = dkc_source_wrap(scn, src);
@@ -82,23 +82,23 @@ void dkc_source_wrap_test(void) {
   CU_ASSERT_EQUAL(scn->sources[0], wrpd_src);  
   CU_ASSERT_EQUAL(wrpd_src->source_id, src->id);
 
-    dkc_app_delete(app);
+  dkc_app_delete(app, NULL);
   
 }
 
 void dkc_source_unwrap_test(void) {
 
-    DkcApp* app = dkc_app_create("dummy", NULL);
+  DkcApp* app = dkc_app_create("dummy", NULL, NULL);
   DkcSceneMgr *scn_mgr = app->scn_mgr;
   DkcScene *scn = dkc_scene_create(scn_mgr);
-    DkcSource* src = dkc_source_create(app->src_mgr, DUMMY_SRC, "whatever", "dummy", NULL);
+  DkcSource* src = dkc_source_create(app->src_mgr, DUMMY_SRC, "whatever", "dummy", NULL);
   DkcWrappedSource* wrpd_src = dkc_source_wrap(scn, src);
 
   CU_ASSERT_EQUAL(dkc_source_unwrap(wrpd_src), OK);
   CU_ASSERT_EQUAL(scn->nb_sources, 0);
   CU_ASSERT_EQUAL(scn->sources[0], NULL);
 
-    dkc_app_delete(app);
+  dkc_app_delete(app, NULL);
   
 }
 

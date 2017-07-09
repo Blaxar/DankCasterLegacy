@@ -283,7 +283,7 @@ DkcSinkMgr* dkc_sinkmgr_create(DkcSinkCBs snk_cbs) {
   
 }
 
-dkc_rc dkc_sinkmgr_delete(DkcSinkMgr*  snk_mgr) {
+gboolean dkc_sinkmgr_delete(DkcSinkMgr*  snk_mgr) {
 
   for(int i=0; i<NB_SINKS; i++) {
     if(snk_mgr->sinks[i] != NULL) return ERROR;
@@ -343,7 +343,7 @@ DkcSink* dkc_sink_pcreate(DkcSinkMgr* snk_mgr, DkcSinkType snk_type, const char*
 }
 
 
-dkc_rc dkc_sink_delete(DkcSink* snk) {
+gboolean dkc_sink_delete(DkcSink* snk) {
 
   pthread_mutex_lock(&snk->snk_mgr->lock);
   

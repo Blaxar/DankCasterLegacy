@@ -52,7 +52,7 @@ dkc_rc gstbkn_create_source(void* ctx, uint8_t id,  DkcSourceType src_type, cons
     case DUMMY_SRC:
       gstbkn_create_source_dummy(&source, params);
     break;
-    case V4L2_SRC:
+    case VIDEO_DEV_SRC:
       gstbkn_create_source_v4l2(&source, uri, params);
     break;
     default:
