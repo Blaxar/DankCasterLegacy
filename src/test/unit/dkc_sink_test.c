@@ -7,7 +7,7 @@
 void dkc_sinkmgr_create_test(void) {
     
   DkcSinkMgr* snk_mgr = NULL;
-  snk_mgr = dkc_sinkmgr_create((DkcSinkCBs){NULL,NULL,NULL});
+  snk_mgr = dkc_sinkmgr_create((DkcSinkCBs){NULL,NULL,NULL}, NULL);
   CU_ASSERT_NOT_EQUAL(snk_mgr, NULL);
   CU_ASSERT_EQUAL(snk_mgr->nb_sinks,0);
   for(int i=0; i<NB_SINKS; i++)
@@ -17,11 +17,11 @@ void dkc_sinkmgr_create_test(void) {
 
 void dkc_sinkmgr_delete_test(void) {
 
-  DkcSinkMgr* snk_mgr = dkc_sinkmgr_create((DkcSinkCBs){NULL,NULL,NULL});
+  DkcSinkMgr* snk_mgr = dkc_sinkmgr_create((DkcSinkCBs){NULL,NULL,NULL}, NULL);
   snk_mgr->sinks[0] = 0xdeadbeef;
-  CU_ASSERT_EQUAL(dkc_sinkmgr_delete(snk_mgr), ERROR);
+  CU_ASSERT_EQUAL(dkc_sinkmgr_delete(snk_mgr, NULL), ERROR);
   snk_mgr->sinks[0] = NULL;
-  CU_ASSERT_EQUAL(dkc_sinkmgr_delete(snk_mgr), OK);
+  CU_ASSERT_EQUAL(dkc_sinkmgr_delete(snk_mgr, NULL), OK);
   
 }
 
@@ -31,8 +31,7 @@ void dkc_sink_create_test(void) {
   DkcSinkMgr *snk_mgr = app->snk_mgr;
 
   DkcSink* snk = NULL;
-  //CU_ASSERT_EQUAL(dkc_sink_create(snk_mgr, "ymmud", &snk, "somename", NULL), ERROR); // When there is no such sink type.
-  snk = dkc_sink_create(snk_mgr, DUMMY_SNK, "whatever", "somename", NULL);
+  snk = dkc_sink_create(snk_mgr, DUMMY_SNK, "whatever", "somename", NULL, NULL);
   CU_ASSERT_NOT_EQUAL(snk, NULL);
   CU_ASSERT_EQUAL(snk->snk_mgr, snk_mgr);
   CU_ASSERT_EQUAL(snk_mgr->nb_sinks, 1);
@@ -43,14 +42,14 @@ void dkc_sink_create_test(void) {
 
 void dkc_sink_delete_test(void){
 
-    DkcApp* app = dkc_app_create("dummy", NULL);
+  DkcApp* app = dkc_app_create("dummy", NULL, NULL);
   DkcSinkMgr *snk_mgr = app->snk_mgr;
   
-  DkcSink* snk = dkc_sink_create(snk_mgr, DUMMY_SNK, "whatever", "somename", NULL);
+  DkcSink* snk = dkc_sink_create(snk_mgr, DUMMY_SNK, "whatever", "somename", NULL, NULL);
 
   uint8_t id = snk->id;
 
-  CU_ASSERT_EQUAL(dkc_sink_delete(snk), OK);
+  CU_ASSERT_EQUAL(dkc_sink_delete(snk, NULL), OK);
   CU_ASSERT_EQUAL(snk_mgr->nb_sinks, 0);
   CU_ASSERT_EQUAL(snk_mgr->sinks[id], NULL);
 

@@ -534,7 +534,7 @@ static void dkc_wrapped_source_dispose (GObject *obj) {
 
 /* Scene handling */
 
-DkcSceneMgr* dkc_scenemgr_create(DkcSceneCBs scn_cbs) {
+DkcSceneMgr* dkc_scenemgr_create(DkcSceneCBs scn_cbs, GError* err) {
 
   return g_object_new (DKC_TYPE_SCENE_MGR,
                        "backend_ctx", scn_cbs.bkn_ctx,
@@ -546,7 +546,7 @@ DkcSceneMgr* dkc_scenemgr_create(DkcSceneCBs scn_cbs) {
   
 }
 
-gboolean dkc_scenemgr_delete(DkcSceneMgr* scn_mgr) {
+gboolean dkc_scenemgr_delete(DkcSceneMgr* scn_mgr, GError* err) {
 
   for(int i=0; i<NB_SCENES; i++) {
     if(scn_mgr->scenes[i] != NULL) return ERROR;
@@ -557,7 +557,7 @@ gboolean dkc_scenemgr_delete(DkcSceneMgr* scn_mgr) {
   
 }
 
-DkcScene* dkc_scene_create(DkcSceneMgr* scn_mgr){
+DkcScene* dkc_scene_create(DkcSceneMgr* scn_mgr, GError* err){
 
   pthread_mutex_lock(&scn_mgr->lock);
   
@@ -581,7 +581,7 @@ DkcScene* dkc_scene_create(DkcSceneMgr* scn_mgr){
   
 }
 
-gboolean dkc_scene_delete(DkcScene* scn){
+gboolean dkc_scene_delete(DkcScene* scn, GError* err){
 
   DkcSceneMgr* scn_mgr = scn->scn_mgr;
   pthread_mutex_lock(&scn_mgr->lock);
@@ -604,7 +604,7 @@ gboolean dkc_scene_delete(DkcScene* scn){
 
 /* Source wrapping */
 
-DkcWrappedSource* dkc_source_wrap(DkcScene* scn, DkcSource* src) {
+DkcWrappedSource* dkc_source_wrap(DkcScene* scn, DkcSource* src, GError* err) {
     
   DkcWrappedSource* wrpd_src = NULL;
   DkcSceneMgr* scn_mgr = scn->scn_mgr;
@@ -629,7 +629,7 @@ DkcWrappedSource* dkc_source_wrap(DkcScene* scn, DkcSource* src) {
   
 }
 
-gboolean dkc_source_unwrap(DkcWrappedSource* wrpd_src) {
+gboolean dkc_source_unwrap(DkcWrappedSource* wrpd_src, GError* err) {
 
   DkcScene* scn = wrpd_src->scn;
   DkcSceneMgr* scn_mgr = scn->scn_mgr;
@@ -649,7 +649,7 @@ gboolean dkc_source_unwrap(DkcWrappedSource* wrpd_src) {
   
 }
 
-DkcScene* dkc_app_scene_create(DkcApp* app) {
+DkcScene* dkc_app_scene_create(DkcApp* app, GError* err) {
   if(app == NULL) return NULL;
-  return dkc_scene_create(app->scn_mgr);
+  return dkc_scene_create(app->scn_mgr, err);
 }

@@ -6,7 +6,7 @@
 
 void dkc_sourcemgr_create_test(void) {
   
-  DkcSourceMgr* src_mgr = dkc_sourcemgr_create((DkcSourceCBs){NULL,NULL,NULL});
+  DkcSourceMgr* src_mgr = dkc_sourcemgr_create((DkcSourceCBs){NULL,NULL,NULL}, NULL);
   CU_ASSERT_NOT_EQUAL(src_mgr, NULL);
   CU_ASSERT_EQUAL(src_mgr->nb_sources,0);
   for(int i=0; i<NB_SOURCES; i++)
@@ -16,11 +16,11 @@ void dkc_sourcemgr_create_test(void) {
 
 void dkc_sourcemgr_delete_test(void) {
   
-  DkcSourceMgr* src_mgr = dkc_sourcemgr_create((DkcSourceCBs){NULL,NULL,NULL});
+  DkcSourceMgr* src_mgr = dkc_sourcemgr_create((DkcSourceCBs){NULL,NULL,NULL}, NULL);
   src_mgr->sources[0] = 0xdeadbeef;
-  CU_ASSERT_EQUAL(dkc_sourcemgr_delete(src_mgr), ERROR);
+  CU_ASSERT_EQUAL(dkc_sourcemgr_delete(src_mgr, NULL), ERROR);
   src_mgr->sources[0] = NULL;
-  CU_ASSERT_EQUAL(dkc_sourcemgr_delete(src_mgr), OK);
+  CU_ASSERT_EQUAL(dkc_sourcemgr_delete(src_mgr, NULL), OK);
     
 }
 
@@ -29,8 +29,7 @@ void dkc_source_create_test(void) {
   DkcApp* app = dkc_app_create("dummy", NULL, NULL);
   DkcSourceMgr *src_mgr = app->src_mgr;
 
-  DkcSource* src = dkc_source_create(src_mgr, DUMMY_SRC, "whatever", "somename", NULL);
-  //CU_ASSERT_EQUAL(dkc_source_create(src_mgr, "ymmud", &src, "somename", NULL), ERROR); // When there is no such source type.
+  DkcSource* src = dkc_source_create(src_mgr, DUMMY_SRC, "whatever", "somename", NULL, NULL);
   CU_ASSERT_NOT_EQUAL(src, NULL); // When there is the source type.
   CU_ASSERT_EQUAL(src->src_mgr, src_mgr);
   CU_ASSERT_EQUAL(src_mgr->nb_sources, 1);
@@ -44,11 +43,11 @@ void dkc_source_delete_test(void){
   DkcApp* app = dkc_app_create("dummy", NULL, NULL);
   DkcSourceMgr *src_mgr = app->src_mgr;
   
-  DkcSource* src = dkc_source_create(src_mgr, DUMMY_SRC, "whatever", "somename", NULL);
+  DkcSource* src = dkc_source_create(src_mgr, DUMMY_SRC, "whatever", "somename", NULL, NULL);
 
   uint8_t id = src->id;
 
-  CU_ASSERT_EQUAL(dkc_source_delete(src), OK);
+  CU_ASSERT_EQUAL(dkc_source_delete(src, NULL), OK);
   CU_ASSERT_EQUAL(src_mgr->nb_sources, 0);
   CU_ASSERT_EQUAL(src_mgr->sources[id],NULL);
 

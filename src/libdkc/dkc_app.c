@@ -117,7 +117,7 @@ dkc_app_constructed (GObject *obj)
   app->src_mgr = dkc_sourcemgr_create(
                      (DkcSourceCBs) {app->backend->ctx,
                                      app->backend->create_source,
-                                     app->backend->delete_source});
+                         app->backend->delete_source}, NULL);
   if(!app->src_mgr) { g_error("Source manager creation failed."); }
   
   app->scn_mgr = dkc_scenemgr_create(
@@ -125,13 +125,13 @@ dkc_app_constructed (GObject *obj)
                                     app->backend->create_scene,
                                     app->backend->delete_scene,
                                     app->backend->wrap_source,
-                                    app->backend->unwrap_source});
+                         app->backend->unwrap_source}, NULL);
   if(!app->scn_mgr) { g_error("Scene manager creation failed."); }
   
   app->snk_mgr = dkc_sinkmgr_create(
                      (DkcSinkCBs) {app->backend->ctx,
                                    app->backend->create_sink,
-                                   app->backend->delete_sink});
+                         app->backend->delete_sink}, NULL);
   if(!app->snk_mgr) { g_error("Sink manager creation failed."); }
 
   GObjectClass* klass = g_type_class_peek_parent(G_OBJECT_GET_CLASS(obj));
@@ -160,9 +160,9 @@ DkcApp* dkc_app_pcreate(const char* bkn_type, DkcParams* params, GError** err) {
 
 gboolean dkc_app_delete(DkcApp* app, GError** err) {
 
-  if(!dkc_sinkmgr_delete(app->snk_mgr)) return ERROR;
-  if(!dkc_scenemgr_delete(app->scn_mgr)) return ERROR;
-  if(!dkc_sourcemgr_delete(app->src_mgr)) return ERROR;
+  if(!dkc_sinkmgr_delete(app->snk_mgr, NULL)) return ERROR;
+  if(!dkc_scenemgr_delete(app->scn_mgr, NULL)) return ERROR;
+  if(!dkc_sourcemgr_delete(app->src_mgr, NULL)) return ERROR;
   if(!dkc_backend_delete(app->backend)) return ERROR;
   
   g_object_unref(app);

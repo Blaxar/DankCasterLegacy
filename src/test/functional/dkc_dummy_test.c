@@ -31,7 +31,7 @@ int main(int argc, char* argv[]){
   }
   printf("Created app.\n");
     
-  DkcSource* dummy_src = dkc_app_source_create(app, DUMMY_SRC, "/dev/video0", "dummy",
+  DkcSource* dummy_src = dkc_app_source_create(app, DUMMY_SRC, "/dev/video0", "dummy", NULL,
                                                "width", INT, 640,
                                                "height", INT, 360,
                                                "framerate", FRACTION, 25, 1,
@@ -46,7 +46,7 @@ int main(int argc, char* argv[]){
   }
   printf("Created source.\n");
 
-  DkcSource* v4l2_src = dkc_app_source_create(app, VIDEO_DEV_SRC, "/dev/video0", "webcam",
+  DkcSource* v4l2_src = dkc_app_source_create(app, VIDEO_DEV_SRC, "/dev/video0", "webcam", NULL,
                                               "width", INT, 752,
                                               "height", INT, 416,
                                               "framerate", FRACTION, 25, 1,
@@ -58,7 +58,7 @@ int main(int argc, char* argv[]){
   }
   printf("Created source.\n");
 
-  DkcSink* window_sink = dkc_app_sink_create(app, DUMMY_SNK, "test window", "test_window",
+  DkcSink* window_sink = dkc_app_sink_create(app, DUMMY_SNK, "test window", "test_window", NULL,
                                                              "width", INT, 640,
                                                              "height", INT, 360,
                                                              "framerate", FRACTION, 25, 1,
@@ -73,21 +73,21 @@ int main(int argc, char* argv[]){
   }
   printf("Created sink.\n");
   
-  DkcScene* scene = dkc_app_scene_create(app);
+  DkcScene* scene = dkc_app_scene_create(app, NULL);
   if (!scene) {
       fprintf(stderr, "Failed to create scene.\n");
       return 1;
   }
   printf("Created scene.\n");
   
-  DkcWrappedSource* wrpd_dummy_src = dkc_source_wrap(scene, dummy_src);
+  DkcWrappedSource* wrpd_dummy_src = dkc_source_wrap(scene, dummy_src, NULL);
   if (!wrpd_dummy_src) {
       fprintf(stderr, "Failed to wrap source.\n");
       return 1;
   }
   printf("Wrapped source.\n");
 
-  DkcWrappedSource* wrpd_v4l2_src = dkc_source_wrap(scene, v4l2_src);
+  DkcWrappedSource* wrpd_v4l2_src = dkc_source_wrap(scene, v4l2_src, NULL);
   if (!wrpd_v4l2_src) {
       fprintf(stderr, "Failed to wrap source.\n");
       return 1;
