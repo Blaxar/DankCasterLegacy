@@ -8,7 +8,7 @@ void dkc_sourcemgr_create_test(void) {
   
   DkcSourceMgr* src_mgr = dkc_sourcemgr_create((DkcSourceCBs){NULL,NULL,NULL}, NULL);
   CU_ASSERT_NOT_EQUAL(src_mgr, NULL);
-  CU_ASSERT_EQUAL(src_mgr->nb_sources,0);
+  CU_ASSERT_EQUAL(src_mgr->nb_sources, 0);
   for(int i=0; i<NB_SOURCES; i++)
     CU_ASSERT_EQUAL(src_mgr->sources[i], NULL);
   
@@ -28,12 +28,27 @@ void dkc_source_create_test(void) {
 
   DkcApp* app = dkc_app_create("dummy", NULL, NULL);
   DkcSourceMgr *src_mgr = app->src_mgr;
+  GError* gerr = NULL;
 
-  DkcSource* src = dkc_source_create(src_mgr, DUMMY_SRC, "whatever", "somename", NULL, NULL);
-  CU_ASSERT_NOT_EQUAL(src, NULL); // When there is the source type.
-  CU_ASSERT_EQUAL(src->src_mgr, src_mgr);
-  CU_ASSERT_EQUAL(src_mgr->nb_sources, 1);
+  DkcSource* src = NULL;
+  for(int i=0; i<NB_SOURCES; i++) { //Already one source created, try to reach max capacity now
+    src = dkc_source_create(src_mgr, DUMMY_SRC, "whatever", "somename", &gerr, NULL);
+    CU_ASSERT_NOT_EQUAL(src, NULL); // When there is the source type.
+    CU_ASSERT_EQUAL(src->src_mgr, src_mgr);
+    CU_ASSERT_EQUAL(src_mgr->nb_sources, i+1);
+    CU_ASSERT_EQUAL(gerr, NULL);
+  }
 
+  //Now we should get an over capacity error
+  src = dkc_source_create(src_mgr, DUMMY_SRC, "whatever", "somename", &gerr, NULL);
+  CU_ASSERT_EQUAL(src, NULL);
+  CU_ASSERT_EQUAL(src_mgr->nb_sources, NB_SOURCES);
+  CU_ASSERT_NOT_EQUAL(gerr, NULL);
+  CU_ASSERT_EQUAL(gerr->domain, ERRD_SOURCE);
+  CU_ASSERT_EQUAL(gerr->code, ERRC_MAX_CAPACITY);
+  
+  g_clear_error(&gerr);
+  
   dkc_app_delete(app, NULL);
   
 }

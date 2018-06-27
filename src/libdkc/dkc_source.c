@@ -320,6 +320,12 @@ DkcSource* dkc_source_vcreate(DkcSourceMgr* src_mgr, DkcSourceType src_type, con
 DkcSource* dkc_source_pcreate(DkcSourceMgr* src_mgr, DkcSourceType src_type, const char* uri, const char* name, DkcParams* params, GError** err) {
   
   pthread_mutex_lock(&src_mgr->lock);
+
+  if (src_mgr->nb_sources == NB_SOURCES) {
+    if(err != NULL) *err = g_error_new(ERRD_SOURCE, ERRC_MAX_CAPACITY, "Maximum number of sources already reached.");
+    pthread_mutex_unlock(&src_mgr->lock);
+    return NULL;
+  }
   
   for(int j=0; j<NB_SOURCES; j++) {
     if(src_mgr->sources[j] == NULL) {

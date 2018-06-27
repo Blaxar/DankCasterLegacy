@@ -21,7 +21,7 @@ G_DECLARE_FINAL_TYPE (DkcSink, dkc_sink, DKC, SINK, GObject)
 #define DKC_TYPE_SINK_MGR dkc_sink_mgr_get_type ()
 G_DECLARE_FINAL_TYPE (DkcSinkMgr, dkc_sink_mgr, DKC, SINK_MGR, GObject)
 
-  DkcSinkMgr* dkc_sinkmgr_create(DkcSinkCBs snk_cbs, GError** err);
+DkcSinkMgr* dkc_sinkmgr_create(DkcSinkCBs snk_cbs, GError** err);
 gboolean dkc_sinkmgr_delete(DkcSinkMgr* snk_mgr, GError** err);
 
 DkcSink* dkc_sink_create(DkcSinkMgr* snk_mgr, DkcSinkType snk_type, const char* uri, const char* name, GError** err, ...);

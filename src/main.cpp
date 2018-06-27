@@ -21,12 +21,12 @@ int main(int argc, char* argv[]){
 	WrpSource wrpWebcam0 = scene0.addSource(webcam);
 	WrpSource wrpWindow0 =  scene0.addSource(x11Window);
 	WrpSource wrpSnd0 = scene0.addSource(sndCapture);
-    WrpSource wrpMic = scene0.addSource(mic);
+  WrpSource wrpMic = scene0.addSource(mic);
 
 	WrpSource wrpWebcam1 = scene1.addSource(webcam);
 	WrpSource wrpWindow1 =  scene1.addSource(x11Window);
 	WrpSource wrpSnd1 = scene1.addSource(sndCapture);
-    WrpSource wrpMic1 = scene1.addSource(mic);
+  WrpSource wrpMic1 = scene1.addSource(mic);
 
 	/* Second sample scenario */
 
