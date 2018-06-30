@@ -285,6 +285,11 @@ DkcSinkMgr* dkc_sinkmgr_create(DkcSinkCBs snk_cbs, GError** err) {
 
 gboolean dkc_sinkmgr_delete(DkcSinkMgr*  snk_mgr, GError** err) {
 
+  if(G_OBJECT_TYPE(snk_mgr) != DKC_TYPE_SINK_MGR){
+    if(err != NULL) *err = g_error_new(ERRD_SINK, ERRC_WRONG_MGR_CLASS, "Provided object is not a DkcSinkMgr instance.");
+    return ERROR;
+  }
+  
   for(int i=0; i<NB_SINKS; i++) {
     if(snk_mgr->sinks[i] != NULL) return ERROR;
   }
@@ -319,8 +324,13 @@ DkcSink* dkc_sink_vcreate(DkcSinkMgr* snk_mgr, DkcSinkType snk_type, const char*
 
 DkcSink* dkc_sink_pcreate(DkcSinkMgr* snk_mgr, DkcSinkType snk_type, const char* uri, const char* name, DkcParams* params, GError** err) {
 
-  DkcSink* snk;
   pthread_mutex_lock(&snk_mgr->lock);
+
+  if (snk_mgr->nb_sinks == NB_SINKS) {
+    if(err != NULL) *err = g_error_new(ERRD_SINK, ERRC_MAX_CAPACITY, "Maximum number of sinks already reached.");
+    pthread_mutex_unlock(&snk_mgr->lock);
+    return NULL;
+  }
   
   for(int j=0; j<NB_SINKS; j++) {
     if(snk_mgr->sinks[j] == NULL) {
@@ -344,6 +354,11 @@ DkcSink* dkc_sink_pcreate(DkcSinkMgr* snk_mgr, DkcSinkType snk_type, const char*
 
 
 gboolean dkc_sink_delete(DkcSink* snk, GError** err) {
+
+  if(G_OBJECT_TYPE(snk) != DKC_TYPE_SINK){
+    if(err != NULL) *err = g_error_new(ERRD_SINK, ERRC_WRONG_CLASS, "Provided object is not a DkcSink instance.");
+    return ERROR;
+  }
 
   pthread_mutex_lock(&snk->snk_mgr->lock);
   
@@ -369,7 +384,7 @@ DkcSink* dkc_app_sink_create(DkcApp* app, DkcSinkType snk_type, const char* uri,
   DkcSink* sink = NULL;
     
   va_list args;
-  va_start(args, name);
+  va_start(args, err);
   sink = dkc_sink_vcreate(app->snk_mgr, snk_type, uri, name, args, err);
   va_end(args);
   

@@ -283,7 +283,12 @@ DkcSourceMgr* dkc_sourcemgr_create(DkcSourceCBs src_cbs, GError** err) {
   
 }
 
-gboolean dkc_sourcemgr_delete(DkcSourceMgr*  src_mgr, GError** err) {
+gboolean dkc_sourcemgr_delete(DkcSourceMgr* src_mgr, GError** err) {
+
+  if(G_OBJECT_TYPE(src_mgr) != DKC_TYPE_SOURCE_MGR){
+    if(err != NULL) *err = g_error_new(ERRD_SOURCE, ERRC_WRONG_MGR_CLASS, "Provided object is not a DkcSourceMgr instance.");
+    return ERROR;
+  }
 
   for(int i=0; i<NB_SOURCES; i++) {
     if(src_mgr->sources[i] != NULL) return ERROR;
@@ -349,6 +354,11 @@ DkcSource* dkc_source_pcreate(DkcSourceMgr* src_mgr, DkcSourceType src_type, con
 
 gboolean dkc_source_delete(DkcSource* src, GError** err) {
 
+  if(G_OBJECT_TYPE(src) != DKC_TYPE_SOURCE){
+    if(err != NULL) *err = g_error_new(ERRD_SOURCE, ERRC_WRONG_CLASS, "Provided object is not a DkcSource instance.");
+    return ERROR;
+  }
+  
   pthread_mutex_lock(&src->src_mgr->lock);
   
   DkcSourceMgr* src_mgr = src->src_mgr;

@@ -17,11 +17,24 @@ void dkc_sinkmgr_create_test(void) {
 
 void dkc_sinkmgr_delete_test(void) {
 
+  GError* gerr = NULL;
+  
   DkcSinkMgr* snk_mgr = dkc_sinkmgr_create((DkcSinkCBs){NULL,NULL,NULL}, NULL);
   snk_mgr->sinks[0] = 0xdeadbeef;
   CU_ASSERT_EQUAL(dkc_sinkmgr_delete(snk_mgr, NULL), ERROR);
   snk_mgr->sinks[0] = NULL;
   CU_ASSERT_EQUAL(dkc_sinkmgr_delete(snk_mgr, NULL), OK);
+
+  DkcApp* app = dkc_app_create("dummy", NULL, NULL);
+
+  CU_ASSERT_EQUAL(dkc_sinkmgr_delete(app, &gerr), ERROR);
+  CU_ASSERT_NOT_EQUAL(gerr, NULL);
+  CU_ASSERT_EQUAL(gerr->domain, ERRD_SINK);
+  CU_ASSERT_EQUAL(gerr->code, ERRC_WRONG_MGR_CLASS);
+  
+  g_clear_error(&gerr);
+
+  dkc_app_delete(app, NULL);
   
 }
 
@@ -30,12 +43,27 @@ void dkc_sink_create_test(void) {
   DkcApp* app = dkc_app_create("dummy", NULL, NULL);
   DkcSinkMgr *snk_mgr = app->snk_mgr;
 
-  DkcSink* snk = NULL;
-  snk = dkc_sink_create(snk_mgr, DUMMY_SNK, "whatever", "somename", NULL, NULL);
-  CU_ASSERT_NOT_EQUAL(snk, NULL);
-  CU_ASSERT_EQUAL(snk->snk_mgr, snk_mgr);
-  CU_ASSERT_EQUAL(snk_mgr->nb_sinks, 1);
+  GError* gerr = NULL;
 
+  DkcSink* snk = NULL;
+  for(int i=0; i<NB_SINKS; i++) { //Already one sink created, try to reach max capacity now
+    snk = dkc_sink_create(snk_mgr, DUMMY_SNK, "whatever", "somename", &gerr, NULL);
+    CU_ASSERT_NOT_EQUAL(snk, NULL); // When there is the sink type.
+    CU_ASSERT_EQUAL(snk->snk_mgr, snk_mgr);
+    CU_ASSERT_EQUAL(snk_mgr->nb_sinks, i+1);
+    CU_ASSERT_EQUAL(gerr, NULL);
+  }
+
+  //Now we should get an over capacity error
+  snk = dkc_sink_create(snk_mgr, DUMMY_SNK, "whatever", "somename", &gerr, NULL);
+  CU_ASSERT_EQUAL(snk, NULL);
+  CU_ASSERT_EQUAL(snk_mgr->nb_sinks, NB_SINKS);
+  CU_ASSERT_NOT_EQUAL(gerr, NULL);
+  CU_ASSERT_EQUAL(gerr->domain, ERRD_SINK);
+  CU_ASSERT_EQUAL(gerr->code, ERRC_MAX_CAPACITY);
+  
+  g_clear_error(&gerr);
+  
   dkc_app_delete(app, NULL);
   
 }
@@ -44,15 +72,22 @@ void dkc_sink_delete_test(void){
 
   DkcApp* app = dkc_app_create("dummy", NULL, NULL);
   DkcSinkMgr *snk_mgr = app->snk_mgr;
+  GError* gerr = NULL;
   
-  DkcSink* snk = dkc_sink_create(snk_mgr, DUMMY_SNK, "whatever", "somename", NULL, NULL);
+  DkcSink* snk = dkc_sink_create(snk_mgr, DUMMY_SNK, "whatever", "somename", &gerr, NULL);
 
   uint8_t id = snk->id;
 
   CU_ASSERT_EQUAL(dkc_sink_delete(snk, NULL), OK);
+  CU_ASSERT_EQUAL(gerr, NULL);
   CU_ASSERT_EQUAL(snk_mgr->nb_sinks, 0);
   CU_ASSERT_EQUAL(snk_mgr->sinks[id], NULL);
 
+  CU_ASSERT_EQUAL(dkc_sink_delete(snk_mgr, &gerr), ERROR);
+  CU_ASSERT_NOT_EQUAL(gerr, NULL);
+  CU_ASSERT_EQUAL(gerr->domain, ERRD_SINK);
+  CU_ASSERT_EQUAL(gerr->code, ERRC_WRONG_CLASS);
+  
   dkc_app_delete(app, NULL);
   
 }

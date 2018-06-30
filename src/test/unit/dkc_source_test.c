@@ -15,12 +15,25 @@ void dkc_sourcemgr_create_test(void) {
 }
 
 void dkc_sourcemgr_delete_test(void) {
+
+  GError* gerr = NULL;
   
   DkcSourceMgr* src_mgr = dkc_sourcemgr_create((DkcSourceCBs){NULL,NULL,NULL}, NULL);
   src_mgr->sources[0] = 0xdeadbeef;
   CU_ASSERT_EQUAL(dkc_sourcemgr_delete(src_mgr, NULL), ERROR);
   src_mgr->sources[0] = NULL;
   CU_ASSERT_EQUAL(dkc_sourcemgr_delete(src_mgr, NULL), OK);
+
+  DkcApp* app = dkc_app_create("dummy", NULL, NULL);
+
+  CU_ASSERT_EQUAL(dkc_sourcemgr_delete(app, &gerr), ERROR);
+  CU_ASSERT_NOT_EQUAL(gerr, NULL);
+  CU_ASSERT_EQUAL(gerr->domain, ERRD_SOURCE);
+  CU_ASSERT_EQUAL(gerr->code, ERRC_WRONG_MGR_CLASS);
+  
+  g_clear_error(&gerr);
+
+  dkc_app_delete(app, NULL);
     
 }
 
@@ -57,14 +70,23 @@ void dkc_source_delete_test(void){
 
   DkcApp* app = dkc_app_create("dummy", NULL, NULL);
   DkcSourceMgr *src_mgr = app->src_mgr;
+  GError* gerr = NULL;
   
-  DkcSource* src = dkc_source_create(src_mgr, DUMMY_SRC, "whatever", "somename", NULL, NULL);
+  DkcSource* src = dkc_source_create(src_mgr, DUMMY_SRC, "whatever", "somename", &gerr, NULL);
 
   uint8_t id = src->id;
 
-  CU_ASSERT_EQUAL(dkc_source_delete(src, NULL), OK);
+  CU_ASSERT_EQUAL(dkc_source_delete(src, &gerr), OK);
+  CU_ASSERT_EQUAL(gerr, NULL);
   CU_ASSERT_EQUAL(src_mgr->nb_sources, 0);
   CU_ASSERT_EQUAL(src_mgr->sources[id],NULL);
+
+  CU_ASSERT_EQUAL(dkc_source_delete(src_mgr, &gerr), ERROR);
+  CU_ASSERT_NOT_EQUAL(gerr, NULL);
+  CU_ASSERT_EQUAL(gerr->domain, ERRD_SOURCE);
+  CU_ASSERT_EQUAL(gerr->code, ERRC_WRONG_CLASS);
+
+  g_clear_error(&gerr);
 
   dkc_app_delete(app, NULL);
   

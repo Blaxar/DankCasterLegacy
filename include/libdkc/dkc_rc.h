@@ -16,6 +16,8 @@ typedef enum {
 
 typedef enum {
   ERRC_MAX_CAPACITY = 0,
+  ERRC_WRONG_CLASS,
+  ERRC_WRONG_MGR_CLASS,
 } ErrorCode;
 
 #endif //DKCST_RC_H	
