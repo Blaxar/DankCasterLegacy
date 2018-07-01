@@ -285,13 +285,16 @@ DkcSourceMgr* dkc_sourcemgr_create(DkcSourceCBs src_cbs, GError** err) {
 
 gboolean dkc_sourcemgr_delete(DkcSourceMgr* src_mgr, GError** err) {
 
-  if(G_OBJECT_TYPE(src_mgr) != DKC_TYPE_SOURCE_MGR){
+  if(G_OBJECT_TYPE(src_mgr) != DKC_TYPE_SOURCE_MGR) {
     if(err != NULL) *err = g_error_new(ERRD_SOURCE, ERRC_WRONG_MGR_CLASS, "Provided object is not a DkcSourceMgr instance.");
     return ERROR;
   }
 
   for(int i=0; i<NB_SOURCES; i++) {
-    if(src_mgr->sources[i] != NULL) return ERROR;
+    if(src_mgr->sources[i] != NULL) {
+      if(err != NULL) *err = g_error_new(ERRD_SOURCE, ERRC_INVALID_MGR_STATE, "DkcSourceMgr is not empty.");
+      return ERROR;
+    }
   }
   g_object_unref(src_mgr);
   return OK;

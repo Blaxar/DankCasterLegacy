@@ -20,9 +20,15 @@ void dkc_sourcemgr_delete_test(void) {
   
   DkcSourceMgr* src_mgr = dkc_sourcemgr_create((DkcSourceCBs){NULL,NULL,NULL}, NULL);
   src_mgr->sources[0] = 0xdeadbeef;
-  CU_ASSERT_EQUAL(dkc_sourcemgr_delete(src_mgr, NULL), ERROR);
+  CU_ASSERT_EQUAL(dkc_sourcemgr_delete(src_mgr, &gerr), ERROR);
+  CU_ASSERT_NOT_EQUAL(gerr, NULL);
+  CU_ASSERT_EQUAL(gerr->domain, ERRD_SOURCE);
+  CU_ASSERT_EQUAL(gerr->code, ERRC_INVALID_MGR_STATE);
+  g_clear_error(&gerr);
+  
   src_mgr->sources[0] = NULL;
   CU_ASSERT_EQUAL(dkc_sourcemgr_delete(src_mgr, NULL), OK);
+  CU_ASSERT_EQUAL(gerr, NULL);
 
   DkcApp* app = dkc_app_create("dummy", NULL, NULL);
 
@@ -44,9 +50,9 @@ void dkc_source_create_test(void) {
   GError* gerr = NULL;
 
   DkcSource* src = NULL;
-  for(int i=0; i<NB_SOURCES; i++) { //Already one source created, try to reach max capacity now
+  for(int i=0; i<NB_SOURCES; i++) { // Create the maximum number of sources allowed
     src = dkc_source_create(src_mgr, DUMMY_SRC, "whatever", "somename", &gerr, NULL);
-    CU_ASSERT_NOT_EQUAL(src, NULL); // When there is the source type.
+    CU_ASSERT_NOT_EQUAL(src, NULL);
     CU_ASSERT_EQUAL(src->src_mgr, src_mgr);
     CU_ASSERT_EQUAL(src_mgr->nb_sources, i+1);
     CU_ASSERT_EQUAL(gerr, NULL);
@@ -79,7 +85,7 @@ void dkc_source_delete_test(void){
   CU_ASSERT_EQUAL(dkc_source_delete(src, &gerr), OK);
   CU_ASSERT_EQUAL(gerr, NULL);
   CU_ASSERT_EQUAL(src_mgr->nb_sources, 0);
-  CU_ASSERT_EQUAL(src_mgr->sources[id],NULL);
+  CU_ASSERT_EQUAL(src_mgr->sources[id], NULL);
 
   CU_ASSERT_EQUAL(dkc_source_delete(src_mgr, &gerr), ERROR);
   CU_ASSERT_NOT_EQUAL(gerr, NULL);

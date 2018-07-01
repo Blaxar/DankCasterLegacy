@@ -28,18 +28,18 @@ G_DECLARE_FINAL_TYPE (DkcSceneMgr, dkc_scene_mgr, DKC, SCENE_MGR, GObject)
 
 /* Scene handling */
 
-DkcSceneMgr* dkc_scenemgr_create(DkcSceneCBs scn_sbs, GError* err);
-gboolean dkc_scenemgr_delete(DkcSceneMgr* scn_mgr, GError* err);
+DkcSceneMgr* dkc_scenemgr_create(DkcSceneCBs scn_sbs, GError** err);
+gboolean dkc_scenemgr_delete(DkcSceneMgr* scn_mgr, GError** err);
 
-DkcScene* dkc_scene_create(DkcSceneMgr* scn_mgr, GError* err);
-gboolean dkc_scene_delete(DkcScene* scn, GError* err);
+DkcScene* dkc_scene_create(DkcSceneMgr* scn_mgr, GError** err);
+gboolean dkc_scene_delete(DkcScene* scn, GError** err);
 
 /* Source wrapping */
 
-DkcWrappedSource* dkc_source_wrap(DkcScene* scn, DkcSource* src, GError* err);
-gboolean dkc_source_unwrap(DkcWrappedSource* wrpd_src, GError* err);
+DkcWrappedSource* dkc_source_wrap(DkcScene* scn, DkcSource* src, GError** err);
+gboolean dkc_source_unwrap(DkcWrappedSource* wrpd_src, GError** err);
 
-DkcScene* dkc_app_scene_create(DkcApp* app, GError* err);
+DkcScene* dkc_app_scene_create(DkcApp* app, GError** err);
 
 G_END_DECLS
 

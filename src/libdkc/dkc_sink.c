@@ -285,13 +285,16 @@ DkcSinkMgr* dkc_sinkmgr_create(DkcSinkCBs snk_cbs, GError** err) {
 
 gboolean dkc_sinkmgr_delete(DkcSinkMgr*  snk_mgr, GError** err) {
 
-  if(G_OBJECT_TYPE(snk_mgr) != DKC_TYPE_SINK_MGR){
+  if(G_OBJECT_TYPE(snk_mgr) != DKC_TYPE_SINK_MGR) {
     if(err != NULL) *err = g_error_new(ERRD_SINK, ERRC_WRONG_MGR_CLASS, "Provided object is not a DkcSinkMgr instance.");
     return ERROR;
   }
   
   for(int i=0; i<NB_SINKS; i++) {
-    if(snk_mgr->sinks[i] != NULL) return ERROR;
+    if(snk_mgr->sinks[i] != NULL) {
+      if(err != NULL) *err = g_error_new(ERRD_SINK, ERRC_INVALID_MGR_STATE, "DkcSinkMgr is not empty.");
+      return ERROR;
+    }
   }
   g_object_unref(snk_mgr);
   return OK;

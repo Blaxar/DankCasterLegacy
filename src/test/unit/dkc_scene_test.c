@@ -6,7 +6,7 @@
 #include <libdkc/dkc_source_internal.h>
 
 void dkc_scenemgr_create_test(void) {
-
+  
   DkcSceneMgr* scn_mgr = NULL;
   scn_mgr = dkc_scenemgr_create((DkcSceneCBs){NULL,NULL,NULL,NULL,NULL}, NULL);
   
@@ -19,12 +19,31 @@ void dkc_scenemgr_create_test(void) {
 
 void dkc_scenemgr_delete_test(void) {
 
+  GError* gerr = NULL;
+  
   DkcSceneMgr* scn_mgr = dkc_scenemgr_create((DkcSceneCBs){NULL,NULL,NULL,NULL,NULL}, NULL);
   
   scn_mgr->scenes[0] = 0xdeadbeef;
-  CU_ASSERT_EQUAL(dkc_scenemgr_delete(scn_mgr, NULL), ERROR);
+  CU_ASSERT_EQUAL(dkc_scenemgr_delete(scn_mgr, &gerr), ERROR);
+  CU_ASSERT_NOT_EQUAL(gerr, NULL);
+  CU_ASSERT_EQUAL(gerr->domain, ERRD_SCENE);
+  CU_ASSERT_EQUAL(gerr->code, ERRC_INVALID_MGR_STATE);
+  g_clear_error(&gerr);
+  
   scn_mgr->scenes[0] = NULL;
-  CU_ASSERT_EQUAL(dkc_scenemgr_delete(scn_mgr, NULL), OK);
+  CU_ASSERT_EQUAL(dkc_scenemgr_delete(scn_mgr, &gerr), OK);
+  CU_ASSERT_EQUAL(gerr, NULL);
+
+  DkcApp* app = dkc_app_create("dummy", NULL, NULL);
+
+  CU_ASSERT_EQUAL(dkc_scenemgr_delete(app, &gerr), ERROR);
+  CU_ASSERT_NOT_EQUAL(gerr, NULL);
+  CU_ASSERT_EQUAL(gerr->domain, ERRD_SCENE);
+  CU_ASSERT_EQUAL(gerr->code, ERRC_WRONG_MGR_CLASS);
+  
+  g_clear_error(&gerr);
+
+  dkc_app_delete(app, NULL);
   
 }
 
@@ -32,14 +51,26 @@ void dkc_scene_create_test(void) {
 
   DkcApp* app = dkc_app_create("dummy", NULL, NULL);
   DkcSceneMgr *scn_mgr = app->scn_mgr;
+  GError* gerr = NULL;
   
   DkcScene* scn = NULL;
-  scn = dkc_scene_create(scn_mgr, NULL);
-  CU_ASSERT_NOT_EQUAL(scn, NULL);
-  CU_ASSERT_EQUAL(scn->scn_mgr, scn_mgr);
-  CU_ASSERT_EQUAL(scn->nb_sources, 0);
-  for(int i=0; i<NB_WRP_SOURCES; i++)
-    CU_ASSERT_EQUAL(scn->sources[i],NULL);
+  for(int i=0; i<NB_SCENES; i++) { // Create the maximum number of scenes allowed
+    scn = dkc_scene_create(scn_mgr, &gerr);
+    CU_ASSERT_NOT_EQUAL(scn, NULL);
+    CU_ASSERT_EQUAL(scn->scn_mgr, scn_mgr);
+    CU_ASSERT_EQUAL(scn_mgr->nb_scenes, i+1);
+    CU_ASSERT_EQUAL(gerr, NULL);
+  }
+
+  // Now we should get an over capacity error
+  scn = dkc_scene_create(scn_mgr, &gerr);
+  CU_ASSERT_EQUAL(scn, NULL);
+  CU_ASSERT_EQUAL(scn_mgr->nb_scenes, NB_SCENES);
+  CU_ASSERT_NOT_EQUAL(gerr, NULL);
+  CU_ASSERT_EQUAL(gerr->domain, ERRD_SCENE);
+  CU_ASSERT_EQUAL(gerr->code, ERRC_MAX_CAPACITY);
+  
+  g_clear_error(&gerr);
 
   dkc_app_delete(app, NULL);
   
@@ -47,20 +78,34 @@ void dkc_scene_create_test(void) {
 
 void dkc_scene_delete_test(void) {
 
+  GError* gerr;
+  
   DkcApp* app = dkc_app_create("dummy", NULL, NULL);
   DkcSceneMgr *scn_mgr = app->scn_mgr;
   
   DkcScene* scn = dkc_scene_create(scn_mgr, NULL);
   uint8_t id = scn->id;
 
-  /* When not all source slots are free*/
+  /* When not all source slots are free */
   scn->sources[0] = 0xdeadbeef;
-  CU_ASSERT_EQUAL(dkc_scene_delete(scn, NULL), ERROR);
+  CU_ASSERT_EQUAL(dkc_scene_delete(scn, &gerr), ERROR);
+  CU_ASSERT_NOT_EQUAL(gerr, NULL);
+  CU_ASSERT_EQUAL(gerr->domain, ERRD_SCENE);
+  CU_ASSERT_EQUAL(gerr->code, ERRC_INVALID_STATE);
+  g_clear_error(&gerr);
 
   /* Good case scenario */
   scn->sources[0] = NULL;
-  CU_ASSERT_EQUAL(dkc_scene_delete(scn, NULL), OK);
+  CU_ASSERT_EQUAL(dkc_scene_delete(scn, &gerr), OK);
   CU_ASSERT_EQUAL(scn_mgr->scenes[id], NULL);
+  CU_ASSERT_EQUAL(gerr, NULL);
+
+  CU_ASSERT_EQUAL(dkc_scene_delete(scn_mgr, &gerr), ERROR);
+  CU_ASSERT_NOT_EQUAL(gerr, NULL);
+  CU_ASSERT_EQUAL(gerr->domain, ERRD_SCENE);
+  CU_ASSERT_EQUAL(gerr->code, ERRC_WRONG_CLASS);
+
+  g_clear_error(&gerr);
 
   dkc_app_delete(app, NULL);
   
