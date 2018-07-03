@@ -327,6 +327,11 @@ DkcSink* dkc_sink_vcreate(DkcSinkMgr* snk_mgr, DkcSinkType snk_type, const char*
 
 DkcSink* dkc_sink_pcreate(DkcSinkMgr* snk_mgr, DkcSinkType snk_type, const char* uri, const char* name, DkcParams* params, GError** err) {
 
+  if(G_OBJECT_TYPE(snk_mgr) != DKC_TYPE_SINK_MGR) {
+    if(err != NULL) *err = g_error_new(ERRD_SINK, ERRC_WRONG_MGR_CLASS, "Provided object is not a DkcSinkMgr instance.");
+    return ERROR;
+  }
+  
   pthread_mutex_lock(&snk_mgr->lock);
 
   if (snk_mgr->nb_sinks == NB_SINKS) {

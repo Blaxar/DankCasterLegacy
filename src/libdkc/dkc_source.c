@@ -326,6 +326,11 @@ DkcSource* dkc_source_vcreate(DkcSourceMgr* src_mgr, DkcSourceType src_type, con
 }
 
 DkcSource* dkc_source_pcreate(DkcSourceMgr* src_mgr, DkcSourceType src_type, const char* uri, const char* name, DkcParams* params, GError** err) {
+
+  if(G_OBJECT_TYPE(src_mgr) != DKC_TYPE_SOURCE_MGR) {
+    if(err != NULL) *err = g_error_new(ERRD_SOURCE, ERRC_WRONG_MGR_CLASS, "Provided object is not a DkcSourceMgr instance.");
+    return ERROR;
+  }
   
   pthread_mutex_lock(&src_mgr->lock);
 

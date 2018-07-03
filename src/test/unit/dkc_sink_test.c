@@ -23,8 +23,10 @@ void dkc_sinkmgr_delete_test(void) {
   snk_mgr->sinks[0] = 0xdeadbeef;
   CU_ASSERT_EQUAL(dkc_sinkmgr_delete(snk_mgr, &gerr), ERROR);
   CU_ASSERT_NOT_EQUAL(gerr, NULL);
-  CU_ASSERT_EQUAL(gerr->domain, ERRD_SINK);
-  CU_ASSERT_EQUAL(gerr->code, ERRC_INVALID_MGR_STATE);
+  if(gerr) {
+    CU_ASSERT_EQUAL(gerr->domain, ERRD_SINK);
+    CU_ASSERT_EQUAL(gerr->code, ERRC_INVALID_MGR_STATE);
+  }
   g_clear_error(&gerr);
   
   snk_mgr->sinks[0] = NULL;
@@ -35,8 +37,10 @@ void dkc_sinkmgr_delete_test(void) {
 
   CU_ASSERT_EQUAL(dkc_sinkmgr_delete(app, &gerr), ERROR);
   CU_ASSERT_NOT_EQUAL(gerr, NULL);
-  CU_ASSERT_EQUAL(gerr->domain, ERRD_SINK);
-  CU_ASSERT_EQUAL(gerr->code, ERRC_WRONG_MGR_CLASS);
+  if(gerr) {
+    CU_ASSERT_EQUAL(gerr->domain, ERRD_SINK);
+    CU_ASSERT_EQUAL(gerr->code, ERRC_WRONG_MGR_CLASS);
+  }
   
   g_clear_error(&gerr);
 
@@ -65,9 +69,19 @@ void dkc_sink_create_test(void) {
   CU_ASSERT_EQUAL(snk, NULL);
   CU_ASSERT_EQUAL(snk_mgr->nb_sinks, NB_SINKS);
   CU_ASSERT_NOT_EQUAL(gerr, NULL);
-  CU_ASSERT_EQUAL(gerr->domain, ERRD_SINK);
-  CU_ASSERT_EQUAL(gerr->code, ERRC_MAX_CAPACITY);
-  
+  if(gerr) {
+    CU_ASSERT_EQUAL(gerr->domain, ERRD_SINK);
+    CU_ASSERT_EQUAL(gerr->code, ERRC_MAX_CAPACITY);
+  }
+  g_clear_error(&gerr);
+
+  /* Wrong object scenario */
+  CU_ASSERT_EQUAL(dkc_sink_create(app, DUMMY_SNK, "whatever", "somename", &gerr, NULL), NULL);
+  CU_ASSERT_NOT_EQUAL(gerr, NULL);
+  if(gerr) {
+    CU_ASSERT_EQUAL(gerr->domain, ERRD_SINK);
+    CU_ASSERT_EQUAL(gerr->code, ERRC_WRONG_MGR_CLASS);
+  }
   g_clear_error(&gerr);
   
   dkc_app_delete(app, NULL);
@@ -91,9 +105,10 @@ void dkc_sink_delete_test(void){
 
   CU_ASSERT_EQUAL(dkc_sink_delete(snk_mgr, &gerr), ERROR);
   CU_ASSERT_NOT_EQUAL(gerr, NULL);
-  CU_ASSERT_EQUAL(gerr->domain, ERRD_SINK);
-  CU_ASSERT_EQUAL(gerr->code, ERRC_WRONG_CLASS);
-
+  if(gerr) {
+    CU_ASSERT_EQUAL(gerr->domain, ERRD_SINK);
+    CU_ASSERT_EQUAL(gerr->code, ERRC_WRONG_CLASS);
+  }
   g_clear_error(&gerr);
   
   dkc_app_delete(app, NULL);

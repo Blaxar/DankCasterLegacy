@@ -567,9 +567,14 @@ gboolean dkc_scenemgr_delete(DkcSceneMgr* scn_mgr, GError** err) {
 
 DkcScene* dkc_scene_create(DkcSceneMgr* scn_mgr, GError** err){
 
+  if(G_OBJECT_TYPE(scn_mgr) != DKC_TYPE_SCENE_MGR) {
+    if(err != NULL) *err = g_error_new(ERRD_SCENE, ERRC_WRONG_MGR_CLASS, "Provided object is not a DkcSceneMgr instance.");
+    return ERROR;
+  }
+  
   pthread_mutex_lock(&scn_mgr->lock);
 
-  if (scn_mgr->nb_scenes == NB_SCENES) {
+  if(scn_mgr->nb_scenes == NB_SCENES) {
     if(err != NULL) *err = g_error_new(ERRD_SCENE, ERRC_MAX_CAPACITY, "Maximum number of scenes already reached.");
     pthread_mutex_unlock(&scn_mgr->lock);
     return NULL;
@@ -628,10 +633,26 @@ gboolean dkc_scene_delete(DkcScene* scn, GError** err){
 /* Source wrapping */
 
 DkcWrappedSource* dkc_source_wrap(DkcScene* scn, DkcSource* src, GError** err) {
-    
+
+  if(G_OBJECT_TYPE(scn) != DKC_TYPE_SCENE) {
+    if(err != NULL) *err = g_error_new(ERRD_SCENE, ERRC_WRONG_CLASS, "Provided object is not a DkcScene instance.");
+    return ERROR;
+  }
+
+  if(G_OBJECT_TYPE(src) != DKC_TYPE_SOURCE) {
+    if(err != NULL) *err = g_error_new(ERRD_SCENE, ERRC_WRONG_CLASS, "Provided object is not a DkcSource instance.");
+    return ERROR;
+  }
+  
   DkcWrappedSource* wrpd_src = NULL;
   DkcSceneMgr* scn_mgr = scn->scn_mgr;
   pthread_mutex_lock(&scn->lock);
+
+  if(scn->nb_sources == NB_WRP_SOURCES) {
+    if(err != NULL) *err = g_error_new(ERRD_SCENE, ERRC_MAX_CAPACITY, "Maximum number of wrapped sources already reached.");
+    pthread_mutex_unlock(&scn->lock);
+    return NULL;
+  }
   
   for(int i=0; i<NB_WRP_SOURCES; i++) {
     if(scn->sources[i] == NULL) {
@@ -654,6 +675,11 @@ DkcWrappedSource* dkc_source_wrap(DkcScene* scn, DkcSource* src, GError** err) {
 
 gboolean dkc_source_unwrap(DkcWrappedSource* wrpd_src, GError** err) {
 
+  if(G_OBJECT_TYPE(wrpd_src) != DKC_TYPE_WRAPPED_SOURCE) {
+    if(err != NULL) *err = g_error_new(ERRD_SCENE, ERRC_WRONG_CLASS, "Provided object is not a DkcWrappedSource instance.");
+    return ERROR;
+  }
+  
   DkcScene* scn = wrpd_src->scn;
   DkcSceneMgr* scn_mgr = scn->scn_mgr;
   uint8_t id = wrpd_src->id;

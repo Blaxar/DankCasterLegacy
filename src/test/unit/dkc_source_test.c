@@ -22,8 +22,10 @@ void dkc_sourcemgr_delete_test(void) {
   src_mgr->sources[0] = 0xdeadbeef;
   CU_ASSERT_EQUAL(dkc_sourcemgr_delete(src_mgr, &gerr), ERROR);
   CU_ASSERT_NOT_EQUAL(gerr, NULL);
-  CU_ASSERT_EQUAL(gerr->domain, ERRD_SOURCE);
-  CU_ASSERT_EQUAL(gerr->code, ERRC_INVALID_MGR_STATE);
+  if(gerr) {
+    CU_ASSERT_EQUAL(gerr->domain, ERRD_SOURCE);
+    CU_ASSERT_EQUAL(gerr->code, ERRC_INVALID_MGR_STATE);
+  }
   g_clear_error(&gerr);
   
   src_mgr->sources[0] = NULL;
@@ -34,9 +36,10 @@ void dkc_sourcemgr_delete_test(void) {
 
   CU_ASSERT_EQUAL(dkc_sourcemgr_delete(app, &gerr), ERROR);
   CU_ASSERT_NOT_EQUAL(gerr, NULL);
-  CU_ASSERT_EQUAL(gerr->domain, ERRD_SOURCE);
-  CU_ASSERT_EQUAL(gerr->code, ERRC_WRONG_MGR_CLASS);
-  
+  if(gerr) {
+   CU_ASSERT_EQUAL(gerr->domain, ERRD_SOURCE);
+   CU_ASSERT_EQUAL(gerr->code, ERRC_WRONG_MGR_CLASS);
+  }
   g_clear_error(&gerr);
 
   dkc_app_delete(app, NULL);
@@ -63,9 +66,19 @@ void dkc_source_create_test(void) {
   CU_ASSERT_EQUAL(src, NULL);
   CU_ASSERT_EQUAL(src_mgr->nb_sources, NB_SOURCES);
   CU_ASSERT_NOT_EQUAL(gerr, NULL);
-  CU_ASSERT_EQUAL(gerr->domain, ERRD_SOURCE);
-  CU_ASSERT_EQUAL(gerr->code, ERRC_MAX_CAPACITY);
-  
+  if(gerr) {
+    CU_ASSERT_EQUAL(gerr->domain, ERRD_SOURCE);
+    CU_ASSERT_EQUAL(gerr->code, ERRC_MAX_CAPACITY);
+  }
+  g_clear_error(&gerr);
+
+  /* Wrong object scenario */
+  CU_ASSERT_EQUAL(dkc_source_create(app, DUMMY_SRC, "whatever", "somename", &gerr, NULL), NULL);
+  CU_ASSERT_NOT_EQUAL(gerr, NULL);
+  if(gerr) {
+    CU_ASSERT_EQUAL(gerr->domain, ERRD_SOURCE);
+    CU_ASSERT_EQUAL(gerr->code, ERRC_WRONG_MGR_CLASS);
+  }
   g_clear_error(&gerr);
   
   dkc_app_delete(app, NULL);
@@ -89,9 +102,10 @@ void dkc_source_delete_test(void){
 
   CU_ASSERT_EQUAL(dkc_source_delete(src_mgr, &gerr), ERROR);
   CU_ASSERT_NOT_EQUAL(gerr, NULL);
-  CU_ASSERT_EQUAL(gerr->domain, ERRD_SOURCE);
-  CU_ASSERT_EQUAL(gerr->code, ERRC_WRONG_CLASS);
-
+  if(gerr) {
+    CU_ASSERT_EQUAL(gerr->domain, ERRD_SOURCE);
+    CU_ASSERT_EQUAL(gerr->code, ERRC_WRONG_CLASS);
+  }
   g_clear_error(&gerr);
 
   dkc_app_delete(app, NULL);
