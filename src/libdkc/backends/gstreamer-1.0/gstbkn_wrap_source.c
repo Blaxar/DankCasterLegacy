@@ -110,9 +110,8 @@ dkc_rc gstbkn_wrap_source(void* ctx, uint8_t scn_id, uint8_t src_id, uint8_t id)
     
   }
       
-  gst_bin_add_many(GST_BIN(gst_ctx->pipeline), source_bin,
-                   scene->sources[id],
-                   NULL);
+  gst_bin_add(GST_BIN(gst_ctx->pipeline), scene->sources[id]);
+  gst_element_set_locked_state(source_bin, FALSE);
   
   if(source_video_tee) {
 

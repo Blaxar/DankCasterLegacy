@@ -683,8 +683,9 @@ gboolean dkc_source_unwrap(DkcWrappedSource* wrpd_src, GError** err) {
   DkcScene* scn = wrpd_src->scn;
   DkcSceneMgr* scn_mgr = scn->scn_mgr;
   uint8_t id = wrpd_src->id;
+  uint8_t src_id = wrpd_src->source_id;
   pthread_mutex_lock(&scn->lock);
-  if(scn_mgr->unwrap_source(scn_mgr->bkn_ctx, id) != OK) {
+  if(scn_mgr->unwrap_source(scn_mgr->bkn_ctx, scn->id, src_id, id) != OK) {
     pthread_mutex_unlock(&scn->lock);
     return ERROR;
   }

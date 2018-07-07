@@ -190,6 +190,8 @@ dkc_rc gstbkn_create_source(void* ctx, uint8_t id,  DkcSourceType src_type, cons
     
     gst_ctx->inputs[id] = source_bin;
     gst_ctx->nb_inputs++;
+    gst_element_set_locked_state(source_bin, TRUE);
+    gst_bin_add(GST_BIN(gst_ctx->pipeline), source_bin);
     return OK;
     
   }

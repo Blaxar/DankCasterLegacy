@@ -18,9 +18,9 @@ dkc_rc gstbkn_create_scene(void* ctx, uint8_t id);
 
 dkc_rc gstbkn_delete_scene(void* ctx, uint8_t id);
 
-dkc_rc gstbkn_wrap_source(void* ctx, uint8_t scn_id, uint8_t src_id, uint8_t id);
+dkc_rc gstbkn_wrap_source(void* ctx, uint8_t scn_id, uint8_t src_id, uint8_t wrpsrc_id);
 
-dkc_rc gstbkn_unwrap_source(void* ctx, uint8_t id);
+dkc_rc gstbkn_unwrap_source(void* ctx, uint8_t scn_id, uint8_t src_id, uint8_t wrpsrc_id);
 
 dkc_rc gstbkn_update_wrapped_source(void* ctx, uint8_t scn_id, uint8_t id,
                                     uint16_t x, uint16_t y,
