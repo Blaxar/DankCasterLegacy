@@ -18,10 +18,13 @@ dkc_rc gstbkn_wrap_source(void* ctx, uint8_t scn_id, uint8_t src_id, uint8_t id)
   GstElement* a_rate = NULL;
   GstElement* a_convert = NULL;
   GstElement* a_filter = NULL;
-
+  
   GstElement* source_bin = gst_ctx->inputs[src_id];
   GstScene* scene = gst_ctx->scenes[scn_id];
-  if(scene->sources[id] != NULL) return ERROR;
+  if(scene->sources[id] != NULL) {
+    g_critical("Wrapped source [%d] already exists in scene [%d].", id, scn_id);
+    return ERROR;
+  }
   scene->sources[id] = gst_bin_new(NULL);
 
   gchar* video_tee_name = g_strconcat(GST_ELEMENT_NAME(source_bin), "_video_tee", NULL);
@@ -37,6 +40,7 @@ dkc_rc gstbkn_wrap_source(void* ctx, uint8_t scn_id, uint8_t src_id, uint8_t id)
 
     gst_object_unref(scene->sources[id]);
     scene->sources[id] = NULL;
+    g_critical("Source [%d] has no capabilities.", src_id);
     return ERROR;
 
   }
@@ -54,12 +58,15 @@ dkc_rc gstbkn_wrap_source(void* ctx, uint8_t scn_id, uint8_t src_id, uint8_t id)
     gst_bin_add_many(GST_BIN(scene->sources[id]), v_queue,
                      v_rate, v_convert, v_scale, v_filter,
                      NULL);
-    link_res = link_res && gst_element_link_many(v_queue, v_rate, v_convert, v_scale, v_filter, NULL);
 
-    if(!link_res)
+    if(!gst_element_link_many(v_queue, v_rate, v_convert, v_scale, v_filter, NULL)) {
+      g_critical("Could not link wrapped source [%d] video formatting elements together.", id);
+      link_res = FALSE;
       gst_bin_remove_many(GST_BIN(scene->sources[id]), v_queue,
                           v_rate, v_convert, v_scale, v_filter,
                           NULL);
+    }
+      
 
   }
 
@@ -72,11 +79,13 @@ dkc_rc gstbkn_wrap_source(void* ctx, uint8_t scn_id, uint8_t src_id, uint8_t id)
 
     gst_bin_add_many(GST_BIN(scene->sources[id]), a_queue, a_rate, a_convert, a_filter,
                      NULL);
-    link_res = link_res && gst_element_link_many(a_queue, a_rate, a_convert, a_filter, NULL);
-
-    if(!link_res)
+    
+    if(!gst_element_link_many(a_queue, a_rate, a_convert, a_filter, NULL)) {
+      g_critical("Could not link wrapped source [%d] audio formatting elements together.", id);
+      link_res = FALSE;
       gst_bin_remove_many(GST_BIN(scene->sources[id]), a_queue, a_rate, a_convert, a_filter,
                           NULL);
+    }
 
   }
 
@@ -115,15 +124,29 @@ dkc_rc gstbkn_wrap_source(void* ctx, uint8_t scn_id, uint8_t src_id, uint8_t id)
   
   if(source_video_tee) {
 
-      link_res = link_res && gst_element_link_pads(source_video_tee, NULL, scene->sources[id], "video_sink") &&
-                             gst_element_link_pads(scene->sources[id], "video_src", gst_ctx->scenes[scn_id]->video_mixer, NULL);
+    if(!gst_element_link_pads(source_video_tee, NULL, scene->sources[id], "video_sink")) {
+      g_critical("Could not link source [%d] video tee to wrapped source [%d] video sink.", src_id, id);
+      link_res = FALSE;
+    }
+    
+    if(!gst_element_link_pads(scene->sources[id], "video_src", gst_ctx->scenes[scn_id]->video_mixer, NULL)) {
+      g_critical("Could not link wrapped source [%d] video src to scene [%d] video mixer.", id, scn_id);
+      link_res = FALSE;
+    }
 
   }
 
   if(source_audio_tee) {
 
-    link_res = link_res && gst_element_link_pads(source_audio_tee, NULL, scene->sources[id], "audio_sink") &&
-                           gst_element_link_pads(scene->sources[id], "audio_src", gst_ctx->scenes[scn_id]->audio_mixer, NULL);
+    if(!gst_element_link_pads(source_audio_tee, NULL, scene->sources[id], "audio_sink")) {
+      g_critical("Could not link source [%d] audio tee to wrapped source [%d] audio sink.", src_id, id);
+      link_res = FALSE;
+    }
+    
+    if(!gst_element_link_pads(scene->sources[id], "audio_src", gst_ctx->scenes[scn_id]->audio_mixer, NULL)) {
+      g_critical("Could not link wrapped source [%d] audio src to scene [%d] audio mixer.", id, scn_id);
+      link_res = FALSE;
+    }
 
   }
 

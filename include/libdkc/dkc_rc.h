@@ -20,6 +20,7 @@ typedef enum {
   ERRC_WRONG_MGR_CLASS,
   ERRC_INVALID_STATE,
   ERRC_INVALID_MGR_STATE,
+  ERRC_INTERNAL_ERROR,
 } ErrorCode;
 
 #endif //DKCST_RC_H	

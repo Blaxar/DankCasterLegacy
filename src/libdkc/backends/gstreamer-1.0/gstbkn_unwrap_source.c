@@ -2,6 +2,22 @@
 #include <libdkc/backends/gstreamer-1.0/gstbackendctx.h>
 #include <stdlib.h>
 
+static gboolean
+pad_foreach_func (GstElement *element,
+                             GstPad *pad,
+                             gpointer user_data) {
+
+  gboolean* found = (gboolean*) user_data;
+
+  if(gst_pad_is_linked(pad)) {
+    *found = TRUE;
+    return FALSE;
+  } else {
+    return TRUE;
+  }
+  
+}
+
 dkc_rc gstbkn_unwrap_source(void* ctx, uint8_t scn_id, uint8_t src_id, uint8_t wrpsrc_id) {
 
   GstBackendCtx* gst_ctx = (GstBackendCtx*) ctx;
@@ -21,20 +37,35 @@ dkc_rc gstbkn_unwrap_source(void* ctx, uint8_t scn_id, uint8_t src_id, uint8_t w
   g_free(video_tee_name);
   g_free(audio_tee_name);
 
+  gboolean found = FALSE;
+  
   if(source_video_tee) { // Source has video capablities
 
     // Iterate over each video tee src pad
     // to check if some of them are still connected
+    gst_element_foreach_src_pad (source_video_tee,
+                                 pad_foreach_func,
+                                 (gpointer*) &found);
     
   }
-
-  if(source_audio_tee) { // Source has audio capablities
+  
+  if(!found && source_audio_tee) { // Source has audio capablities
 
     // Iterate over each audio tee src pad
     // to check if some of them are still connected
+    gst_element_foreach_src_pad (source_audio_tee,
+                                 pad_foreach_func,
+                                 (gpointer*) &found);
 
   }
-  
+
+  if(!found) {
+    gst_element_set_locked_state(source_bin, TRUE);
+  }
+
   gst_bin_remove(GST_BIN(gst_ctx->pipeline), wrpsrc);
+  scene->sources[wrpsrc_id] = NULL;
+
+  return OK;
   
 }

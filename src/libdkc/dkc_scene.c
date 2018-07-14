@@ -584,6 +584,8 @@ DkcScene* dkc_scene_create(DkcSceneMgr* scn_mgr, GError** err){
     if(scn_mgr->scenes[i] == NULL) {
       scn_mgr->scenes[i] = g_object_new (DKC_TYPE_SCENE, "scn_mgr", scn_mgr, "id", i, NULL);
       if(scn_mgr->create_scene(scn_mgr->bkn_ctx, i) != OK) {
+        if(err != NULL) *err = g_error_new(ERRD_SCENE, ERRC_INTERNAL_ERROR,
+                                           "Internal error from the backend while trying to create scene.");
         g_object_unref(scn_mgr->scenes[i]);
         scn_mgr->scenes[i] = NULL;
         pthread_mutex_unlock(&scn_mgr->lock);
@@ -619,6 +621,8 @@ gboolean dkc_scene_delete(DkcScene* scn, GError** err){
     }
   }
   if(scn_mgr->delete_scene(scn_mgr->bkn_ctx, id) != OK) {
+    if(err != NULL) *err = g_error_new(ERRD_SCENE, ERRC_INTERNAL_ERROR,
+                                       "Internal error from the backend while trying to delete scene.");
     pthread_mutex_unlock(&scn_mgr->lock);
     return ERROR;
   }
@@ -658,6 +662,8 @@ DkcWrappedSource* dkc_source_wrap(DkcScene* scn, DkcSource* src, GError** err) {
     if(scn->sources[i] == NULL) {
       scn->sources[i] = g_object_new (DKC_TYPE_WRAPPED_SOURCE, "scn", scn, "src_id", src->id, "id", i, NULL);
       if(scn_mgr->wrap_source(scn_mgr->bkn_ctx, scn->id, src->id, i) != OK){
+        if(err != NULL) *err = g_error_new(ERRD_SCENE, ERRC_INTERNAL_ERROR,
+                                           "Internal error from the backend while trying to wrap source.");
         scn->sources[i] = NULL;
         pthread_mutex_unlock(&scn->lock);
         return NULL;
@@ -673,24 +679,27 @@ DkcWrappedSource* dkc_source_wrap(DkcScene* scn, DkcSource* src, GError** err) {
   
 }
 
-gboolean dkc_source_unwrap(DkcWrappedSource* wrpd_src, GError** err) {
+gboolean dkc_source_unwrap(DkcWrappedSource** wrpd_src, GError** err) {
 
-  if(G_OBJECT_TYPE(wrpd_src) != DKC_TYPE_WRAPPED_SOURCE) {
+  if(G_OBJECT_TYPE(*wrpd_src) != DKC_TYPE_WRAPPED_SOURCE) {
     if(err != NULL) *err = g_error_new(ERRD_SCENE, ERRC_WRONG_CLASS, "Provided object is not a DkcWrappedSource instance.");
     return ERROR;
   }
   
-  DkcScene* scn = wrpd_src->scn;
+  DkcScene* scn = (*wrpd_src)->scn;
   DkcSceneMgr* scn_mgr = scn->scn_mgr;
-  uint8_t id = wrpd_src->id;
-  uint8_t src_id = wrpd_src->source_id;
+  uint8_t id = (*wrpd_src)->id;
+  uint8_t src_id = (*wrpd_src)->source_id;
   pthread_mutex_lock(&scn->lock);
   if(scn_mgr->unwrap_source(scn_mgr->bkn_ctx, scn->id, src_id, id) != OK) {
+    if(err != NULL) *err = g_error_new(ERRD_SCENE, ERRC_INTERNAL_ERROR,
+                                       "Internal error from the backend while trying to unwrap source.");
     pthread_mutex_unlock(&scn->lock);
     return ERROR;
   }
-  pthread_mutex_destroy(&wrpd_src->lock);
+  pthread_mutex_destroy(&(*wrpd_src)->lock);
   g_object_unref(scn->sources[id]);
+  *wrpd_src = NULL;
   scn->sources[id] = NULL;
   scn->nb_sources--;
 

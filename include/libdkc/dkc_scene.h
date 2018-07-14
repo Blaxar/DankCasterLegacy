@@ -37,7 +37,7 @@ gboolean dkc_scene_delete(DkcScene* scn, GError** err);
 /* Source wrapping */
 
 DkcWrappedSource* dkc_source_wrap(DkcScene* scn, DkcSource* src, GError** err);
-gboolean dkc_source_unwrap(DkcWrappedSource* wrpd_src, GError** err);
+gboolean dkc_source_unwrap(DkcWrappedSource** wrpd_src, GError** err);
 
 DkcScene* dkc_app_scene_create(DkcApp* app, GError** err);
 

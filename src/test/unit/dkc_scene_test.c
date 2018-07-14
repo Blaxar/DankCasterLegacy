@@ -195,12 +195,14 @@ void dkc_source_unwrap_test(void) {
   DkcWrappedSource* wrpd_src = dkc_source_wrap(scn, src, NULL);
 
   /* Good case scenario */
-  CU_ASSERT_EQUAL(dkc_source_unwrap(wrpd_src, &gerr), OK);
+  CU_ASSERT_EQUAL(dkc_source_unwrap(&wrpd_src, &gerr), OK);
+  CU_ASSERT_EQUAL(wrpd_src, NULL);
   CU_ASSERT_EQUAL(scn->nb_sources, 0);
   CU_ASSERT_EQUAL(scn->sources[0], NULL);
   CU_ASSERT_EQUAL(gerr, NULL);
 
-  CU_ASSERT_EQUAL(dkc_source_unwrap(scn_mgr, &gerr), ERROR);
+  CU_ASSERT_EQUAL(dkc_source_unwrap(&scn_mgr, &gerr), ERROR);
+  CU_ASSERT_NOT_EQUAL(scn_mgr, NULL);
   CU_ASSERT_NOT_EQUAL(gerr, NULL);
   if(gerr) {
     CU_ASSERT_EQUAL(gerr->domain, ERRD_SCENE);

@@ -343,7 +343,9 @@ DkcSink* dkc_sink_pcreate(DkcSinkMgr* snk_mgr, DkcSinkType snk_type, const char*
   for(int j=0; j<NB_SINKS; j++) {
     if(snk_mgr->sinks[j] == NULL) {
       snk_mgr->sinks[j] = g_object_new (DKC_TYPE_SINK, "snk_mgr", snk_mgr, "id", j, NULL);
-      if(snk_mgr->create_sink(snk_mgr->bkn_ctx, j, snk_type, uri, name, params) != OK){
+      if(snk_mgr->create_sink(snk_mgr->bkn_ctx, j, snk_type, uri, name, params) != OK) {
+        if(err != NULL) *err = g_error_new(ERRD_SINK, ERRC_INTERNAL_ERROR,
+                                           "Internal error from the backend while trying to create sink.");
         free(snk_mgr->sinks[j]);
         snk_mgr->sinks[j] = NULL;
         pthread_mutex_unlock(&snk_mgr->lock);
@@ -373,6 +375,8 @@ gboolean dkc_sink_delete(DkcSink* snk, GError** err) {
   DkcSinkMgr* snk_mgr = snk->snk_mgr;
   uint8_t id = snk->id;
   if(snk_mgr->delete_sink(snk_mgr->bkn_ctx, id) != OK) {
+    if(err != NULL) *err = g_error_new(ERRD_SINK, ERRC_INTERNAL_ERROR,
+                                       "Internal error from the backend while trying to delete sink.");
     pthread_mutex_unlock(&snk->snk_mgr->lock);
     return ERROR;
   }
@@ -390,7 +394,7 @@ DkcSink* dkc_app_sink_create(DkcApp* app, DkcSinkType snk_type, const char* uri,
   if(app == NULL) return NULL;
 
   DkcSink* sink = NULL;
-    
+  
   va_list args;
   va_start(args, err);
   sink = dkc_sink_vcreate(app->snk_mgr, snk_type, uri, name, args, err);

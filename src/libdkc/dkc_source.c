@@ -344,6 +344,8 @@ DkcSource* dkc_source_pcreate(DkcSourceMgr* src_mgr, DkcSourceType src_type, con
     if(src_mgr->sources[j] == NULL) {
       src_mgr->sources[j] = g_object_new (DKC_TYPE_SOURCE, "src_mgr", src_mgr, "id", j, NULL);
       if(!src_mgr->create_source(src_mgr->bkn_ctx, j, src_type, uri, name, params)) {
+        if(err != NULL) *err = g_error_new(ERRD_SOURCE, ERRC_INTERNAL_ERROR,
+                                           "Internal error from the backend while trying to create source.");
         g_object_unref(src_mgr->sources[j]);
         src_mgr->sources[j] = NULL;
         pthread_mutex_unlock(&src_mgr->lock);
@@ -372,6 +374,8 @@ gboolean dkc_source_delete(DkcSource* src, GError** err) {
   DkcSourceMgr* src_mgr = src->src_mgr;
   uint8_t id = src->id;
   if(src_mgr->delete_source(src_mgr->bkn_ctx, id) != OK) {
+    if(err != NULL) *err = g_error_new(ERRD_SOURCE, ERRC_INTERNAL_ERROR,
+                                       "Internal error from the backend while trying to delete source.");
     pthread_mutex_unlock(&src->src_mgr->lock);
     return ERROR;
   }
@@ -404,5 +408,5 @@ DkcSource* dkc_app_source_pcreate(DkcApp* app, DkcSourceType src_type, const cha
     if(app == NULL) return NULL;
     
     return dkc_source_pcreate(app->src_mgr, src_type, uri, name, params, err);
-    
+
 }

@@ -94,6 +94,23 @@ int main(int argc, char* argv[]){
   }
   printf("Wrapped source.\n");
 
+  dkc_source_unwrap(&wrpd_v4l2_src, NULL);
+  if (wrpd_v4l2_src) {
+      fprintf(stderr, "Failed to unwrap source.\n");
+      return 1;
+  }
+  printf("Unwrapped source.\n");
+
+  GError* err = NULL;
+  wrpd_v4l2_src = dkc_source_wrap(scene, v4l2_src, &err);
+  if (!wrpd_v4l2_src) {
+      if(err) g_printerr("%s\n", err->message);
+      g_clear_error(&err);
+      fprintf(stderr, "Failed to wrap source.\n");
+      return 1;
+  }
+  printf("Wrapped source.\n");
+
   if (!dkc_app_start(app, NULL)) {
       fprintf(stderr, "Failed to start app.\n");
       return 1;
