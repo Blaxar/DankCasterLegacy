@@ -98,7 +98,7 @@ dkc_rc gstbkn_create_source(void* ctx, uint8_t id,  DkcSourceType src_type, cons
   if(audio_pad){ // If the source has audio capabilites...
 
     gchar* audio_tee_name = g_strconcat(name, "_audio_tee", NULL);
-      
+    
     /* Making audio specific elements */
     a_rate = gst_element_factory_make("audiorate", NULL);
     a_convert = gst_element_factory_make("audioconvert", NULL);
@@ -168,7 +168,7 @@ dkc_rc gstbkn_create_source(void* ctx, uint8_t id,  DkcSourceType src_type, cons
                              NULL);
 
     g_free(a_format);
-      
+    
     link_res = link_res && gst_element_link(source, a_rate) &&
                gst_element_link_filtered(a_rate, a_convert, a_rate_caps) &&
                gst_element_link_filtered(a_convert, a_tee, a_convert_caps);

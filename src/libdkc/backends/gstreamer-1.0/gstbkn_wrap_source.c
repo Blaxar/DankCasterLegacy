@@ -151,7 +151,7 @@ dkc_rc gstbkn_wrap_source(void* ctx, uint8_t scn_id, uint8_t src_id, uint8_t id)
   }
 
   if(!link_res) {
-    gst_bin_remove_many(GST_BIN(gst_ctx->pipeline), source_bin,
+    gst_bin_remove_many(GST_BIN(gst_ctx->pipeline),
                         scene->sources[id],
                         NULL);
     scene->sources[id] = NULL;
