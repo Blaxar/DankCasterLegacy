@@ -1,6 +1,6 @@
 #include <libdkc/backends/gstreamer-1.0/dkc_gst_sinks.h>
 
-dkc_rc gstbkn_create_sink_dummy(GstElement** sink, DkcParams* params) {
+gboolean gstbkn_create_sink_dummy(GstElement** sink, DkcParams* params) {
 
   GstElement *video_snk = NULL;
   GstElement *audio_snk = NULL;

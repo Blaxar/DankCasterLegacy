@@ -2,7 +2,7 @@
 #include <libdkc/backends/gstreamer-1.0/gstbackendctx.h>
 #include <stdlib.h>
 
-dkc_rc gstbkn_uninit(void** ctx) {
+gboolean gstbkn_uninit(void** ctx) {
 
   GstBackendCtx* gst_ctx = (GstBackendCtx*) *ctx;
 

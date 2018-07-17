@@ -30,8 +30,8 @@ typedef struct {
   GstElement* video_tee;
   GstElement* audio_selector;
   GstElement* audio_tee;
-  GstPad* v_caps;
-  GstPad* a_caps;
+  GstCaps* v_caps;
+  GstCaps* a_caps;
   
 } GstBackendCtx;
 

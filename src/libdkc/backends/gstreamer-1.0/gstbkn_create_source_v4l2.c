@@ -1,6 +1,6 @@
 #include <libdkc/backends/gstreamer-1.0/dkc_gst_sources.h>
 
-dkc_rc gstbkn_create_source_v4l2(GstElement** source, const char* uri, DkcParams* params) {
+gboolean gstbkn_create_source_v4l2(GstElement** source, const char* uri, DkcParams* params) {
 
   GstElement *video_src = NULL;
   GstElement *filter = NULL;

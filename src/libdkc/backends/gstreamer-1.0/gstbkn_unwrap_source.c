@@ -2,7 +2,7 @@
 #include <libdkc/backends/gstreamer-1.0/gstbackendctx.h>
 #include <stdlib.h>
 
-dkc_rc gstbkn_unwrap_source(void* ctx, uint8_t scn_id, uint8_t src_id, uint8_t wrpsrc_id) {
+gboolean gstbkn_unwrap_source(void* ctx, uint8_t scn_id, uint8_t src_id, uint8_t wrpsrc_id) {
 
   GstBackendCtx* gst_ctx = (GstBackendCtx*) ctx;
 
@@ -99,7 +99,7 @@ dkc_rc gstbkn_unwrap_source(void* ctx, uint8_t scn_id, uint8_t src_id, uint8_t w
   if(pad_err) return ERROR;
 
   if(video_ghost_pad) // Remove ghost video pad from source bin
-    gst_element_remove_pad(source_bin, video_ghost_pad);
+    gst_element_remove_pad(source_bin, GST_PAD(video_ghost_pad));
 
   if(video_tee_pad) { // Release pad from video source tee
     gst_element_release_request_pad(source_video_tee, video_tee_pad);
@@ -107,7 +107,7 @@ dkc_rc gstbkn_unwrap_source(void* ctx, uint8_t scn_id, uint8_t src_id, uint8_t w
   }
 
   if(audio_ghost_pad) // Remove ghost audio pad from source bin
-    gst_element_remove_pad(source_bin, audio_ghost_pad);
+    gst_element_remove_pad(source_bin, GST_PAD(audio_ghost_pad));
 
   if(audio_tee_pad) { // Release pad from audio source tee
     gst_element_release_request_pad(source_audio_tee, audio_tee_pad);

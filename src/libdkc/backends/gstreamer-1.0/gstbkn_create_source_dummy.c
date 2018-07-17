@@ -1,6 +1,6 @@
 #include <libdkc/backends/gstreamer-1.0/dkc_gst_sources.h>
 
-dkc_rc gstbkn_create_source_dummy(GstElement** source, DkcParams* params) {
+gboolean gstbkn_create_source_dummy(GstElement** source, DkcParams* params) {
 
   GstElement *video_src = NULL;
   GstElement *audio_src = NULL;

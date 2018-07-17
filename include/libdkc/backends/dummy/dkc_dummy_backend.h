@@ -4,29 +4,29 @@
 #include <libdkc/dkc_params.h>
 #include <libdkc/dkc_types.h>
 
-dkc_rc dummybkn_init(void** ctx, DkcParams* params);
+gboolean dummybkn_init(void** ctx, DkcParams* params);
 
-dkc_rc dummybkn_start(void* ctx);
+gboolean dummybkn_start(void* ctx);
 
-dkc_rc dummybkn_stop(void* ctx);
+gboolean dummybkn_stop(void* ctx);
 
-dkc_rc dummybkn_create_source(void* ctx, uint8_t id, DkcSourceType src_type, const char* uri, const char* name, DkcParams* params);
+gboolean dummybkn_create_source(void* ctx, uint8_t id, DkcSourceType src_type, const char* uri, const char* name, DkcParams* params);
 
-dkc_rc dummybkn_delete_source(void* ctx, uint8_t id);
+gboolean dummybkn_delete_source(void* ctx, uint8_t id);
 
-dkc_rc dummybkn_create_scene(void* ctx, uint8_t id);
+gboolean dummybkn_create_scene(void* ctx, uint8_t id);
 
-dkc_rc dummybkn_delete_scene(void* ctx, uint8_t id);
+gboolean dummybkn_delete_scene(void* ctx, uint8_t id);
 
-dkc_rc dummybkn_wrap_source(void* ctx, uint8_t scn_id, uint8_t src_id, uint8_t id);
+gboolean dummybkn_wrap_source(void* ctx, uint8_t scn_id, uint8_t src_id, uint8_t wrpsrc_id);
 
-dkc_rc dummybkn_unwrap_source(void* ctx, uint8_t id);
+gboolean dummybkn_unwrap_source(void* ctx, uint8_t scn_id, uint8_t src_id, uint8_t wrpsrc_id);
 
-dkc_rc dummybkn_create_sink(void* ctx, uint8_t id, DkcSinkType snk_type, const char* type, const char* name, DkcParams* params);
+gboolean dummybkn_create_sink(void* ctx, uint8_t id, DkcSinkType snk_type, const char* type, const char* name, DkcParams* params);
 
-dkc_rc dummybkn_delete_sink(void* ctx, uint8_t id);
+gboolean dummybkn_delete_sink(void* ctx, uint8_t id);
 
-dkc_rc dummybkn_uninit(void** ctx);
+gboolean dummybkn_uninit(void** ctx);
 
 
 #endif //DKCST_DUMMY_BACKEND_H

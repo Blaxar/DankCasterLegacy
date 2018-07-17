@@ -2,7 +2,7 @@
 #include <libdkc/backends/gstreamer-1.0/gstbackendctx.h>
 #include <stdlib.h>
 
-dkc_rc gstbkn_init(void** ctx, DkcParams* params) {
+gboolean gstbkn_init(void** ctx, DkcParams* params) {
 
   *ctx = (void*) malloc(sizeof(GstBackendCtx));
   GstBackendCtx* gst_ctx = *ctx;

@@ -3,7 +3,7 @@
 #include <libdkc/backends/gstreamer-1.0/gstbackendctx.h>
 #include <stdlib.h>
 
-dkc_rc gstbkn_create_source(void* ctx, uint8_t id,  DkcSourceType src_type, const char* uri, const char* name, DkcParams* params) {
+gboolean gstbkn_create_source(void* ctx, uint8_t id,  DkcSourceType src_type, const char* uri, const char* name, DkcParams* params) {
 
   GstBackendCtx* gst_ctx = (GstBackendCtx*) ctx;
 
@@ -42,11 +42,16 @@ dkc_rc gstbkn_create_source(void* ctx, uint8_t id,  DkcSourceType src_type, cons
   int channels = dkc_params_fetch_int(params, "channels", 2);
   int rate = dkc_params_fetch_int(params, "rate", 48000);
   gchar* a_format = dkc_params_fetch_string(params, "audioformat", "S16LE");
-  
+
+  if(gst_ctx->inputs[id] != NULL) {
+    g_critical("Source [%d] already exists.", id);
+    return ERROR;
+  }
+
   source_bin = gst_bin_new(name);
 
   dkc_params_ref(params);
-  
+
   switch(src_type) {
 
     case DUMMY_SRC:
@@ -57,7 +62,7 @@ dkc_rc gstbkn_create_source(void* ctx, uint8_t id,  DkcSourceType src_type, cons
     break;
     default:
     break;
-      
+
   }
 
   dkc_params_unref(params);
@@ -65,7 +70,7 @@ dkc_rc gstbkn_create_source(void* ctx, uint8_t id,  DkcSourceType src_type, cons
   if(!source_bin || !source) {
 
     // Something went wrong, either source or bin not created
-    
+
     if(source_bin) gst_object_unref(GST_OBJECT(source_bin));
     if(source) gst_object_unref(GST_OBJECT(source));
 
@@ -74,12 +79,12 @@ dkc_rc gstbkn_create_source(void* ctx, uint8_t id,  DkcSourceType src_type, cons
   }
 
   gst_bin_add(GST_BIN(source_bin), source);
-  
+
   video_pad = gst_element_get_static_pad(source, "video_src");
   if(video_pad){ // If the source has video capabilites...
 
     gchar* video_tee_name = g_strconcat(name, "_video_tee", NULL);
-      
+
     /* Making video specific elements */
     v_rate = gst_element_factory_make("videorate", NULL);
     v_convert = gst_element_factory_make("videoconvert", NULL);
@@ -89,7 +94,7 @@ dkc_rc gstbkn_create_source(void* ctx, uint8_t id,  DkcSourceType src_type, cons
     gst_bin_add_many(GST_BIN(source_bin), v_rate, v_convert, v_scale, v_tee, NULL);
 
     g_object_set(v_tee, "allow-not-linked", TRUE, NULL);
-    
+
     g_free(video_tee_name);
 
   }
@@ -98,7 +103,7 @@ dkc_rc gstbkn_create_source(void* ctx, uint8_t id,  DkcSourceType src_type, cons
   if(audio_pad){ // If the source has audio capabilites...
 
     gchar* audio_tee_name = g_strconcat(name, "_audio_tee", NULL);
-    
+
     /* Making audio specific elements */
     a_rate = gst_element_factory_make("audiorate", NULL);
     a_convert = gst_element_factory_make("audioconvert", NULL);
@@ -107,15 +112,17 @@ dkc_rc gstbkn_create_source(void* ctx, uint8_t id,  DkcSourceType src_type, cons
     gst_bin_add_many(GST_BIN(source_bin), a_rate, a_convert, a_tee, NULL);
 
     g_object_set(a_tee, "allow-not-linked", TRUE, NULL);
-      
+
     g_free(audio_tee_name);
-    
+
   }
 
-  if(!video_pad && !audio_pad) { //If the source has no capabilities
+  if(!video_pad && !audio_pad) { // If the source has no capabilities
 
     gst_bin_remove(GST_BIN(source_bin), source);
     gst_object_unref(source_bin);
+
+    g_critical("Source [%d] has no capabilities.", id);
 
     return ERROR;
 
@@ -124,8 +131,8 @@ dkc_rc gstbkn_create_source(void* ctx, uint8_t id,  DkcSourceType src_type, cons
   if(video_pad) gst_object_unref(video_pad);
   if(audio_pad) gst_object_unref(audio_pad);
 
-  gboolean link_res = TRUE;
-  
+  gboolean link_err = FALSE;
+
   if(v_rate) { // If the source has video capabilites...
 
     /* Setting video specific caps */
@@ -141,18 +148,19 @@ dkc_rc gstbkn_create_source(void* ctx, uint8_t id,  DkcSourceType src_type, cons
                              NULL);
 
     g_free(v_format);
-    
-    link_res = link_res && gst_element_link(source, v_rate) &&
-               gst_element_link_filtered(v_rate, v_convert, v_rate_caps) &&
-               gst_element_link_filtered(v_convert, v_scale, v_convert_caps) &&
-               gst_element_link_filtered(v_scale, v_tee, v_scale_caps);
-  
+
+    if(!(gst_element_link(source, v_rate) &&
+         gst_element_link_filtered(v_rate, v_convert, v_rate_caps) &&
+         gst_element_link_filtered(v_convert, v_scale, v_convert_caps) &&
+         gst_element_link_filtered(v_scale, v_tee, v_scale_caps))) {
+      g_critical("Could not link source [%d] video formatting elements together.", id);
+      gst_bin_remove_many(GST_BIN(source_bin), source, v_rate, v_convert, v_scale, v_tee, NULL);
+      link_err = TRUE;
+    }
+
     gst_caps_unref(v_rate_caps);
     gst_caps_unref(v_convert_caps);
     gst_caps_unref(v_scale_caps);
-
-    if(!link_res)
-      gst_bin_remove_many(GST_BIN(source_bin), source, v_rate, v_convert, v_scale, v_tee, NULL);
 
   }
 
@@ -168,37 +176,29 @@ dkc_rc gstbkn_create_source(void* ctx, uint8_t id,  DkcSourceType src_type, cons
                              NULL);
 
     g_free(a_format);
-    
-    link_res = link_res && gst_element_link(source, a_rate) &&
-               gst_element_link_filtered(a_rate, a_convert, a_rate_caps) &&
-               gst_element_link_filtered(a_convert, a_tee, a_convert_caps);
-  
+
+    if(!(gst_element_link(source, a_rate) &&
+         gst_element_link_filtered(a_rate, a_convert, a_rate_caps) &&
+         gst_element_link_filtered(a_convert, a_tee, a_convert_caps))) {
+      g_critical("Could not link source [%d] audio formatting elements together.", id);
+      gst_bin_remove_many(GST_BIN(source_bin), source, a_rate, a_convert, a_tee, NULL);
+      link_err = TRUE;
+    }
+
     gst_caps_unref(a_rate_caps);
     gst_caps_unref(a_convert_caps);
 
-    if(!link_res)
-      gst_bin_remove_many(GST_BIN(source_bin), source, a_rate, a_convert, a_tee, NULL);
-
   }
-    
-  if(!link_res){
+
+  if(link_err){
       gst_object_unref(GST_OBJECT(source_bin));
       return ERROR;
   }
-  
-  if(gst_ctx->inputs[id] == NULL) {
-    
-    gst_ctx->inputs[id] = source_bin;
-    gst_ctx->nb_inputs++;
-    gst_element_set_locked_state(source_bin, TRUE);
-    gst_bin_add(GST_BIN(gst_ctx->pipeline), source_bin);
-    return OK;
-    
-  }
 
-  gst_bin_remove(GST_BIN(source_bin), source);
-  gst_object_unref(source_bin);
+  gst_ctx->inputs[id] = source_bin;
+  gst_ctx->nb_inputs++;
+  gst_element_set_locked_state(source_bin, TRUE);
+  gst_bin_add(GST_BIN(gst_ctx->pipeline), source_bin);
+  return OK;
 
-  return ERROR;
-  
 }
