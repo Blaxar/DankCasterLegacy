@@ -80,14 +80,14 @@ int main(int argc, char* argv[]){
   }
   printf("Created scene.\n");
   
-  DkcWrappedSource* wrpd_dummy_src = dkc_source_wrap(scene, dummy_src, NULL);
+  DkcWrappedSource* wrpd_dummy_src = dkc_source_wrap(scene, dummy_src, NULL, NULL);
   if (!wrpd_dummy_src) {
       fprintf(stderr, "Failed to wrap source.\n");
       return 1;
   }
   printf("Wrapped source.\n");
 
-  DkcWrappedSource* wrpd_v4l2_src = dkc_source_wrap(scene, v4l2_src, NULL);
+  DkcWrappedSource* wrpd_v4l2_src = dkc_source_wrap(scene, v4l2_src, NULL, NULL);
   if (!wrpd_v4l2_src) {
       fprintf(stderr, "Failed to wrap source.\n");
       return 1;
@@ -102,7 +102,7 @@ int main(int argc, char* argv[]){
   printf("Unwrapped source.\n");
 
   GError* err = NULL;
-  wrpd_v4l2_src = dkc_source_wrap(scene, v4l2_src, &err);
+  wrpd_v4l2_src = dkc_source_wrap(scene, v4l2_src, &err, NULL);
   if (!wrpd_v4l2_src) {
       if(err) g_printerr("%s\n", err->message);
       g_clear_error(&err);

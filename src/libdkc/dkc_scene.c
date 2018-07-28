@@ -59,7 +59,7 @@ dkc_scene_mgr_set_property (GObject      *object,
                             const GValue *value,
                             GParamSpec   *pspec)
 {
-  
+
   DkcSceneMgr *self = DKC_SCENE_MGR (object);
 
   switch (property_id)
@@ -88,7 +88,7 @@ dkc_scene_mgr_set_property (GObject      *object,
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID (object, property_id, pspec);
       break;
-      
+
   }
 }
 
@@ -636,7 +636,30 @@ gboolean dkc_scene_delete(DkcScene* scn, GError** err){
 
 /* Source wrapping */
 
-DkcWrappedSource* dkc_source_wrap(DkcScene* scn, DkcSource* src, GError** err) {
+DkcWrappedSource* dkc_source_wrap(DkcScene* scn, DkcSource* src, GError** err, ...) {
+
+  DkcWrappedSource* wrpd_src = NULL;
+
+  va_list args;
+  va_start(args, err);
+  wrpd_src = dkc_source_vwrap(scn, src, args, err);
+  va_end(args);
+
+  return wrpd_src;
+
+}
+
+DkcWrappedSource* dkc_source_vwrap(DkcScene* scn, DkcSource* src, va_list args, GError** err) {
+
+  DkcParams* params = NULL;
+  char* fname = va_arg(args, char*);
+  if(fname) params = dkc_params_vwrap(fname, args);
+
+  return dkc_source_pwrap(scn, src, params, err);
+
+}
+
+DkcWrappedSource* dkc_source_pwrap(DkcScene* scn, DkcSource* src, DkcParams* params, GError** err) {
 
   if(G_OBJECT_TYPE(scn) != DKC_TYPE_SCENE) {
     if(err != NULL) *err = g_error_new(ERRD_SCENE, ERRC_WRONG_CLASS, "Provided object is not a DkcScene instance.");
@@ -661,7 +684,7 @@ DkcWrappedSource* dkc_source_wrap(DkcScene* scn, DkcSource* src, GError** err) {
   for(int i=0; i<NB_WRP_SOURCES; i++) {
     if(scn->sources[i] == NULL) {
       scn->sources[i] = g_object_new (DKC_TYPE_WRAPPED_SOURCE, "scn", scn, "src_id", src->id, "id", i, NULL);
-      if(scn_mgr->wrap_source(scn_mgr->bkn_ctx, scn->id, src->id, i) != OK){
+      if(scn_mgr->wrap_source(scn_mgr->bkn_ctx, scn->id, src->id, i, params) != OK){
         if(err != NULL) *err = g_error_new(ERRD_SCENE, ERRC_INTERNAL_ERROR,
                                            "Internal error from the backend while trying to wrap source.");
         scn->sources[i] = NULL;

@@ -36,8 +36,14 @@ gboolean dkc_scene_delete(DkcScene* scn, GError** err);
 
 /* Source wrapping */
 
-DkcWrappedSource* dkc_source_wrap(DkcScene* scn, DkcSource* src, GError** err);
+DkcWrappedSource* dkc_source_wrap(DkcScene* scn, DkcSource* src, GError** err, ...);
+DkcWrappedSource* dkc_source_vwrap(DkcScene* scn, DkcSource* src, va_list args, GError** err);
+DkcWrappedSource* dkc_source_pwrap(DkcScene* scn, DkcSource* src, DkcParams* params, GError** err);
 gboolean dkc_source_unwrap(DkcWrappedSource** wrpd_src, GError** err);
+
+DkcSource* dkc_source_create(DkcSourceMgr* src_mgr, DkcSourceType src_type, const char* uri, const char* name, GError** err, ...);
+DkcSource* dkc_source_vcreate(DkcSourceMgr* src_mgr, DkcSourceType src_type, const char* uri, const char* name, va_list args, GError** err);
+DkcSource* dkc_source_pcreate(DkcSourceMgr* src_mgr, DkcSourceType src_type, const char* uri, const char* name, DkcParams* params, GError** err);
 
 DkcScene* dkc_app_scene_create(DkcApp* app, GError** err);
 

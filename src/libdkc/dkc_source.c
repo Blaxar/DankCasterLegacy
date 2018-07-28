@@ -331,7 +331,7 @@ DkcSource* dkc_source_pcreate(DkcSourceMgr* src_mgr, DkcSourceType src_type, con
     if(err != NULL) *err = g_error_new(ERRD_SOURCE, ERRC_WRONG_MGR_CLASS, "Provided object is not a DkcSourceMgr instance.");
     return ERROR;
   }
-  
+
   pthread_mutex_lock(&src_mgr->lock);
 
   if (src_mgr->nb_sources == NB_SOURCES) {
@@ -339,7 +339,7 @@ DkcSource* dkc_source_pcreate(DkcSourceMgr* src_mgr, DkcSourceType src_type, con
     pthread_mutex_unlock(&src_mgr->lock);
     return NULL;
   }
-  
+
   for(int j=0; j<NB_SOURCES; j++) {
     if(src_mgr->sources[j] == NULL) {
       src_mgr->sources[j] = g_object_new (DKC_TYPE_SOURCE, "src_mgr", src_mgr, "id", j, NULL);
@@ -356,10 +356,10 @@ DkcSource* dkc_source_pcreate(DkcSourceMgr* src_mgr, DkcSourceType src_type, con
       return src_mgr->sources[j];
     }
   }
-  
+
   pthread_mutex_unlock(&src_mgr->lock);
   return NULL;
-  
+
 }
 
 gboolean dkc_source_delete(DkcSource* src, GError** err) {
@@ -368,9 +368,9 @@ gboolean dkc_source_delete(DkcSource* src, GError** err) {
     if(err != NULL) *err = g_error_new(ERRD_SOURCE, ERRC_WRONG_CLASS, "Provided object is not a DkcSource instance.");
     return ERROR;
   }
-  
+
   pthread_mutex_lock(&src->src_mgr->lock);
-  
+
   DkcSourceMgr* src_mgr = src->src_mgr;
   uint8_t id = src->id;
   if(src_mgr->delete_source(src_mgr->bkn_ctx, id) != OK) {
@@ -382,10 +382,10 @@ gboolean dkc_source_delete(DkcSource* src, GError** err) {
   g_object_unref(src_mgr->sources[id]);
   src_mgr->sources[id] = NULL;
   src_mgr->nb_sources--;
-  
+
   pthread_mutex_unlock(&src->src_mgr->lock);
   return OK;
-  
+
 }
 
 DkcSource* dkc_app_source_create(DkcApp* app, DkcSourceType src_type, const char* uri, const char* name, GError** err, ...) {

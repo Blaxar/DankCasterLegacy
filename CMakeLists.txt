@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 2.6)
  
 project(DankCaster)
  
-#set(CMAKE_DEBUG_POSTFIX "_d")
+set(CMAKE_DEBUG_POSTFIX "_d")
  
 set(CMAKE_INSTALL_PREFIX "${CMAKE_CURRENT_BINARY_DIR}/bin")
 
@@ -14,7 +14,6 @@ find_package(Threads REQUIRED)
 find_package(PkgConfig REQUIRED)
 pkg_check_modules(GSTREAMER REQUIRED gstreamer-1.0)
 
-find_package(SDL2 REQUIRED)
 find_package(CUnit)
 
 set(DEFAULT_SRC_DIR ${CMAKE_SOURCE_DIR}/src)
@@ -24,9 +23,8 @@ set(DEFAULT_BIN_DIR ${CMAKE_SOURCE_DIR}/bin)
 
 #Define all the include directories
 include_directories(
-    ${DEFAULT_INCLUDE_DIR}
+  ${DEFAULT_INCLUDE_DIR}
 	${GSTREAMER_INCLUDE_DIRS}
-	${SDL2_INCLUDE_DIR}
 )
 
 IF(CMAKE_BUILD_TYPE MATCHES Debug)

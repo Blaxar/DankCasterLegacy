@@ -1,8 +1,9 @@
 #include <libdkc/backends/gstreamer-1.0/dkc_gst_backend.h>
 #include <libdkc/backends/gstreamer-1.0/gstbackendctx.h>
+#include <libdkc/dkc_params.h>
 #include <stdlib.h>
 
-gboolean gstbkn_wrap_source(void* ctx, uint8_t scn_id, uint8_t src_id, uint8_t id) {
+gboolean gstbkn_wrap_source(void* ctx, uint8_t scn_id, uint8_t src_id, uint8_t id, DkcParams* params) {
 
   GstBackendCtx* gst_ctx = (GstBackendCtx*) ctx;
 
@@ -21,6 +22,9 @@ gboolean gstbkn_wrap_source(void* ctx, uint8_t scn_id, uint8_t src_id, uint8_t i
   
   GstElement* source_bin = gst_ctx->inputs[src_id];
   GstScene* scene = gst_ctx->scenes[scn_id];
+
+  if(params) dkc_params_unref(params);
+  
   if(scene->sources[id] != NULL) {
     g_critical("Wrapped source [%d] already exists in scene [%d].", id, scn_id);
     return ERROR;

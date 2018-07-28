@@ -140,7 +140,7 @@ void dkc_source_wrap_test(void) {
   /* Good case scenario */
   DkcWrappedSource* wrpd_src = NULL;
   for(int i=0; i<NB_WRP_SOURCES; i++) { // Wrap the maximum number of sources allowed
-    wrpd_src = dkc_source_wrap(scn, src, &gerr);
+    wrpd_src = dkc_source_wrap(scn, src, &gerr, NULL);
     CU_ASSERT_NOT_EQUAL(wrpd_src, NULL);
     CU_ASSERT_EQUAL(wrpd_src->scn, scn);
     CU_ASSERT_EQUAL(scn->nb_sources, i+1);
@@ -150,7 +150,7 @@ void dkc_source_wrap_test(void) {
   }
 
   // Now we should get an over capacity error
-  wrpd_src = dkc_source_wrap(scn, src, &gerr);
+  wrpd_src = dkc_source_wrap(scn, src, &gerr, NULL);
   CU_ASSERT_EQUAL(wrpd_src, NULL);
   CU_ASSERT_EQUAL(scn->nb_sources, NB_WRP_SOURCES);
   CU_ASSERT_NOT_EQUAL(gerr, NULL);
@@ -171,7 +171,7 @@ void dkc_source_wrap_test(void) {
   g_clear_error(&gerr);
 
   /* 2nd Wrong object scenario */
-  wrpd_src = dkc_source_wrap(scn, scn_mgr, &gerr);
+  wrpd_src = dkc_source_wrap(scn, scn_mgr, &gerr, NULL);
   CU_ASSERT_EQUAL(wrpd_src, NULL);
   CU_ASSERT_NOT_EQUAL(gerr, NULL);
   if(gerr) {
@@ -192,7 +192,7 @@ void dkc_source_unwrap_test(void) {
   DkcSceneMgr *scn_mgr = app->scn_mgr;
   DkcScene *scn = dkc_scene_create(scn_mgr, NULL);
   DkcSource* src = dkc_source_create(app->src_mgr, DUMMY_SRC, "whatever", "dummy", NULL, NULL);
-  DkcWrappedSource* wrpd_src = dkc_source_wrap(scn, src, NULL);
+  DkcWrappedSource* wrpd_src = dkc_source_wrap(scn, src, NULL, NULL);
 
   /* Good case scenario */
   CU_ASSERT_EQUAL(dkc_source_unwrap(&wrpd_src, &gerr), OK);

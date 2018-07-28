@@ -5,5 +5,5 @@ add_subdirectory(test)
 
 #DankCaster executable
 add_executable(libdkc_sample ${DankCaster_src_files})
-target_link_libraries(libdkc_sample pthread dl ${SDL2_LIBRARY} ${GSTREAMER_LIBRARIES} dkc)
+target_link_libraries(libdkc_sample pthread dl ${GSTREAMER_LIBRARIES} dkc)
 set_target_properties(libdkc_sample PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${DEFAULT_BIN_DIR})

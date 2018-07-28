@@ -18,7 +18,7 @@ gboolean gstbkn_create_scene(void* ctx, uint8_t id);
 
 gboolean gstbkn_delete_scene(void* ctx, uint8_t id);
 
-gboolean gstbkn_wrap_source(void* ctx, uint8_t scn_id, uint8_t src_id, uint8_t wrpsrc_id);
+gboolean gstbkn_wrap_source(void* ctx, uint8_t scn_id, uint8_t src_id, uint8_t wrpsrc_id, DkcParams* params);
 
 gboolean gstbkn_unwrap_source(void* ctx, uint8_t scn_id, uint8_t src_id, uint8_t wrpsrc_id);
 

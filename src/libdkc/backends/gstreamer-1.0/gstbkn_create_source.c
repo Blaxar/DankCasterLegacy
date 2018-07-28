@@ -50,7 +50,7 @@ gboolean gstbkn_create_source(void* ctx, uint8_t id,  DkcSourceType src_type, co
 
   source_bin = gst_bin_new(name);
 
-  dkc_params_ref(params);
+  if(params) dkc_params_ref(params);
 
   switch(src_type) {
 
@@ -65,7 +65,7 @@ gboolean gstbkn_create_source(void* ctx, uint8_t id,  DkcSourceType src_type, co
 
   }
 
-  dkc_params_unref(params);
+  if(params) dkc_params_unref(params);
 
   if(!source_bin || !source) {
 

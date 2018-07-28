@@ -18,7 +18,7 @@ gboolean dummybkn_create_scene(void* ctx, uint8_t id);
 
 gboolean dummybkn_delete_scene(void* ctx, uint8_t id);
 
-gboolean dummybkn_wrap_source(void* ctx, uint8_t scn_id, uint8_t src_id, uint8_t wrpsrc_id);
+gboolean dummybkn_wrap_source(void* ctx, uint8_t scn_id, uint8_t src_id, uint8_t wrpsrc_id, DkcParams* params);
 
 gboolean dummybkn_unwrap_source(void* ctx, uint8_t scn_id, uint8_t src_id, uint8_t wrpsrc_id);
 

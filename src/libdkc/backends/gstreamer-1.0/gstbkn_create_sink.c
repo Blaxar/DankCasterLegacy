@@ -52,7 +52,7 @@ gboolean gstbkn_create_sink(void* ctx, uint8_t id, DkcSinkType snk_type, const c
   
   sink_bin = gst_bin_new(name);
 
-  dkc_params_ref(params);
+  if(params) dkc_params_ref(params);
   
   switch(snk_type) {
 
@@ -64,7 +64,7 @@ gboolean gstbkn_create_sink(void* ctx, uint8_t id, DkcSinkType snk_type, const c
       
   }
 
-  dkc_params_unref(params);
+  if(params) dkc_params_unref(params);
 
   if(!sink_bin || !sink) {
 

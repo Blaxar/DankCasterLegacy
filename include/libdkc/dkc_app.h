@@ -32,7 +32,7 @@ G_END_DECLS
 
 #define DKC_SCENE_CBS() gboolean (*create_scene)(void* ctx, uint8_t id); \
                         gboolean (*delete_scene)(void* ctx, uint8_t id); \
-                        gboolean (*wrap_source)(void* ctx, uint8_t scn_id, uint8_t src_id, uint8_t wrpsrc_id); \
+                        gboolean (*wrap_source)(void* ctx, uint8_t scn_id, uint8_t src_id, uint8_t wrpsrc_id, DkcParams* params); \
                         gboolean (*unwrap_source)(void* ctx, uint8_t scn_id, uint8_t src_id, uint8_t wrpsrc_id)
 
 #define DKC_SINK_CBS() gboolean (*create_sink)(void* ctx, uint8_t id, DkcSinkType snk_type, const char* uri, const char* name, DkcParams* params); \
