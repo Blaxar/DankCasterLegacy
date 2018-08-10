@@ -10,10 +10,10 @@
 struct _DkcParam;
 
 typedef enum {
-  INT = 0, //int
-  FLOAT,   //float    
-  STRING,  //char*
-  FRACTION,
+  DKC_TYPE_INT = 0, //int
+  DKC_TYPE_FLOAT,   //float    
+  DKC_TYPE_STRING,  //char*
+  DKC_TYPE_FRACTION, //DkcFraction
 } DkcParamType;
 
 typedef struct _DkcFraction {

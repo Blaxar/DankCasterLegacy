@@ -161,7 +161,7 @@ void dkc_source_wrap_test(void) {
   g_clear_error(&gerr);
   
   /* 1st Wrong object scenario */
-  wrpd_src = dkc_source_wrap(scn_mgr, src, &gerr);
+  wrpd_src = dkc_source_wrap(scn_mgr, src, &gerr, NULL);
   CU_ASSERT_EQUAL(wrpd_src, NULL);
   CU_ASSERT_NOT_EQUAL(gerr, NULL);
   if(gerr) {

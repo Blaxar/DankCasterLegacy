@@ -7,22 +7,22 @@
 #include <gst/gst.h>
 
 int main(int argc, char* argv[]){
-  
+
   printf("Initializing Dkc\n");
   dkc_init();
   printf("Initialized Dkc\n");
 
   GMainLoop* loop = g_main_loop_new (NULL, FALSE);
-  
+
   DkcApp* app;
-  
-  if(! (app = dkc_app_create("gst", NULL, "width", INT, 640*2,
-                                          "height", INT, 360*2,
-                                          "framerate", FRACTION, 25, 1,
-                                          "videoformat", STRING, "NV12",
-                                          "rate", INT, 48000,
-                                          "channels", INT, 2,
-                                          "audioformat", STRING, "S16LE",
+
+  if(! (app = dkc_app_create("gst", NULL, "width", DKC_TYPE_INT, 1280,
+                                          "height", DKC_TYPE_INT, 720,
+                                          "framerate", DKC_TYPE_FRACTION, 25, 1,
+                                          "videoformat", DKC_TYPE_STRING, "NV12",
+                                          "rate", DKC_TYPE_INT, 48000,
+                                          "channels", DKC_TYPE_INT, 2,
+                                          "audioformat", DKC_TYPE_STRING, "S16LE",
                                           NULL))) printf("Failed to create app.\n");
 
   if (!app) {
@@ -30,15 +30,15 @@ int main(int argc, char* argv[]){
       return 1;
   }
   printf("Created app.\n");
-    
+
   DkcSource* dummy_src = dkc_app_source_create(app, DUMMY_SRC, "/dev/video0", "dummy", NULL,
-                                               "width", INT, 640,
-                                               "height", INT, 360,
-                                               "framerate", FRACTION, 25, 1,
-                                               "format", STRING, "NV12",
-                                               "audiorate", INT, 48000,
-                                               "channels", INT, 2,
-                                               "audioformat", STRING, "S16LE",
+                                               "width", DKC_TYPE_INT, 640,
+                                               "height", DKC_TYPE_INT, 360,
+                                               "framerate", DKC_TYPE_FRACTION, 25, 1,
+                                               "format", DKC_TYPE_STRING, "NV12",
+                                               "audiorate", DKC_TYPE_INT, 48000,
+                                               "channels", DKC_TYPE_INT, 2,
+                                               "audioformat", DKC_TYPE_STRING, "S16LE",
                                                NULL);
   if (!dummy_src) {
       fprintf(stderr, "Failed to create source.\n");
@@ -47,10 +47,10 @@ int main(int argc, char* argv[]){
   printf("Created source.\n");
 
   DkcSource* v4l2_src = dkc_app_source_create(app, VIDEO_DEV_SRC, "/dev/video0", "webcam", NULL,
-                                              "width", INT, 752,
-                                              "height", INT, 416,
-                                              "framerate", FRACTION, 25, 1,
-                                              "format", STRING, "YUY2",
+                                              "width", DKC_TYPE_INT, 752,
+                                              "height", DKC_TYPE_INT, 416,
+                                              "framerate", DKC_TYPE_FRACTION, 25, 1,
+                                              "format", DKC_TYPE_STRING, "YUY2",
                                               NULL);
   if (!v4l2_src) {
       fprintf(stderr, "Failed to create source.\n");
@@ -59,28 +59,31 @@ int main(int argc, char* argv[]){
   printf("Created source.\n");
 
   DkcSink* window_sink = dkc_app_sink_create(app, DUMMY_SNK, "test window", "test_window", NULL,
-                                                             "width", INT, 640,
-                                                             "height", INT, 360,
-                                                             "framerate", FRACTION, 25, 1,
-                                                             "format", STRING, "NV12",
-                                                             "audiorate", INT, 48000,
-                                                             "channels", INT, 2,
-                                                             "audioformat", STRING, "S16LE",
+                                                             "width", DKC_TYPE_INT, 640,
+                                                             "height", DKC_TYPE_INT, 360,
+                                                             "framerate", DKC_TYPE_FRACTION, 25, 1,
+                                                             "format", DKC_TYPE_STRING, "NV12",
+                                                             "audiorate", DKC_TYPE_INT, 48000,
+                                                             "channels", DKC_TYPE_INT, 2,
+                                                             "audioformat", DKC_TYPE_STRING, "S16LE",
                                                              NULL);
   if (!window_sink) {
       fprintf(stderr, "Failed to create sink.\n");
       return 1;
   }
   printf("Created sink.\n");
-  
+
   DkcScene* scene = dkc_app_scene_create(app, NULL);
   if (!scene) {
       fprintf(stderr, "Failed to create scene.\n");
       return 1;
   }
   printf("Created scene.\n");
-  
-  DkcWrappedSource* wrpd_dummy_src = dkc_source_wrap(scene, dummy_src, NULL, NULL);
+
+  DkcWrappedSource* wrpd_dummy_src = dkc_source_wrap(scene, dummy_src, NULL,
+                                                     "width", DKC_TYPE_INT, 1280,
+                                                     "height", DKC_TYPE_INT, 720,
+                                                     NULL);
   if (!wrpd_dummy_src) {
       fprintf(stderr, "Failed to wrap source.\n");
       return 1;
@@ -102,7 +105,10 @@ int main(int argc, char* argv[]){
   printf("Unwrapped source.\n");
 
   GError* err = NULL;
-  wrpd_v4l2_src = dkc_source_wrap(scene, v4l2_src, &err, NULL);
+  wrpd_v4l2_src = dkc_source_wrap(scene, v4l2_src, &err,
+                                  "xpos", DKC_TYPE_INT, 250,
+                                  "ypos", DKC_TYPE_INT, 250,
+                                  NULL);
   if (!wrpd_v4l2_src) {
       if(err) g_printerr("%s\n", err->message);
       g_clear_error(&err);
@@ -124,11 +130,11 @@ int main(int argc, char* argv[]){
       return 1;
   }
   printf("Stopped app.\n");
-  
+
   printf("Terminating Dkc\n");
   dkc_terminate();
   printf("Terminated Dkc\n");
-  
+
   return 0; 
-  
+
 }

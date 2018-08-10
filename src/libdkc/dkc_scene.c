@@ -653,7 +653,10 @@ DkcWrappedSource* dkc_source_vwrap(DkcScene* scn, DkcSource* src, va_list args, 
 
   DkcParams* params = NULL;
   char* fname = va_arg(args, char*);
-  if(fname) params = dkc_params_vwrap(fname, args);
+  if(fname) {
+    g_print("fname: %s\n", fname);
+    params = dkc_params_vwrap(fname, args);
+  }
 
   return dkc_source_pwrap(scn, src, params, err);
 
@@ -670,7 +673,7 @@ DkcWrappedSource* dkc_source_pwrap(DkcScene* scn, DkcSource* src, DkcParams* par
     if(err != NULL) *err = g_error_new(ERRD_SCENE, ERRC_WRONG_CLASS, "Provided object is not a DkcSource instance.");
     return ERROR;
   }
-  
+
   DkcWrappedSource* wrpd_src = NULL;
   DkcSceneMgr* scn_mgr = scn->scn_mgr;
   pthread_mutex_lock(&scn->lock);
@@ -680,7 +683,7 @@ DkcWrappedSource* dkc_source_pwrap(DkcScene* scn, DkcSource* src, DkcParams* par
     pthread_mutex_unlock(&scn->lock);
     return NULL;
   }
-  
+
   for(int i=0; i<NB_WRP_SOURCES; i++) {
     if(scn->sources[i] == NULL) {
       scn->sources[i] = g_object_new (DKC_TYPE_WRAPPED_SOURCE, "scn", scn, "src_id", src->id, "id", i, NULL);
@@ -699,7 +702,7 @@ DkcWrappedSource* dkc_source_pwrap(DkcScene* scn, DkcSource* src, DkcParams* par
   }
   pthread_mutex_unlock(&scn->lock);
   return wrpd_src;
-  
+
 }
 
 gboolean dkc_source_unwrap(DkcWrappedSource** wrpd_src, GError** err) {

@@ -23,6 +23,13 @@ gboolean gstbkn_wrap_source(void* ctx, uint8_t scn_id, uint8_t src_id, uint8_t i
   GstElement* source_bin = gst_ctx->inputs[src_id];
   GstScene* scene = gst_ctx->scenes[scn_id];
 
+  /* fetching parameters */
+  int width  = dkc_params_fetch_int(params, "width", 0);
+  int height = dkc_params_fetch_int(params, "height", 0);
+  int xpos  = dkc_params_fetch_int(params, "xpos", 0);
+  int ypos  = dkc_params_fetch_int(params, "ypos", 0);
+
+  
   if(params) dkc_params_unref(params);
   
   if(scene->sources[id] != NULL) {
@@ -69,6 +76,12 @@ gboolean gstbkn_wrap_source(void* ctx, uint8_t scn_id, uint8_t src_id, uint8_t i
       gst_bin_remove_many(GST_BIN(scene->sources[id]), v_queue,
                           v_rate, v_convert, v_scale, v_filter,
                           NULL);
+    } else if (width > 0 && height > 0) {
+      GstCaps* video_caps = gst_caps_new_simple("video/x-raw",
+                                                "width", G_TYPE_INT, width,
+                                                "height", G_TYPE_INT, height,
+                                                NULL);
+      g_object_set(v_filter, "caps", video_caps, NULL);
     }
       
 
@@ -136,6 +149,13 @@ gboolean gstbkn_wrap_source(void* ctx, uint8_t scn_id, uint8_t src_id, uint8_t i
     if(!gst_element_link_pads(scene->sources[id], "video_src", gst_ctx->scenes[scn_id]->video_mixer, NULL)) {
       g_critical("Could not link wrapped source [%d] video src to scene [%d] video mixer.", id, scn_id);
       link_res = FALSE;
+    } else {
+      GstPad* video_src = gst_element_get_static_pad(scene->sources[id], "video_src");
+      GstPad* mixer_sink = gst_pad_get_peer(video_src);
+      g_object_set(mixer_sink, "xpos", xpos, NULL);
+      g_object_set(mixer_sink, "ypos", ypos, NULL);
+      gst_object_unref(video_src);
+      gst_object_unref(mixer_sink);
     }
 
   }
