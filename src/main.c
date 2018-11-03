@@ -2,7 +2,6 @@
 #include <stdio.h>
 #include <libdkc/dkc.h>
 #include <libdkc/dkc_app.h>
-#include <SDL2/SDL.h>
 
 int main(int argc, char* argv[]){
 
